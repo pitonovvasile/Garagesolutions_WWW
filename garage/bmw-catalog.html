@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BMW Catalog — Variante motor</title>
+    <link rel="stylesheet" href="../assets/css/main.css" />
+  </head>
+  <body class="body--categorie">
+    <main class="categorie-sub">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a class="breadcrumbs__link" href="../index.html">Acasă</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <a class="breadcrumbs__link" href="../garage.html">Garaj</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <span class="breadcrumbs__current">BMW catalog</span>
+      </nav>
+
+      <header class="categorie-sub__head categorie-sub__head--solo">
+        <div class="categorie-sub__intro">
+          <h1 class="categorie-sub__title">BMW — catalog &amp; variante motor</h1>
+          <p class="categorie-sub__lead">
+            Select din <code>bmw_dropdown_catalog</code>; variantele se încarcă din <code>bmw_variants</code> cu filtrare strictă (model sau generație).
+          </p>
+        </div>
+      </header>
+
+      <section class="categorie-sub__content">
+        <label class="catalog-live__form" for="bmw-dropdown-catalog" style="display: block; max-width: 520px">
+          <span>Model / generație</span>
+          <select id="bmw-dropdown-catalog" class="brand-strip__select" style="width: 100%; margin-top: 0.35rem"></select>
+        </label>
+        <p id="bmw-catalog-status" class="catalog-live__status">Se încarcă catalogul…</p>
+      </section>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">Variante motor (<code>bmw_variants</code>)</h2>
+        <ul class="catalog-live__list" id="bmw-variants-list"></ul>
+      </section>
+    </main>
+
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../assets/js/supabase-config.mjs";
+      import {
+        loadBmwDropdownCatalog,
+        fetchBmwVariantLookup,
+        fillBmwCatalogSelect,
+        parseBmwCatalogOption,
+      } from "../assets/js/bmw-dropdown-variants.mjs";
+
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const selectEl = document.getElementById("bmw-dropdown-catalog");
+      const statusEl = document.getElementById("bmw-catalog-status");
+      const listEl = document.getElementById("bmw-variants-list");
+
+      const esc = (s) =>
+        String(s ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+
+      function clearVariantsUi() {
+        listEl.innerHTML = "";
+      }
+
+      async function initCatalog() {
+        const { data, error } = await loadBmwDropdownCatalog(supabase);
+        if (error) {
+          statusEl.textContent = `Eroare catalog: ${error.message}`;
+          return;
+        }
+        fillBmwCatalogSelect(selectEl, data || []);
+        statusEl.textContent = `${(data || []).length} intrări în catalog. Alege o opțiune.`;
+      }
+
+      selectEl.addEventListener("change", async () => {
+        clearVariantsUi();
+        const opt = selectEl.selectedOptions[0];
+        const selected = parseBmwCatalogOption(opt);
+        if (!selected) {
+          statusEl.textContent = "Alege model sau generație.";
+          return;
+        }
+
+        statusEl.textContent = "Se încarcă variantele…";
+        const { data, error } = await fetchBmwVariantLookup(supabase, selected);
+        if (error) {
+          statusEl.textContent = `Eroare variante: ${error.message}`;
+          return;
+        }
+        const rows = data || [];
+        if (!rows.length) {
+          statusEl.textContent = "Nu există variante pentru selecția curentă.";
+          return;
+        }
+        statusEl.textContent = `${rows.length} variant(e) — ${selected.item_type === "model" ? "toate pentru model" : "doar pentru generație"}.`;
+        listEl.innerHTML = rows
+          .map((v) => {
+            const name = esc(v.variant_name ?? "—");
+            const code = v.generation_code ? ` (${esc(v.generation_code)})` : "";
+            const extra = [
+              v.displacement_cc != null ? `${v.displacement_cc} cc` : "",
+              v.power_value != null && v.power_unit
+                ? `${v.power_value} ${v.power_unit}`
+                : v.power_value != null
+                  ? String(v.power_value)
+                  : "",
+            ]
+              .filter(Boolean)
+              .join(" · ");
+            return `<li><strong>${name}${code}</strong>${extra ? `<span>${esc(extra)}</span>` : ""}</li>`;
+          })
+          .join("");
+      });
+
+      initCatalog();
+    </script>
+  </body>
+</html>

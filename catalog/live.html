@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Catalog Live Supabase — Garage Solutions</title>
+    <link rel="stylesheet" href="../assets/css/main.css" />
+  </head>
+  <body class="body--categorie">
+    <main class="categorie-sub catalog-live">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a class="breadcrumbs__link" href="../index.html">Acasa</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <span class="breadcrumbs__current">Catalog Live</span>
+      </nav>
+
+      <header class="categorie-sub__head categorie-sub__head--solo">
+        <div class="categorie-sub__intro">
+          <h1 class="categorie-sub__title">Catalog Live Supabase</h1>
+          <p class="categorie-sub__lead">
+            Datele sunt citite direct din Supabase (fara snapshot static). Categoria este filtru obligatoriu.
+          </p>
+        </div>
+      </header>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">Filtre Catalog</h2>
+        <div class="catalog-live__filters">
+          <label><span>Categorie *</span><select id="f-category"><option value="classic">classic</option><option value="current">current</option></select></label>
+          <label><span>Brand</span><select id="f-brand"><option value="">Toate</option></select></label>
+          <label><span>Chassis code</span><input id="f-chassis" type="search" placeholder="ex: E46, G20" /></label>
+          <label><span>Body style</span><input id="f-body-style" type="search" placeholder="ex: sedan, touring" /></label>
+          <label><span>Production start year</span><input id="f-start-year" type="number" min="1950" max="2099" /></label>
+          <label><span>Production end year</span><input id="f-end-year" type="number" min="1950" max="2099" /></label>
+          <label><span>Engine code</span><input id="f-engine-code" type="search" placeholder="ex: B58, N47" /></label>
+          <label><span>Transmission name</span><input id="f-transmission-name" type="search" placeholder="ex: ZF8HP" /></label>
+        </div>
+        <p class="catalog-live__status" id="live-status">Initializare conexiune live...</p>
+      </section>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">Search by alias / chassis code</h2>
+        <div class="catalog-live__search">
+          <input id="search-q" type="search" placeholder="Cauta alias sau chassis code" />
+          <select id="search-alias-type">
+            <option value="">Alias type (toate)</option>
+            <option value="search">search</option>
+            <option value="display">display</option>
+            <option value="legacy">legacy</option>
+          </select>
+        </div>
+        <ul class="catalog-live__list" id="search-results"></ul>
+      </section>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">1) Brand groups list</h2>
+        <ul class="catalog-live__list" id="manufacturer-groups-list"></ul>
+      </section>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">2) Brands list</h2>
+        <ul class="catalog-live__list" id="brands-list"></ul>
+      </section>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">3) BMW catalog list</h2>
+        <ul class="catalog-live__list" id="catalog-list"></ul>
+      </section>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">4) Catalog entry detail</h2>
+        <div class="catalog-live__card" id="entry-detail"></div>
+      </section>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">5) Generation detail</h2>
+        <div class="catalog-live__card" id="generation-detail"></div>
+      </section>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">6) Variant detail</h2>
+        <div class="catalog-live__card" id="variant-detail"></div>
+      </section>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">8) Admin edit form</h2>
+        <form class="catalog-live__form" id="admin-form">
+          <label><span>Entry ID</span><input id="admin-entry-id" required placeholder="UUID / ID entry" /></label>
+          <label><span>Notes</span><textarea id="admin-notes" rows="4" placeholder="Notes (optional)"></textarea></label>
+          <button class="categorie-sub__btn" type="submit">Save notes (admin)</button>
+        </form>
+        <p class="catalog-live__status" id="admin-status">Write path: auth admin only (RLS aware).</p>
+      </section>
+    </main>
+
+    <script type="module" src="../assets/js/catalog-live-app.mjs"></script>
+  </body>
+</html>

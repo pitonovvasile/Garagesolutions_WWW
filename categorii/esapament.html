@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sistemul de esapament — Garage Solutions</title>
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <link rel="icon" href="../assets/garage-solutions-favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../assets/garage-solutions-apple-touch.png" />
+    <script>
+      try {
+        if (localStorage.getItem("garage-site-theme") === "bright")
+          document.documentElement.setAttribute("data-site-theme", "bright");
+      } catch (e) {}
+    </script>
+  </head>
+  <body class="body--categorie">
+    <div class="site-top site-top--hero">
+      <header class="header header--secondary-apex">
+        <a class="logo-link" href="../index.html" aria-label="Garage Solutions — acasa">
+          <img
+            class="logo-img"
+            src="../assets/garage-solutions-logo.png"
+            alt="Garage Solutions"
+            width="333"
+            height="222"
+            loading="eager"
+          />
+        </a>
+        <nav class="main-nav" aria-label="Navigare principala">
+          <a href="../index.html#categorii">Piese auto</a>
+          <a href="../anvelope.html">Anvelope</a>
+          <a href="../universale/jante-auto.html">Jante</a>
+          <a href="../universale.html">Universale</a>
+          <a href="../index.html">Oferte</a>
+          <a href="../index.html">Contact</a>
+          <div class="header-account-cluster">
+            <div class="header-account-cluster__buttons">
+              <button id="garage-btn" class="account-link" type="button" aria-label="Zona garaj utilizator">
+                Garajul meu
+              </button>
+              <button
+                id="account-btn"
+                class="account-link account-link--secondary"
+                type="button"
+                aria-label="Contul meu"
+                aria-expanded="false"
+                aria-controls="account-panel"
+              >
+                Contul meu
+              </button>
+            </div>
+          </div>
+        </nav>
+        <div class="header-apex" aria-label="Cont, favorite, cos">
+          <button type="button" class="header-apex__identity" id="header-identity-btn" aria-controls="account-panel" aria-label="Deschide contul">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.35" />
+              <path fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" d="M5 20.2c1.3-4.2 4.8-6.5 7-6.5s5.7 2.3 7 6.5" />
+            </svg>
+            <span class="header-apex__user-text" id="header-user-label">Autentificate!</span>
+          </button>
+          <span class="header-apex__favorites-wrap" id="header-favorites-wrap" hidden>
+            <button type="button" class="header-apex__icon-btn" id="header-favorites-btn" aria-label="Piese favorite salvate" title="Favorite">
+              <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.35"
+                  stroke-linejoin="round"
+                  d="M12 20.2S5 15.7 5 10.3c0-2.8 2.2-5 4.9-5 1.5 0 2.9.7 3.6 1.9.7-1.1 2-1.9 3.5-1.9 2.8 0 5 2.2 5 5 0 5.4-7 9.9-7 9.9Z"
+                />
+              </svg>
+            </button>
+          </span>
+          <button type="button" class="header-apex__icon-btn" id="header-cart-btn" aria-label="Cos cumparaturi" title="Cos">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.35"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5V4a3 3 0 0 1 6 0v1M6 6h12l-1.4 12.2a1.5 1.5 0 0 1-1.5 1.3H8.9a1.5 1.5 0 0 1-1.5-1.3L6 6Z"
+              />
+              <circle cx="10" cy="20" r="0.95" fill="currentColor" stroke="none" />
+              <circle cx="17" cy="20" r="0.95" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="theme-switch-wrap theme-switch-wrap--header-corner"
+          aria-label="Comutator temă"
+        >
+          <span class="theme-switch__txt">Dark</span>
+          <label class="theme-switch">
+            <input
+              type="checkbox"
+              id="site-theme-toggle"
+              class="theme-switch__input"
+              role="switch"
+              aria-checked="false"
+              aria-label="Comută tema între dark și bright"
+            />
+            <span class="theme-switch__slider"></span>
+          </label>
+          <span class="theme-switch__txt">Bright</span>
+        </div>
+      </header>
+    </div>
+
+    <main class="categorie-sub">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a class="breadcrumbs__link" href="../index.html">Acasa</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <span class="breadcrumbs__current">Sistemul de esapament</span>
+      </nav>
+
+      <header class="categorie-sub__head">
+        <div class="categorie-sub__icon" aria-hidden="true">
+          <img src="../assets/exhaust-icon-alpha.png" alt="" width="200" height="200" />
+        </div>
+        <div class="categorie-sub__intro">
+          <h1 class="categorie-sub__title">Sistemul de esapament</h1>
+          <p class="categorie-sub__lead">Tobe, furtunuri, sonde, elemente de esapament sport sau OEM, dupa reglementari si compatibilitate.</p>
+        </div>
+      </header>
+
+      <section class="categorie-sub__content" aria-labelledby="categorie-continut">
+        <h2 id="categorie-continut" class="categorie-sub__h2">Piese in aceasta categorie</h2>
+        <p>
+          Aici vei regasi catalogul de piese filtrat dupa marca, model si motorizare (din pagina
+          <a class="categorie-sub__inline" href="../index.html">principala</a>). Pana conectam lista
+          live, foloseste selectia de autovehicul de acasa si revenim cu rezultatele aici in functie de
+          stoc.
+        </p>
+        <p class="categorie-sub__actions">
+          <a class="categorie-sub__btn" href="../index.html">Inapoi la piese &amp; autovehicul</a>
+        </p>
+      </section>
+    </main>
+
+    <aside id="account-panel" class="account-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-panel-title">
+      <div class="account-panel__header">
+        <h2 id="account-panel-title">Contul meu</h2>
+        <button id="account-close-btn" type="button" class="account-panel__close">Inchide</button>
+      </div>
+      <div class="account-panel__section account-panel__section--auth" id="auth-section">
+        <h3>Cont (demo)</h3>
+        <p class="account-panel__hint" style="margin-top: 0; margin-bottom: 0.55rem; font-size: 0.76rem">
+          <a class="account-panel__cont-link" href="../cont.html">Pagină cont (nume, firmă, parolă) — baza de date</a>
+        </p>
+        <div id="auth-logged-out">
+          <div class="account-panel__subnav" role="tablist" aria-label="Autentificare și cont">
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-login"
+              aria-selected="true"
+              aria-controls="auth-panel-login"
+            >
+              Conectează-te
+            </button>
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-register"
+              aria-selected="false"
+              aria-controls="auth-panel-register"
+            >
+              Creare cont
+            </button>
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-forgot"
+              aria-selected="false"
+              aria-controls="auth-panel-forgot"
+            >
+              Parolă uitată
+            </button>
+          </div>
+          <div id="auth-panel-login" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-login">
+            <p class="account-panel__hint">
+              Parola de demonstrație: <strong>demo</strong> — orice e-mail valid (ex.
+              <code>eu@exemplu.ro</code>).
+            </p>
+            <form id="demo-login-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-email"
+                  name="email"
+                  type="email"
+                  autocomplete="username"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input
+                  id="demo-password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="demo"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-auth-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-login-btn">Conectează-te</button>
+            </form>
+          </div>
+          <div id="auth-panel-register" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-register" hidden>
+            <p class="account-panel__hint">
+              Alege o parolă de cel puțin 6 caractere. După creare ești conectat automat; la următoarea vizită folosește
+              același e-mail cu parola <strong>demo</strong> (mod demonstrație).
+            </p>
+            <form id="demo-register-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-register-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input
+                  id="demo-register-password"
+                  name="password"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="6"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Confirmă parola</span>
+                <input
+                  id="demo-register-password2"
+                  name="password2"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="6"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-register-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-register-btn">Creează contul</button>
+            </form>
+          </div>
+          <div id="auth-panel-forgot" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-forgot" hidden>
+            <p class="account-panel__hint">
+              Introdu adresa de e-mail asociată contului. În modul demonstrație nu se trimite un e-mail real.
+            </p>
+            <form id="demo-forgot-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-forgot-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-forgot-error" class="account-panel__error" role="alert" hidden></p>
+              <p id="demo-forgot-success" class="account-panel__success" role="status" aria-live="polite" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-forgot-btn">Trimite instrucțiuni</button>
+            </form>
+          </div>
+        </div>
+        <div id="auth-logged-in" hidden>
+          <p id="demo-user-line" class="account-panel__welcome"></p>
+          <p id="demo-session-meta" class="account-panel__meta"></p>
+          <p style="margin: 0 0 0.5rem; font-size: 0.8rem">
+            <a class="account-panel__cont-link" href="../cont.html">Deschide pagina de cont (Supabase) →</a>
+          </p>
+          <button type="button" class="account-panel__logout" id="demo-logout-btn">Deconectare</button>
+        </div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Mașinile salvate</h3>
+        <ul id="garage-saved-list"></ul>
+      </div>
+      <div class="account-panel__section" id="cos-cumparaturi-section">
+        <h3>Istoric comenzi (demo)</h3>
+        <div id="orders-demo-container"></div>
+      </div>
+      <div class="account-panel__section" id="favorite-articles-section">
+        <h3>Piese favorite (demo)</h3>
+        <div id="favorites-demo-container"></div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Activitate recentă (demo)</h3>
+        <div id="activity-demo-container"></div>
+      </div>
+    </aside>
+
+
+    <footer class="footer">
+      <small>© <span id="y"></span> Garage Solutions</small>
+    </footer>
+    
+    <script src="../assets/js/site-theme.js" defer></script>
+    <script src="../assets/js/main.js"></script>
+    <script type="module">
+      import { initAccountPanel } from "../assets/js/account-panel.mjs";
+      import { initDemoAuthUI } from "../assets/js/demo-auth-ui.mjs";
+
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      const accountBtn = document.getElementById("account-btn");
+      const accountPanel = document.getElementById("account-panel");
+      const accountCloseBtn = document.getElementById("account-close-btn");
+      const garageSavedList = document.getElementById("garage-saved-list");
+      let refreshDemoAuthUi = () => {};
+      const accountPanelApi = initAccountPanel({
+        accountBtn,
+        accountPanel,
+        accountCloseBtn,
+        savedCarsList: garageSavedList,
+        onOpen: () => refreshDemoAuthUi(),
+      });
+      refreshDemoAuthUi = initDemoAuthUI();
+
+      function scrollAccountSection(id) {
+        const el = document.getElementById(id);
+        el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+
+      document.getElementById("header-identity-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+      });
+      document.getElementById("header-favorites-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("favorite-articles-section"));
+      });
+      document.getElementById("header-cart-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("cos-cumparaturi-section"));
+      });
+
+      const garageBtn = document.getElementById("garage-btn");
+      if (garageBtn) {
+        garageBtn.addEventListener("click", function () {
+          window.location.href = "../index.html";
+        });
+      }
+    </script>
+
+</body>
+</html>

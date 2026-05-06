@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anvelope — Garage Solutions</title>
+    <link rel="stylesheet" href="assets/css/main.css?v=67" />
+    <link rel="icon" href="assets/garage-solutions-favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="assets/garage-solutions-apple-touch.png" />
+    <script>
+      try {
+        if (localStorage.getItem("garage-site-theme") === "bright")
+          document.documentElement.setAttribute("data-site-theme", "bright");
+      } catch (e) {}
+    </script>
+  </head>
+  <body class="body--categorie">
+    <div class="site-top site-top--hero">
+      <header class="header header--secondary-apex">
+        <a class="logo-link" href="index.html" aria-label="Garage Solutions — acasa">
+          <img
+            class="logo-img"
+            src="assets/garage-solutions-logo.png"
+            alt="Garage Solutions"
+            width="333"
+            height="222"
+            loading="eager"
+          />
+        </a>
+        <nav class="main-nav" aria-label="Navigare principala">
+          <a href="#">Piese auto</a>
+          <a href="anvelope.html" aria-current="page">Anvelope</a>
+          <a href="universale/jante-auto.html">Jante</a>
+          <a href="universale.html">Universale</a>
+          <a href="#">Oferte</a>
+          <a href="#">Contact</a>
+          <div class="header-account-cluster">
+            <div class="header-account-cluster__buttons">
+              <button id="garage-btn" class="account-link" type="button" aria-label="Zona garaj utilizator">
+                Garajul meu
+              </button>
+              <button
+                id="account-btn"
+                class="account-link account-link--secondary"
+                type="button"
+                aria-label="Contul meu"
+                aria-expanded="false"
+                aria-controls="account-panel"
+              >
+                Contul meu
+              </button>
+            </div>
+          </div>
+        </nav>
+        <div class="header-apex" aria-label="Cont, favorite, cos">
+          <button type="button" class="header-apex__identity" id="header-identity-btn" aria-controls="account-panel" aria-label="Deschide contul">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.35" />
+              <path fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" d="M5 20.2c1.3-4.2 4.8-6.5 7-6.5s5.7 2.3 7 6.5" />
+            </svg>
+            <span class="header-apex__user-text" id="header-user-label">Autentificate!</span>
+          </button>
+          <span class="header-apex__favorites-wrap" id="header-favorites-wrap" hidden>
+            <button type="button" class="header-apex__icon-btn" id="header-favorites-btn" aria-label="Piese favorite salvate" title="Favorite">
+              <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.35"
+                  stroke-linejoin="round"
+                  d="M12 20.2S5 15.7 5 10.3c0-2.8 2.2-5 4.9-5 1.5 0 2.9.7 3.6 1.9.7-1.1 2-1.9 3.5-1.9 2.8 0 5 2.2 5 5 0 5.4-7 9.9-7 9.9Z"
+                />
+              </svg>
+            </button>
+          </span>
+          <button type="button" class="header-apex__icon-btn" id="header-cart-btn" aria-label="Cos cumparaturi" title="Cos">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.35"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5V4a3 3 0 0 1 6 0v1M6 6h12l-1.4 12.2a1.5 1.5 0 0 1-1.5 1.3H8.9a1.5 1.5 0 0 1-1.5-1.3L6 6Z"
+              />
+              <circle cx="10" cy="20" r="0.95" fill="currentColor" stroke="none" />
+              <circle cx="17" cy="20" r="0.95" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="theme-switch-wrap theme-switch-wrap--header-corner"
+          aria-label="Comutator temă"
+        >
+          <span class="theme-switch__txt">Dark</span>
+          <label class="theme-switch">
+            <input
+              type="checkbox"
+              id="site-theme-toggle"
+              class="theme-switch__input"
+              role="switch"
+              aria-checked="false"
+              aria-label="Comută tema între dark și bright"
+            />
+            <span class="theme-switch__slider"></span>
+          </label>
+          <span class="theme-switch__txt">Bright</span>
+        </div>
+      </header>
+    </div>
+
+    <main class="categorie-sub categorie-sub--wide">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a class="breadcrumbs__link" href="index.html">Acasa</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <span class="breadcrumbs__current">Anvelope</span>
+      </nav>
+
+      <section
+        class="anv-selector"
+        data-anv-tabs
+        aria-label="Cauta anvelope: dimensiune, automobil sau marca pneu"
+      >
+        <div class="anv-selector__table">
+        <div class="anv-tab-strip">
+          <div class="anv-tab-strip__inner" role="tablist" aria-label="Mod cautare">
+            <button
+              type="button"
+              class="anv-selector__side-tab is-active"
+              role="tab"
+              id="anv-tab-dim"
+              aria-selected="true"
+              aria-controls="anv-panel-dim"
+              tabindex="0"
+            >
+              <span class="anv-selector__side-kicker">Cautare dupa</span>
+              <span class="anv-selector__side-title">DIMENSIUNE</span>
+            </button>
+            <button
+              type="button"
+              class="anv-selector__side-tab"
+              role="tab"
+              id="anv-tab-auto"
+              aria-selected="false"
+              aria-controls="anv-panel-auto"
+              tabindex="-1"
+            >
+              <span class="anv-selector__side-kicker">Cautare dupa</span>
+              <span class="anv-selector__side-title">AUTOMOBIL</span>
+            </button>
+            <button
+              type="button"
+              class="anv-selector__side-tab"
+              role="tab"
+              id="anv-tab-brand"
+              aria-selected="false"
+              aria-controls="anv-panel-brand"
+              tabindex="-1"
+            >
+              <span class="anv-selector__side-kicker">Cautare dupa</span>
+              <span class="anv-selector__side-title anv-selector__side-title--sm">MARCA PNEU</span>
+            </button>
+          </div>
+        </div>
+        <div class="anv-selector__layout">
+          <div class="anv-selector__body">
+            <div
+              class="anv-selector__panel"
+              id="anv-panel-dim"
+              role="tabpanel"
+              aria-labelledby="anv-tab-dim"
+            >
+              <p id="anv-dim-bg-desc" class="anv-sr-only">
+                Inscripția de pe anvelopă, ex. 225/45 R17 94 Y: lățime, raport aspect, jantă, indice
+                sarcină, viteză. Folosiți câmpurile aliniate pe același model. Pictograma alăturată opțiunilor
+                (Anvelope, Sezon) explică pozițiile inscripției.
+              </p>
+              <div
+                class="anv-selector__form-wrap anv-selector__form-wrap--dim"
+                aria-describedby="anv-dim-bg-desc"
+              >
+                <div class="anv-dim-dims-sezon">
+                <div class="anv-selector__fields anv-selector__fields--3">
+                    <div class="anv-selector__field">
+                      <label class="anv-selector__label" for="anv-dim-lat">Latime</label>
+                      <select id="anv-dim-lat" class="anv-selector__select" name="latime">
+                        <option value="">Toate</option>
+                        <option value="165">165</option>
+                        <option value="175">175</option>
+                        <option value="185">185</option>
+                        <option value="195">195</option>
+                        <option value="205">205</option>
+                        <option value="215">215</option>
+                        <option value="225">225</option>
+                        <option value="235">235</option>
+                      </select>
+                    </div>
+                    <div class="anv-selector__field">
+                      <label class="anv-selector__label" for="anv-dim-inalt">Inaltime</label>
+                      <select id="anv-dim-inalt" class="anv-selector__select" name="inaltime">
+                        <option value="">---</option>
+                        <option value="40">40</option>
+                        <option value="45">45</option>
+                        <option value="50">50</option>
+                        <option value="55">55</option>
+                        <option value="60">60</option>
+                        <option value="65">65</option>
+                        <option value="70">70</option>
+                        <option value="80">80</option>
+                      </select>
+                    </div>
+                    <div class="anv-selector__field">
+                      <label class="anv-selector__label" for="anv-dim-diam">Diametru</label>
+                      <select id="anv-dim-diam" class="anv-selector__select" name="diametru">
+                        <option value="">---</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    class="anv-selector__optgroup anv-selector__optgroup--sezon"
+                    role="group"
+                    aria-labelledby="anv-season-legend"
+                  >
+                    <p id="anv-season-legend" class="anv-selector__group-title">SEZON</p>
+                    <label class="anv-selector__check">
+                      <input type="checkbox" name="sezon_vara" value="1" /> Vara
+                    </label>
+                    <label class="anv-selector__check">
+                      <input type="checkbox" name="sezon_iarna" value="1" /> Iarna
+                    </label>
+                    <label class="anv-selector__check">
+                      <input type="checkbox" name="sezon_allseason" value="1" /> All Season
+                    </label>
+                  </div>
+                  <div
+                    class="anv-selector__optgroup anv-selector__optgroup--anvelope"
+                    role="group"
+                    aria-labelledby="anv-opts-legend"
+                  >
+                    <p id="anv-opts-legend" class="anv-selector__group-title">ANVELOPE</p>
+                    <label class="anv-selector__check">
+                      <input type="checkbox" name="runflat" />
+                      Run flat
+                      <span class="anv-selector__help" title="Pentru anvelope echipate de serie cu pereti ranforsati">?</span>
+                    </label>
+                    <label class="anv-selector__check">
+                      <input type="checkbox" name="ranforsat" />
+                      Rănforsat
+                      <span
+                        class="anv-selector__help"
+                        title="Anvelopa extra-load (XL) cu sarcina crescuta"
+                        >?</span
+                      >
+                    </label>
+                  </div>
+                </div>
+                <div class="anv-dim-lower anv-dim-lower--media-only">
+                  <div class="anv-dim-lower__visual" aria-hidden="true">
+                    <p class="anv-dim-lower__caption">Ghid anvelope</p>
+                    <img
+                      class="anv-selector__tire-img anv-dim-lower__img"
+                      src="assets/anvelope-dim-pictograma.jpg"
+                      alt=""
+                      width="400"
+                      height="300"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+                <div class="anv-selector__actions">
+                    <button type="button" class="anv-selector__search-btn" id="anv-btn-cauta-dim">
+                      <span class="anv-selector__search-ico" aria-hidden="true"></span>
+                      CAUTA
+                    </button>
+                  </div>
+              </div>
+            </div>
+
+            <div
+              class="anv-selector__panel"
+              id="anv-panel-auto"
+              role="tabpanel"
+              aria-labelledby="anv-tab-auto"
+              hidden
+            >
+              <div class="anv-selector__row anv-selector__row--start">
+                <div class="anv-selector__visual anv-selector__visual--auto">
+                  <div
+                    class="anv-garage"
+                    id="anv-garage"
+                    role="group"
+                    aria-labelledby="anv-garage-title"
+                  >
+                    <button
+                      type="button"
+                      class="anv-garage__toggle"
+                      id="anv-garage-title"
+                      aria-pressed="true"
+                      aria-controls="anv-garage-shell"
+                    >
+                      <span class="anv-garage__led" aria-hidden="true"></span>
+                      <span class="anv-garage__label">Din garaj (Acasă)</span>
+                    </button>
+                    <div class="anv-garage__shell" id="anv-garage-shell">
+                      <button
+                        type="button"
+                        class="anv-garage__arr"
+                        id="anv-garage-up"
+                        disabled
+                        aria-label="Vehiculul anterior din lista salvata"
+                      >
+                        ▲
+                      </button>
+                      <div
+                        class="anv-garage__view"
+                        id="anv-garage-view"
+                        tabindex="0"
+                        role="status"
+                        aria-live="polite"
+                      >
+                        —
+                      </div>
+                      <button
+                        type="button"
+                        class="anv-garage__arr"
+                        id="anv-garage-down"
+                        disabled
+                        aria-label="Vehiculul urmator din lista salvata"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                    <p class="anv-garage__meta" id="anv-garage-meta" aria-hidden="true"></p>
+                  </div>
+                  <div class="anv-selector__car-ico" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 120 100"
+                      width="120"
+                      height="100"
+                      fill="none"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M8 64h6l4-10h80l4 10h6v8H8v-8zm12-10 8-20h20l3 8H35l-3-8H25l-5 20zm64 0 5-20h-8l-3 8H83l-3-8H65l-8 20h27z"
+                        opacity="0.35"
+                      />
+                      <rect x="20" y="70" width="20" height="10" rx="2" fill="currentColor" />
+                      <rect x="80" y="70" width="20" height="10" rx="2" fill="currentColor" />
+                      <path
+                        stroke="currentColor"
+                        stroke-width="2"
+                        d="M4 78h112"
+                        opacity="0.4"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div class="anv-selector__form-wrap anv-selector__form-wrap--dim">
+                  <div class="anv-dim-dims-sezon">
+                    <div class="anv-selector__fields anv-selector__fields--auto">
+                      <div class="anv-selector__field">
+                        <label class="anv-selector__label" for="anv-a-marca">Marca autovehicul</label>
+                        <select id="anv-a-marca" class="anv-selector__select" name="auto_marca_id">
+                          <option value="" disabled>Se incarca…</option>
+                        </select>
+                      </div>
+                      <div class="anv-selector__field">
+                        <label class="anv-selector__label" for="anv-a-model"
+                          >Model
+                          <span class="anv-selector__field-hint" id="anv-a-model-hint" aria-live="polite"
+                            >— se activeaza dupa alegerea marcii</span
+                          ></label
+                        >
+                        <select
+                          id="anv-a-model"
+                          class="anv-selector__select anv-selector__select--chained"
+                          name="auto_model"
+                          disabled
+                          aria-describedby="anv-a-model-hint"
+                        >
+                          <option value="">Alege intai marca</option>
+                        </select>
+                      </div>
+                      <div class="anv-selector__field">
+                        <label class="anv-selector__label" for="anv-a-diam">Diametru</label>
+                        <select id="anv-a-diam" class="anv-selector__select" name="auto_diametru" aria-label="Diametru janta cautat">
+                          <option value="">---</option>
+                          <option value="13">13</option>
+                          <option value="14">14</option>
+                          <option value="15">15</option>
+                          <option value="16">16</option>
+                          <option value="17">17</option>
+                          <option value="18">18</option>
+                          <option value="19">19</option>
+                          <option value="20">20</option>
+                        </select>
+                      </div>
+                      <div class="anv-selector__field">
+                        <label class="anv-selector__label" for="anv-a-an">An fabricatie</label>
+                        <select id="anv-a-an" class="anv-selector__select" name="auto_an" disabled>
+                          <option value="">Alege intai modelul</option>
+                        </select>
+                      </div>
+                      <div class="anv-selector__field">
+                        <label class="anv-selector__label" for="anv-a-motor">Motorizare / varianta</label>
+                        <select id="anv-a-motor" class="anv-selector__select" name="auto_motor" disabled>
+                          <option value="">Alege intai modelul</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div
+                      class="anv-selector__optgroup anv-selector__optgroup--sezon"
+                      role="group"
+                      aria-labelledby="anv-a-season-legend"
+                    >
+                      <p id="anv-a-season-legend" class="anv-selector__group-title">SEZON</p>
+                      <label class="anv-selector__check">
+                        <input type="checkbox" name="auto_sezon_vara" value="1" /> Vara
+                      </label>
+                      <label class="anv-selector__check">
+                        <input type="checkbox" name="auto_sezon_iarna" value="1" /> Iarna
+                      </label>
+                      <label class="anv-selector__check">
+                        <input type="checkbox" name="auto_sezon_allseason" value="1" /> All Season
+                      </label>
+                    </div>
+                    <div
+                      class="anv-selector__optgroup anv-selector__optgroup--anvelope"
+                      role="group"
+                      aria-labelledby="anv-a-opts-legend"
+                    >
+                      <p id="anv-a-opts-legend" class="anv-selector__group-title">ANVELOPE</p>
+                      <label class="anv-selector__check">
+                        <input type="checkbox" name="auto_runflat" />
+                        Run flat
+                        <span class="anv-selector__help" title="Pentru anvelope echipate de serie cu pereti ranforsati">?</span>
+                      </label>
+                      <label class="anv-selector__check">
+                        <input type="checkbox" name="auto_ranforsat" />
+                        Rănforsat
+                        <span
+                          class="anv-selector__help"
+                          title="Anvelopa extra-load (XL) cu sarcina crescuta"
+                          >?</span
+                        >
+                      </label>
+                    </div>
+                  </div>
+                  <p class="anv-selector__panel-note">
+                    Ai deja datele in
+                    <a class="anv-selector__link" href="index.html">garaj (Acasa)</a> — import raport.
+                  </p>
+                  <div class="anv-selector__actions">
+                    <button type="button" class="anv-selector__search-btn" id="anv-btn-cauta-auto">
+                      <span class="anv-selector__search-ico" aria-hidden="true"></span>
+                      CAUTA
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="anv-selector__panel"
+              id="anv-panel-brand"
+              role="tabpanel"
+              aria-labelledby="anv-tab-brand"
+              hidden
+            >
+              <div
+                class="anv-selector__form-wrap anv-selector__form-wrap--dim anv-brand-form"
+              >
+                <div class="anv-brand__grid">
+                  <div class="anv-selector__field anv-brand__field--brand">
+                    <label class="anv-selector__label" for="anv-b-brand">Marca pneu</label>
+                    <select id="anv-b-brand" class="anv-selector__select" name="pneu_brand">
+                      <option value="">Alege</option>
+                      <option value="michelin">Michelin</option>
+                      <option value="continental">Continental</option>
+                      <option value="pirelli">Pirelli</option>
+                      <option value="bridgestone">Bridgestone</option>
+                      <option value="goodyear">Goodyear</option>
+                      <option value="dunlop">Dunlop</option>
+                      <option value="nokian">Nokian</option>
+                      <option value="hankook">Hankook</option>
+                    </select>
+                  </div>
+                <div
+                  class="anv-selector__fields anv-selector__fields--3 anv-brand__dims"
+                >
+                  <div class="anv-selector__field">
+                    <label class="anv-selector__label" for="anv-b-lat">Latime</label>
+                    <select id="anv-b-lat" class="anv-selector__select" name="b_latime">
+                      <option value="">---</option>
+                      <option value="195">195</option>
+                      <option value="205">205</option>
+                      <option value="225">225</option>
+                      <option value="235">235</option>
+                      <option value="245">245</option>
+                    </select>
+                  </div>
+                  <div class="anv-selector__field">
+                    <label class="anv-selector__label" for="anv-b-inalt">Inaltime</label>
+                    <select id="anv-b-inalt" class="anv-selector__select" name="b_inaltime">
+                      <option value="">---</option>
+                      <option value="45">45</option>
+                      <option value="50">50</option>
+                      <option value="55">55</option>
+                      <option value="60">60</option>
+                      <option value="65">65</option>
+                    </select>
+                  </div>
+                  <div class="anv-selector__field">
+                    <label class="anv-selector__label" for="anv-b-diam">Diametru</label>
+                    <select id="anv-b-diam" class="anv-selector__select" name="b_diametru">
+                      <option value="">---</option>
+                      <option value="16">16</option>
+                      <option value="17">17</option>
+                      <option value="18">18</option>
+                      <option value="19">19</option>
+                      <option value="20">20</option>
+                    </select>
+                  </div>
+                </div>
+                </div>
+                <div class="anv-selector__actions anv-brand__actions">
+                  <button type="button" class="anv-selector__offers-btn" id="anv-btn-oferte-brand">Vezi ofertele</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <p class="anv-selector__hint">
+          Cautare demonstrativa: trei moduri (dimensiune, automobil, marca pneu). Conecteaza la
+          catalog si stoc; pentru vehicul alege modul <strong>Automobil</strong> sau
+          <a class="categorie-sub__inline" href="index.html">garajul (Acasa)</a>.
+        </p>
+      </section>
+
+      <section class="categorie-sub__content" aria-labelledby="anv-ghid">
+        <h2 id="anv-ghid" class="categorie-sub__h2">Cum alegi</h2>
+        <p>
+          Introdu
+          <a class="categorie-sub__inline" href="index.html">datele de autovehicul de pe front</a>
+          (marca, model, motorizare) sau masoara cauciucurile de pe janta ta pentru profil, latime si
+          diametru. Urmarim codurile de producator si, unde exista, alternative omologate (recomandate
+          in manual).
+        </p>
+        <p>
+          Exista deja categoria
+          <a class="categorie-sub__inline" href="universale/anvelope-auto.html"
+            >Anvelope auto (universale)</a
+          >
+          la piese fără mapare VIN; pentru montajul corect pe vehiculul concret, prefera selectia din
+          garaj.
+        </p>
+        <p class="categorie-sub__actions">
+          <a class="categorie-sub__btn" href="index.html">Selecteaza autovehicul (garaj)</a>
+        </p>
+        <p class="categorie-sub__actions categorie-sub__actions--minor">
+          <a class="categorie-sub__inline" href="universale.html">Spre categoriile universale</a>
+        </p>
+      </section>
+    </main>
+
+    <aside
+      id="account-panel"
+      class="account-panel"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="account-panel-title"
+    >
+      <div class="account-panel__header">
+        <h2 id="account-panel-title">Contul meu</h2>
+        <button id="account-close-btn" type="button" class="account-panel__close">Inchide</button>
+      </div>
+      <div class="account-panel__section account-panel__section--auth" id="auth-section">
+        <h3>Cont (demo)</h3>
+        <p class="account-panel__hint" style="margin-top: 0; margin-bottom: 0.55rem; font-size: 0.76rem">
+          <a class="account-panel__cont-link" href="cont.html">Pagină cont (nume, firmă, parolă) — baza de date</a>
+        </p>
+        <div id="auth-logged-out">
+          <div class="account-panel__subnav" role="tablist" aria-label="Autentificare și cont">
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-login"
+              aria-selected="true"
+              aria-controls="auth-panel-login"
+            >
+              Conectează-te
+            </button>
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-register"
+              aria-selected="false"
+              aria-controls="auth-panel-register"
+            >
+              Creare cont
+            </button>
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-forgot"
+              aria-selected="false"
+              aria-controls="auth-panel-forgot"
+            >
+              Parolă uitată
+            </button>
+          </div>
+          <div id="auth-panel-login" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-login">
+            <p class="account-panel__hint">
+              Parola de demonstrație: <strong>demo</strong> — orice e-mail valid (ex.
+              <code>eu@exemplu.ro</code>).
+            </p>
+            <form id="demo-login-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-email"
+                  name="email"
+                  type="email"
+                  autocomplete="username"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input
+                  id="demo-password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="demo"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-auth-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-login-btn">Conectează-te</button>
+            </form>
+          </div>
+          <div id="auth-panel-register" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-register" hidden>
+            <p class="account-panel__hint">
+              Alege o parolă de cel puțin 6 caractere. După creare ești conectat automat; la următoarea vizită folosește
+              același e-mail cu parola <strong>demo</strong> (mod demonstrație).
+            </p>
+            <form id="demo-register-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-register-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input
+                  id="demo-register-password"
+                  name="password"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="6"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Confirmă parola</span>
+                <input
+                  id="demo-register-password2"
+                  name="password2"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="6"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-register-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-register-btn">Creează contul</button>
+            </form>
+          </div>
+          <div id="auth-panel-forgot" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-forgot" hidden>
+            <p class="account-panel__hint">
+              Introdu adresa de e-mail asociată contului. În modul demonstrație nu se trimite un e-mail real.
+            </p>
+            <form id="demo-forgot-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-forgot-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-forgot-error" class="account-panel__error" role="alert" hidden></p>
+              <p id="demo-forgot-success" class="account-panel__success" role="status" aria-live="polite" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-forgot-btn">Trimite instrucțiuni</button>
+            </form>
+          </div>
+        </div>
+        <div id="auth-logged-in" hidden>
+          <p id="demo-user-line" class="account-panel__welcome"></p>
+          <p id="demo-session-meta" class="account-panel__meta"></p>
+          <p style="margin: 0 0 0.5rem; font-size: 0.8rem">
+            <a class="account-panel__cont-link" href="cont.html">Deschide pagina de cont (Supabase) →</a>
+          </p>
+          <button type="button" class="account-panel__logout" id="demo-logout-btn">Deconectare</button>
+        </div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Mașinile salvate</h3>
+        <ul id="garage-saved-list"></ul>
+      </div>
+      <div class="account-panel__section" id="cos-cumparaturi-section">
+        <h3>Istoric comenzi (demo)</h3>
+        <div id="orders-demo-container"></div>
+      </div>
+      <div class="account-panel__section" id="favorite-articles-section">
+        <h3>Piese favorite (demo)</h3>
+        <div id="favorites-demo-container"></div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Activitate recentă (demo)</h3>
+        <div id="activity-demo-container"></div>
+      </div>
+    </aside>
+
+    <footer class="footer">
+      <small>© <span id="y"></span> Garage Solutions</small>
+    </footer>
+    <script src="assets/js/site-theme.js" defer></script>
+    <script src="assets/js/main.js"></script>
+    <script type="module">
+      import { initAccountPanel } from "./assets/js/account-panel.mjs";
+      import { initDemoAuthUI } from "./assets/js/demo-auth-ui.mjs";
+
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      const accountBtn = document.getElementById("account-btn");
+      const accountPanel = document.getElementById("account-panel");
+      const accountCloseBtn = document.getElementById("account-close-btn");
+      const garageSavedList = document.getElementById("garage-saved-list");
+      let refreshDemoAuthUi = () => {};
+      const accountPanelApi = initAccountPanel({
+        accountBtn,
+        accountPanel,
+        accountCloseBtn,
+        savedCarsList: garageSavedList,
+        onOpen: () => refreshDemoAuthUi(),
+      });
+      refreshDemoAuthUi = initDemoAuthUI();
+
+      function scrollAccountSection(id) {
+        const el = document.getElementById(id);
+        el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+
+      document.getElementById("header-identity-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+      });
+      document.getElementById("header-favorites-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("favorite-articles-section"));
+      });
+      document.getElementById("header-cart-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("cos-cumparaturi-section"));
+      });
+
+      const garageBtn = document.getElementById("garage-btn");
+      if (garageBtn) {
+        garageBtn.addEventListener("click", function () {
+          window.location.href = "index.html";
+        });
+      }
+    </script>
+    <script>
+      (function () {
+        var root = document.querySelector("[data-anv-tabs]");
+        if (!root) return;
+        var tabs = [].slice.call(root.querySelectorAll('[role="tab"]'));
+        var panels = [].slice.call(root.querySelectorAll('[role="tabpanel"]'));
+        function activate(i) {
+          tabs.forEach(function (t, j) {
+            var on = j === i;
+            t.setAttribute("aria-selected", on ? "true" : "false");
+            t.setAttribute("tabindex", on ? "0" : "-1");
+            t.classList.toggle("is-active", on);
+            panels[j].hidden = !on;
+          });
+        }
+        tabs.forEach(function (tab, i) {
+          tab.addEventListener("click", function () {
+            activate(i);
+          });
+        });
+        activate(0);
+        function stub(btnId, message) {
+          var el = document.getElementById(btnId);
+          if (el) {
+            el.addEventListener("click", function () {
+              console.info("[anvelope] " + message);
+            });
+          }
+        }
+        stub("anv-btn-cauta-dim", "Cauta anvelope dupa dimensiune (conecteaza catalogul / API).");
+        (function () {
+          var el = document.getElementById("anv-btn-cauta-auto");
+          if (el) {
+            el.addEventListener("click", function () {
+              var b = document.getElementById("anv-a-marca");
+              var m = document.getElementById("anv-a-model");
+              var d = document.getElementById("anv-a-diam");
+              var a = document.getElementById("anv-a-an");
+              var e = document.getElementById("anv-a-motor");
+              var p = b && b.options[b.selectedIndex];
+              var q = m && m.options[m.selectedIndex];
+              var diam = d && d.options[d.selectedIndex] && d.options[d.selectedIndex].textContent;
+              var line = [p && p.textContent, q && q.textContent, diam && diam !== "---" && ("Diametru " + diam), a && a.value, e && (e.options[e.selectedIndex] && e.options[e.selectedIndex].textContent)]
+                .filter(Boolean)
+                .join(" | ");
+              console.info("[anvelope] Cauta dupa autovehicul (date Supabase / garaj): " + line + " — leaga catalog in backend.");
+            });
+          }
+        })();
+        stub("anv-btn-oferte-brand", "Vezi ofertele — marca pneu, apoi filtre (conecteaza stocul).");
+      })();
+    </script>
+    <script type="module" src="assets/js/anvelope-vehicle.mjs"></script>
+    <script type="module" src="assets/js/anvelope-garage-carousel.mjs"></script>
+  </body>
+</html>

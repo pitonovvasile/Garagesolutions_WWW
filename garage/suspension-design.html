@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Suspension design — Garage Solutions</title>
+    <link rel="icon" href="../assets/garage-solutions-favicon.png" type="image/png" />
+    <script>
+      try {
+        if (localStorage.getItem("garage-site-theme") === "bright")
+          document.documentElement.setAttribute("data-site-theme", "bright");
+      } catch (e) {}
+    </script>
+    <link rel="stylesheet" href="../suspension-design-dist/assets/suspension-design-index.css" />
+    <style>
+      #root {
+        min-height: 100dvh;
+      }
+      .sd-boot {
+        margin: 0;
+        padding: 1.25rem;
+        font-family: system-ui, sans-serif;
+        font-size: 0.875rem;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body class="m-0 min-h-screen bg-black">
+    <noscript>
+      <div class="p-6 text-white">
+        Activează JavaScript pentru modulul Suspension Design.
+        <a class="text-cyan-400 underline" href="../garage.html">Înapoi la garaj</a>
+      </div>
+    </noscript>
+    <div id="root"><p class="sd-boot" id="sd-boot">Se încarcă modulul Suspension Design…</p></div>
+    <script type="module" src="../suspension-design-dist/assets/suspension-design.js"></script>
+  </body>
+</html>

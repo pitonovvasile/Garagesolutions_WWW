@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contul meu — Garage Solutions</title>
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="icon" href="assets/garage-solutions-favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="assets/garage-solutions-apple-touch.png" />
+    <script>
+      try {
+        if (localStorage.getItem("garage-site-theme") === "bright")
+          document.documentElement.setAttribute("data-site-theme", "bright");
+      } catch (e) {}
+    </script>
+  </head>
+  <body class="body--cont-page">
+    <div class="site-top site-top--hero">
+      <header class="header header--secondary-apex">
+        <a class="logo-link" href="index.html" aria-label="Garage Solutions — acasa">
+          <img
+            class="logo-img"
+            src="assets/garage-solutions-logo.png"
+            alt="Garage Solutions"
+            width="333"
+            height="222"
+            loading="eager"
+          />
+        </a>
+        <nav class="main-nav" aria-label="Navigare principala">
+          <a href="index.html#categorii">Piese auto</a>
+          <a href="anvelope.html">Anvelope</a>
+          <a href="universale/jante-auto.html">Jante</a>
+          <a href="universale.html">Universale</a>
+          <a href="index.html">Oferte</a>
+          <a href="index.html">Contact</a>
+          <div class="header-account-cluster">
+            <div class="header-account-cluster__buttons">
+              <button id="garage-btn" class="account-link" type="button" aria-label="Zona garaj utilizator">
+                Garajul meu
+              </button>
+              <button
+                id="account-btn"
+                class="account-link account-link--secondary"
+                type="button"
+                aria-label="Contul meu"
+                aria-expanded="false"
+                aria-controls="account-panel" aria-current="page"
+              >
+                Contul meu
+              </button>
+            </div>
+          </div>
+        </nav>
+        <div class="header-apex" aria-label="Cont, favorite, cos">
+          <button type="button" class="header-apex__identity" id="header-identity-btn" aria-controls="account-panel" aria-label="Deschide contul">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.35" />
+              <path fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" d="M5 20.2c1.3-4.2 4.8-6.5 7-6.5s5.7 2.3 7 6.5" />
+            </svg>
+            <span class="header-apex__user-text" id="header-user-label">Autentificate!</span>
+          </button>
+          <span class="header-apex__favorites-wrap" id="header-favorites-wrap" hidden>
+            <button type="button" class="header-apex__icon-btn" id="header-favorites-btn" aria-label="Piese favorite salvate" title="Favorite">
+              <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.35"
+                  stroke-linejoin="round"
+                  d="M12 20.2S5 15.7 5 10.3c0-2.8 2.2-5 4.9-5 1.5 0 2.9.7 3.6 1.9.7-1.1 2-1.9 3.5-1.9 2.8 0 5 2.2 5 5 0 5.4-7 9.9-7 9.9Z"
+                />
+              </svg>
+            </button>
+          </span>
+          <button type="button" class="header-apex__icon-btn" id="header-cart-btn" aria-label="Cos cumparaturi" title="Cos">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.35"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5V4a3 3 0 0 1 6 0v1M6 6h12l-1.4 12.2a1.5 1.5 0 0 1-1.5 1.3H8.9a1.5 1.5 0 0 1-1.5-1.3L6 6Z"
+              />
+              <circle cx="10" cy="20" r="0.95" fill="currentColor" stroke="none" />
+              <circle cx="17" cy="20" r="0.95" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="theme-switch-wrap theme-switch-wrap--header-corner"
+          aria-label="Comutator temă"
+        >
+          <span class="theme-switch__txt">Dark</span>
+          <label class="theme-switch">
+            <input
+              type="checkbox"
+              id="site-theme-toggle"
+              class="theme-switch__input"
+              role="switch"
+              aria-checked="false"
+              aria-label="Comută tema între dark și bright"
+            />
+            <span class="theme-switch__slider"></span>
+          </label>
+          <span class="theme-switch__txt">Bright</span>
+        </div>
+      </header>
+    </div>
+
+    <main class="cont-page">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a class="breadcrumbs__link" href="index.html">Acasa</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <span class="breadcrumbs__current">Contul meu</span>
+      </nav>
+
+      <header class="cont-page__head">
+        <h1 class="cont-page__title">Contul meu</h1>
+        <p class="cont-page__lead">
+          Datele sunt salvate în contul Garage Solutions (Supabase). Autentificarea de pe pagina principală (mod
+          demonstrație) este separată: aici folosești e-mail și parola contului real.
+        </p>
+      </header>
+
+      <section id="cont-auth-gate" class="cont-card" aria-labelledby="cont-auth-title">
+        <h2 id="cont-auth-title" class="cont-card__title">Autentificare</h2>
+        <p id="cont-auth-error" class="cont-message" role="alert" hidden></p>
+        <div class="cont-auth-grid">
+          <div>
+            <h3 class="cont-card__subtitle">Conectează-te</h3>
+            <form id="cont-login-form" class="cont-form" novalidate>
+              <label class="cont-field">
+                <span class="cont-field__label">E-mail</span>
+                <input class="cont-input" type="email" name="email" autocomplete="username" required placeholder="nume@domeniu.ro" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Parolă</span>
+                <input class="cont-input" type="password" name="password" autocomplete="current-password" required />
+              </label>
+              <button type="submit" class="cont-btn cont-btn--primary">Conectează-te</button>
+            </form>
+          </div>
+          <div>
+            <h3 class="cont-card__subtitle">Creare cont</h3>
+            <form id="cont-register-form" class="cont-form" novalidate>
+              <label class="cont-field">
+                <span class="cont-field__label">E-mail</span>
+                <input class="cont-input" type="email" name="email" autocomplete="email" required placeholder="nume@domeniu.ro" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Parolă</span>
+                <input class="cont-input" type="password" name="password" autocomplete="new-password" required minlength="6" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Confirmă parola</span>
+                <input class="cont-input" type="password" name="password2" autocomplete="new-password" required minlength="6" />
+              </label>
+              <button type="submit" class="cont-btn cont-btn--secondary">Înregistrează-te</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <div id="cont-app" class="cont-app" hidden>
+        <div class="cont-app__bar">
+          <p class="cont-app__session">
+            <span class="cont-app__label">E-mail conectat:</span>
+            <strong id="cont-header-email" class="cont-app__email">—</strong>
+          </p>
+          <button type="button" class="cont-btn cont-btn--ghost" id="cont-sign-out-btn">Deconectare</button>
+        </div>
+
+        <form id="cont-profile-form" class="cont-card" novalidate>
+          <h2 class="cont-card__title">Datele contului</h2>
+          <p id="cont-form-message" class="cont-message" role="status" aria-live="polite" hidden></p>
+          <div class="cont-form cont-form--2col">
+            <label class="cont-field">
+              <span class="cont-field__label">Nume</span>
+              <input class="cont-input" type="text" id="profile-last-name" name="last_name" autocomplete="family-name" />
+            </label>
+            <label class="cont-field">
+              <span class="cont-field__label">Prenume</span>
+              <input class="cont-input" type="text" id="profile-first-name" name="first_name" autocomplete="given-name" />
+            </label>
+            <label class="cont-field">
+              <span class="cont-field__label">Data nașterii</span>
+              <input class="cont-input" type="date" id="profile-birth" name="birth_date" />
+            </label>
+            <label class="cont-field">
+              <span class="cont-field__label">Domeniu de activitate</span>
+              <select class="cont-input cont-input--select" id="profile-activity" name="activity_type" required>
+                <option value="">Alege…</option>
+                <option value="fizica">Persoană fizică</option>
+                <option value="juridica">Persoană juridică</option>
+              </select>
+            </label>
+            <div id="profile-company-wrap" class="cont-field cont-field--full" hidden>
+              <label class="cont-field cont-field--block">
+                <span class="cont-field__label">Denumire firmă / punct de lucru (garaj)</span>
+                <input
+                  class="cont-input"
+                  type="text"
+                  id="profile-company"
+                  name="company_name"
+                  placeholder="Denumirea societății sau a atelierului"
+                  autocomplete="organization"
+                />
+              </label>
+            </div>
+            <label class="cont-field cont-field--full">
+              <span class="cont-field__label">Cum ați aflat de «Garage Solutions»?</span>
+              <select class="cont-input cont-input--select" id="how-heard" name="how_heard">
+                <option value="">Alege…</option>
+                <option value="cautare">Motor de căutare (Google etc.)</option>
+                <option value="recomandare">Recomandare de la cunoștințe / clienți</option>
+                <option value="social">Rețele sociale</option>
+                <option value="eveniment">Eveniment / târg</option>
+                <option value="publicitate">Publicitate / bannere</option>
+                <option value="altul">Altele</option>
+              </select>
+            </label>
+            <label class="cont-field cont-field--full">
+              <span class="cont-field__label">Adresă web (opțional)</span>
+              <input
+                class="cont-input"
+                type="url"
+                id="profile-website"
+                name="website"
+                placeholder="https://"
+                autocomplete="url"
+              />
+            </label>
+            <fieldset class="cont-field cont-field--full cont-field--radios">
+              <legend class="cont-field__label">Doresc să primesc newslettere Garage Solutions</legend>
+              <label class="cont-radio">
+                <input type="radio" name="newsletter" id="profile-newsletter-yes" value="yes" />
+                Da
+              </label>
+              <label class="cont-radio">
+                <input type="radio" name="newsletter" id="profile-newsletter-no" value="no" checked />
+                Nu
+              </label>
+            </fieldset>
+          </div>
+          <div class="cont-actions">
+            <button type="submit" class="cont-btn cont-btn--primary">Salvează datele</button>
+          </div>
+        </form>
+
+        <section class="cont-card" id="cont-delivery-section" aria-labelledby="cont-delivery-title">
+          <div class="cont-block__head">
+            <span class="cont-block__icon" aria-hidden="true">
+              <svg class="cont-block__icon-svg" viewBox="0 0 24 24" width="32" height="32" role="img" focusable="false">
+                <rect x="1" y="3" width="15" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" />
+                <path
+                  d="M16 8h2l4 3v6h-6M6 20h.01M18 20h.01M7 20a2 2 0 1 0 4 0M17 20a2 2 0 1 0 4 0M6 7h1"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+            <div>
+              <h2 id="cont-delivery-title" class="cont-card__title cont-card__title--with-icon">Adrese livrare</h2>
+              <p class="cont-block__desc">
+                Stochează oricâte adrese dorești (acasă, serviciu, atelier). Poți adăuga adrese noi, le poți modifica
+                pe fiecare sau le poți șterge. Adresa marcată ca implicită poate fi folosită la finalizarea comenzilor.
+              </p>
+            </div>
+          </div>
+          <p id="cont-delivery-message" class="cont-message" role="status" aria-live="polite" hidden></p>
+          <div id="delivery-addresses-list" class="cont-delivery-list" aria-label="Listă adrese de livrare"></div>
+          <p class="cont-delivery-empty" id="delivery-empty-hint" hidden>
+            Nu ai încă nicio adresă. Folosește butonul de mai jos.
+          </p>
+          <div class="cont-actions">
+            <button type="button" class="cont-btn cont-btn--secondary" id="delivery-add-btn">+ Adaugă adresă de livrare</button>
+          </div>
+        </section>
+
+        <section class="cont-card" id="cont-garage-saved-section" aria-labelledby="cont-garage-saved-title">
+          <div class="cont-block__head">
+            <div>
+              <h2 id="cont-garage-saved-title" class="cont-card__title">Mașini salvate în garaj</h2>
+              <p class="cont-block__desc">
+                Gestionează rapid mașinile salvate din selectorul principal. Poți șterge individual fiecare mașină sau
+                poți goli lista complet.
+              </p>
+            </div>
+          </div>
+          <p id="cont-garage-cars-message" class="cont-message" role="status" aria-live="polite" hidden></p>
+          <ul id="cont-saved-cars-list" class="cont-delivery-list" aria-label="Listă mașini salvate"></ul>
+          <p class="cont-delivery-empty" id="cont-saved-cars-empty" hidden>Nu ai mașini salvate în garaj.</p>
+          <div class="cont-actions">
+            <button type="button" class="cont-btn cont-btn--ghost" id="cont-saved-cars-clear-btn">Șterge toate mașinile</button>
+          </div>
+        </section>
+
+        <form id="cont-billing-form" class="cont-card" novalidate>
+          <div class="cont-block__head cont-block__head--billing">
+            <span class="cont-block__icon cont-block__icon--billing" aria-hidden="true">
+              <svg class="cont-block__icon-svg" viewBox="0 0 24 24" width="32" height="32" role="img" focusable="false">
+                <path
+                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M14 2v6h6M8 13h8M8 17h5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+            <div>
+              <h2 class="cont-card__title cont-card__title--with-icon">Date facturare</h2>
+              <p class="cont-block__desc">
+                Alege tipul de facturare. Pentru <strong>persoană fizică</strong> completează numele, prenumele și adresa
+                folosită pe factură. Pentru <strong>persoană juridică</strong> introdu datele firmă (CUI, Reg. Com., sediu, date
+                bancare). Aceste date sunt folosite la emiterea documentelor fiscale.
+              </p>
+            </div>
+          </div>
+          <p id="cont-billing-message" class="cont-message" role="status" aria-live="polite" hidden></p>
+          <div class="cont-field cont-field--full">
+            <span class="cont-field__label">Facturare pe</span>
+            <select class="cont-input cont-input--select" id="bill-type" name="bill_type" required>
+              <option value="">Alege…</option>
+              <option value="fizica">Persoană fizică</option>
+              <option value="juridica">Persoană juridică</option>
+            </select>
+          </div>
+          <div id="bill-pf-wrap" class="cont-bill-group" hidden>
+            <h3 class="cont-bill-group__title">Date persoană fizică</h3>
+            <div class="cont-form cont-form--2col">
+              <label class="cont-field">
+                <span class="cont-field__label">Nume</span>
+                <input class="cont-input" type="text" id="bill-pf-last" name="bill_pf_last_name" autocomplete="family-name" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Prenume</span>
+                <input class="cont-input" type="text" id="bill-pf-first" name="bill_pf_first_name" autocomplete="given-name" />
+              </label>
+              <label class="cont-field cont-field--full">
+                <span class="cont-field__label">CNP (opțional)</span>
+                <input class="cont-input" type="text" id="bill-pf-cnp" name="bill_pf_cnp" inputmode="numeric" maxlength="13" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Județ / sector</span>
+                <input class="cont-input" type="text" id="bill-pf-county" name="bill_pf_county" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Localitate</span>
+                <input class="cont-input" type="text" id="bill-pf-city" name="bill_pf_city" />
+              </label>
+              <label class="cont-field cont-field--full">
+                <span class="cont-field__label">Stradă, număr, bloc, apartament</span>
+                <input class="cont-input" type="text" id="bill-pf-street" name="bill_pf_street" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Cod poștal</span>
+                <input class="cont-input" type="text" id="bill-pf-postal" name="bill_pf_postal" inputmode="numeric" />
+              </label>
+            </div>
+          </div>
+          <div id="bill-pj-wrap" class="cont-bill-group" hidden>
+            <h3 class="cont-bill-group__title">Date persoană juridică</h3>
+            <div class="cont-form cont-form--2col">
+              <label class="cont-field cont-field--full">
+                <span class="cont-field__label">Denumire legală / firmă</span>
+                <input class="cont-input" type="text" id="bill-pj-denumire" name="bill_pj_denumire" autocomplete="organization" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">CUI</span>
+                <input class="cont-input" type="text" id="bill-pj-cui" name="bill_pj_cui" inputmode="numeric" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Nr. Reg. Com. / J</span>
+                <input class="cont-input" type="text" id="bill-pj-reg" name="bill_pj_reg_com" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Județ / sector (sediu)</span>
+                <input class="cont-input" type="text" id="bill-pj-county" name="bill_pj_county" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Localitate</span>
+                <input class="cont-input" type="text" id="bill-pj-city" name="bill_pj_city" />
+              </label>
+              <label class="cont-field cont-field--full">
+                <span class="cont-field__label">Stradă, număr, sediu / punct de lucru</span>
+                <input class="cont-input" type="text" id="bill-pj-street" name="bill_pj_street" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Cod poștal</span>
+                <input class="cont-input" type="text" id="bill-pj-postal" name="bill_pj_postal" inputmode="numeric" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">Bancă</span>
+                <input class="cont-input" type="text" id="bill-pj-bank" name="bill_pj_bank" />
+              </label>
+              <label class="cont-field">
+                <span class="cont-field__label">IBAN</span>
+                <input class="cont-input" type="text" id="bill-pj-iban" name="bill_pj_iban" spellcheck="false" />
+              </label>
+              <label class="cont-field cont-field--full">
+                <span class="cont-field__label">Persoană de contact (opțional)</span>
+                <input class="cont-input" type="text" id="bill-pj-contact" name="bill_pj_contact" />
+              </label>
+            </div>
+          </div>
+          <div class="cont-actions">
+            <button type="submit" class="cont-btn cont-btn--primary" id="cont-billing-save">Salvează datele de facturare</button>
+          </div>
+        </form>
+
+        <form id="cont-password-form" class="cont-card cont-card--password" novalidate>
+          <h2 class="cont-card__title">Date de conectare</h2>
+          <p class="cont-card__meta" id="cont-connect-meta">Ultima autentificare: —</p>
+          <p id="cont-password-message" class="cont-message" role="status" aria-live="polite" hidden></p>
+          <div class="cont-form cont-form--stack">
+            <label class="cont-field">
+              <span class="cont-field__label">Adresă e-mail (cont)</span>
+              <input
+                class="cont-input"
+                type="email"
+                id="cont-profile-email"
+                name="email"
+                autocomplete="email"
+                required
+              />
+            </label>
+            <label class="cont-field">
+              <span class="cont-field__label">Parolă nouă</span>
+              <input
+                class="cont-input"
+                type="password"
+                id="cont-pwd-new"
+                name="password_new"
+                autocomplete="new-password"
+                minlength="6"
+              />
+            </label>
+            <label class="cont-field">
+              <span class="cont-field__label">Confirmă parola nouă</span>
+              <input
+                class="cont-input"
+                type="password"
+                id="cont-pwd-confirm"
+                name="password_confirm"
+                autocomplete="new-password"
+                minlength="6"
+              />
+            </label>
+          </div>
+          <div class="cont-actions cont-actions--password">
+            <button type="submit" class="cont-btn cont-btn--accent" id="cont-password-submit">ACTUALIZEAZĂ</button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <aside id="account-panel" class="account-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-panel-title">
+      <div class="account-panel__header">
+        <h2 id="account-panel-title">Contul meu</h2>
+        <button id="account-close-btn" type="button" class="account-panel__close">Inchide</button>
+      </div>
+      <div class="account-panel__section account-panel__section--auth" id="auth-section">
+        <h3>Cont (demo)</h3>
+        <p class="account-panel__hint" style="margin-top: 0; margin-bottom: 0.55rem; font-size: 0.76rem">
+          <a class="account-panel__cont-link" href="cont.html">Pagină cont (nume, firmă, parolă) — baza de date</a>
+        </p>
+        <div id="auth-logged-out">
+          <div class="account-panel__subnav" role="tablist" aria-label="Autentificare și cont">
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-login"
+              aria-selected="true"
+              aria-controls="auth-panel-login"
+            >
+              Conectează-te
+            </button>
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-register"
+              aria-selected="false"
+              aria-controls="auth-panel-register"
+            >
+              Creare cont
+            </button>
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-forgot"
+              aria-selected="false"
+              aria-controls="auth-panel-forgot"
+            >
+              Parolă uitată
+            </button>
+          </div>
+          <div id="auth-panel-login" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-login">
+            <p class="account-panel__hint">
+              Parola de demonstrație: <strong>demo</strong> — orice e-mail valid (ex.
+              <code>eu@exemplu.ro</code>).
+            </p>
+            <form id="demo-login-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-email"
+                  name="email"
+                  type="email"
+                  autocomplete="username"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input
+                  id="demo-password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="demo"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-auth-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-login-btn">Conectează-te</button>
+            </form>
+          </div>
+          <div id="auth-panel-register" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-register" hidden>
+            <p class="account-panel__hint">
+              Alege o parolă de cel puțin 6 caractere. După creare ești conectat automat; la următoarea vizită folosește
+              același e-mail cu parola <strong>demo</strong> (mod demonstrație).
+            </p>
+            <form id="demo-register-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-register-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input
+                  id="demo-register-password"
+                  name="password"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="6"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Confirmă parola</span>
+                <input
+                  id="demo-register-password2"
+                  name="password2"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="6"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-register-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-register-btn">Creează contul</button>
+            </form>
+          </div>
+          <div id="auth-panel-forgot" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-forgot" hidden>
+            <p class="account-panel__hint">
+              Introdu adresa de e-mail asociată contului. În modul demonstrație nu se trimite un e-mail real.
+            </p>
+            <form id="demo-forgot-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-forgot-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-forgot-error" class="account-panel__error" role="alert" hidden></p>
+              <p id="demo-forgot-success" class="account-panel__success" role="status" aria-live="polite" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-forgot-btn">Trimite instrucțiuni</button>
+            </form>
+          </div>
+        </div>
+        <div id="auth-logged-in" hidden>
+          <p id="demo-user-line" class="account-panel__welcome"></p>
+          <p id="demo-session-meta" class="account-panel__meta"></p>
+          <p style="margin: 0 0 0.5rem; font-size: 0.8rem">
+            <a class="account-panel__cont-link" href="cont.html">Deschide pagina de cont (Supabase) →</a>
+          </p>
+          <button type="button" class="account-panel__logout" id="demo-logout-btn">Deconectare</button>
+        </div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Mașinile salvate</h3>
+        <ul id="garage-saved-list"></ul>
+      </div>
+      <div class="account-panel__section" id="cos-cumparaturi-section">
+        <h3>Istoric comenzi (demo)</h3>
+        <div id="orders-demo-container"></div>
+      </div>
+      <div class="account-panel__section" id="favorite-articles-section">
+        <h3>Piese favorite (demo)</h3>
+        <div id="favorites-demo-container"></div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Activitate recentă (demo)</h3>
+        <div id="activity-demo-container"></div>
+      </div>
+    </aside>
+
+
+    <footer class="footer">
+      <small>© <span id="y"></span> Garage Solutions</small>
+    </footer>
+    
+    <script src="assets/js/site-theme.js" defer></script>
+    <script type="module">
+      import { initAccountPanel } from "./assets/js/account-panel.mjs";
+      import { initDemoAuthUI } from "./assets/js/demo-auth-ui.mjs";
+
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      const accountBtn = document.getElementById("account-btn");
+      const accountPanel = document.getElementById("account-panel");
+      const accountCloseBtn = document.getElementById("account-close-btn");
+      const garageSavedList = document.getElementById("garage-saved-list");
+      let refreshDemoAuthUi = () => {};
+      const accountPanelApi = initAccountPanel({
+        accountBtn,
+        accountPanel,
+        accountCloseBtn,
+        savedCarsList: garageSavedList,
+        onOpen: () => refreshDemoAuthUi(),
+      });
+      refreshDemoAuthUi = initDemoAuthUI();
+
+      function scrollAccountSection(id) {
+        const el = document.getElementById(id);
+        el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+
+      document.getElementById("header-identity-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+      });
+      document.getElementById("header-favorites-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("favorite-articles-section"));
+      });
+      document.getElementById("header-cart-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("cos-cumparaturi-section"));
+      });
+
+      const garageBtn = document.getElementById("garage-btn");
+      if (garageBtn) {
+        garageBtn.addEventListener("click", function () {
+          window.location.href = "index.html";
+        });
+      }
+    </script>
+    <script type="module" src="assets/js/account-profile-page.mjs"></script>
+
+</body>
+</html>

@@ -1,0 +1,1575 @@
+/* Garage Mode — cinematic underground garage (standalone) */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+.garage-body {
+  margin: 0;
+  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
+  font-family:
+    system-ui,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
+  color: #e8eaef;
+  background: #000;
+
+  /* Înălțime fâșie carusel sus (grafică buton + etichetă) */
+  --garage-top-carousel-h: 9.25rem;
+
+  /* Temă accent (suprascrise de garage-theme.mjs); default #ef4444 + complement */
+  --garage-p-r: 239;
+  --garage-p-g: 68;
+  --garage-p-b: 68;
+  --garage-c-r: 68;
+  --garage-c-g: 239;
+  --garage-c-b: 239;
+  --garage-gda-r: 172;
+  --garage-gda-g: 49;
+  --garage-gda-b: 49;
+  --garage-gca-r: 245;
+  --garage-gca-g: 133;
+  --garage-gca-b: 133;
+  --garage-cda-r: 49;
+  --garage-cda-g: 172;
+  --garage-cda-b: 172;
+  --garage-cca-r: 133;
+  --garage-cca-g: 245;
+  --garage-cca-b: 245;
+  --garage-pl-r: 246;
+  --garage-pl-g: 147;
+  --garage-pl-b: 147;
+  --garage-dh-r: 84;
+  --garage-dh-g: 24;
+  --garage-dh-b: 24;
+}
+
+/* Fâșie full-width sus: carusel orizontal, degradee masă stânga / dreapta */
+.garage-feature-carousel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 28;
+  padding-top: env(safe-area-inset-top, 0px);
+  pointer-events: none;
+}
+
+.garage-feature-carousel__inner {
+  position: relative;
+  pointer-events: auto;
+  min-height: var(--garage-top-carousel-h);
+  padding-bottom: 0.35rem;
+  background: linear-gradient(
+    180deg,
+    rgba(2, 4, 10, 0.94) 0%,
+    rgba(3, 6, 14, 0.8) 48%,
+    rgba(2, 4, 10, 0.28) 88%,
+    transparent 100%
+  );
+  border-bottom: 1px solid rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.22);
+  opacity: 0;
+  animation: garage-exit-in 0.75s ease 0.95s forwards;
+}
+
+.garage-feature-carousel__inner::before,
+.garage-feature-carousel__inner::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(2rem, 11vw, 4.25rem);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.garage-feature-carousel__inner::before {
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(1, 3, 10, 0.99) 0%,
+    rgba(2, 4, 12, 0.5) 50%,
+    transparent 100%
+  );
+}
+
+.garage-feature-carousel__inner::after {
+  right: 0;
+  background: linear-gradient(
+    270deg,
+    rgba(1, 3, 10, 0.99) 0%,
+    rgba(2, 4, 12, 0.5) 50%,
+    transparent 100%
+  );
+}
+
+.garage-feature-carousel__track {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.45rem clamp(2.1rem, 9vw, 3.65rem) 0.4rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.garage-feature-carousel__track::-webkit-scrollbar {
+  display: none;
+  height: 0;
+}
+
+.garage-feature-carousel__kicker {
+  flex-shrink: 0;
+  align-self: center;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.82);
+  padding: 0.15rem 0.45rem 0.15rem 0;
+  margin-right: 0.05rem;
+  border-right: 1px solid rgba(148, 163, 184, 0.38);
+  scroll-snap-align: start;
+}
+
+.garage-feature-carousel__chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.35rem 1rem 0.35rem 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(248, 250, 252, 0.94);
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(100, 116, 139, 0.45);
+  border-radius: 14px;
+  scroll-snap-align: start;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.garage-feature-carousel__chip-visual {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(2.85rem, 11vw, 3.75rem);
+  height: clamp(2.85rem, 11vw, 3.75rem);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(4, 6, 14, 0.75);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.12),
+    0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.garage-feature-carousel__chip-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.garage-feature-carousel__chip-label {
+  line-height: 1.25;
+  padding-right: 0.15rem;
+  max-width: min(11rem, 38vw);
+}
+
+.garage-feature-carousel__chip:hover {
+  color: #fff;
+  border-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.5);
+  background: rgba(30, 41, 59, 0.92);
+  box-shadow: 0 0 20px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.14);
+}
+
+.garage-feature-carousel__chip:focus-visible {
+  outline: 2px solid rgba(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b), 0.85);
+  outline-offset: 2px;
+}
+
+.garage-feature-carousel__chip--design {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.32rem;
+  padding: 0.42rem 0.6rem 0.38rem;
+  border-style: dashed;
+  border-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.58);
+}
+
+.garage-feature-carousel__chip--design .garage-feature-carousel__chip-visual {
+  width: clamp(4.5rem, 20vw, 7rem);
+  height: clamp(4.5rem, 20vw, 7rem);
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.garage-feature-carousel__chip--design .garage-feature-carousel__chip-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  /* Chenar alb în asset: tăiere procentuală pe muchii + zoom în overflow */
+  transform: scale(1.32);
+  transform-origin: center center;
+  clip-path: inset(4% 7.5% 11% 7.5%);
+}
+
+.garage-feature-carousel__chip--suspension .garage-feature-carousel__chip-img {
+  transform: scale(0.9);
+  clip-path: inset(0);
+}
+
+.garage-feature-carousel__chip--transmission .garage-feature-carousel__chip-img {
+  transform: scale(1.06);
+  clip-path: inset(0);
+  mix-blend-mode: normal;
+  filter: none;
+}
+
+.garage-feature-carousel__chip--design .garage-feature-carousel__chip-label {
+  text-align: center;
+  max-width: 9rem;
+  padding-right: 0;
+  font-size: 0.6rem;
+  letter-spacing: 0.07em;
+}
+
+/* Intro: întreaga scenă din negru + zoom ușor spre immersion */
+.garage-scene {
+  position: fixed;
+  inset: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: clamp(5.5rem, 18vh, 7.5rem);
+  overflow: hidden;
+  perspective: 1400px;
+  opacity: 0;
+  transform: scale(1.065);
+  transform-origin: center 52%;
+  animation: garage-scene-reveal 1.55s cubic-bezier(0.16, 1, 0.3, 1) 0.08s forwards;
+}
+
+@keyframes garage-scene-reveal {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Fundal: zoom lent separat pentru adâncime */
+.garage-scene__bg-parallax {
+  position: absolute;
+  inset: -4%;
+  z-index: 0;
+  animation: garage-bg-zoom 2.1s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  transform: scale(1.12);
+}
+
+@keyframes garage-bg-zoom {
+  to {
+    transform: scale(1);
+  }
+}
+
+.garage-scene__bg {
+  position: absolute;
+  inset: 0;
+  background-color: #030306;
+  background-image:
+    linear-gradient(180deg, rgba(1, 2, 6, 0.82) 0%, rgba(3, 5, 12, 0.55) 38%, rgba(2, 3, 8, 0.88) 100%),
+    linear-gradient(100deg, rgba(6, 8, 18, 0.75) 0%, transparent 50%),
+    url("https://images.unsplash.com/photo-1504222490343-c4fcc00dba12?auto=format&fit=crop&w=1920&q=70");
+  background-size: cover;
+  background-position: center 42%;
+  filter: saturate(0.82) contrast(1.1) brightness(0.42);
+}
+
+/* Ceață & volum: senzație de tunel / garaj adânc */
+.garage-scene__fog {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.garage-scene__fog--deep {
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -10%, rgba(18, 22, 34, 0.45) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(8, 10, 20, 0.5) 0%, transparent 28%, transparent 62%, rgba(4, 5, 12, 0.65) 100%);
+  filter: blur(24px);
+  opacity: 0.85;
+}
+
+.garage-scene__fog--mid {
+  inset: -8% 0 15% 0;
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 35%, rgba(30, 35, 55, 0.22) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 40% at 30% 60%, rgba(20, 24, 40, 0.18) 0%, transparent 50%);
+  filter: blur(38px);
+  opacity: 0.9;
+  animation: garage-fog-drift 14s ease-in-out infinite;
+}
+
+.garage-scene__fog--floor {
+  left: -10%;
+  right: -10%;
+  bottom: 0;
+  height: 48%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(12, 14, 24, 0.35) 35%,
+    rgba(6, 8, 16, 0.55) 100%
+  );
+  filter: blur(20px);
+  opacity: 0.75;
+}
+
+@keyframes garage-fog-drift {
+  0%,
+  100% {
+    transform: translateX(0) scale(1);
+  }
+  50% {
+    transform: translateX(1.2%) scale(1.01);
+  }
+}
+
+.garage-scene__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(
+    ellipse 88% 72% at 50% 46%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 52%,
+    rgba(0, 0, 0, 0.82) 100%
+  );
+  pointer-events: none;
+}
+
+/* Glow ambient: penumbre mari, foarte blur, underground workshop */
+.garage-scene__glow {
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: screen;
+  filter: blur(60px);
+  opacity: 0.55;
+}
+
+.garage-scene__glow--red {
+  inset: -25% 35% 10% -35%;
+  background: radial-gradient(
+    ellipse 55% 50% at 12% 42%,
+    rgba(var(--garage-gda-r), var(--garage-gda-g), var(--garage-gda-b), 0.55) 0%,
+    transparent 68%
+  );
+}
+
+.garage-scene__glow--red-core {
+  inset: -15% 50% 25% -20%;
+  background: radial-gradient(
+    ellipse 40% 38% at 22% 48%,
+    rgba(var(--garage-gca-r), var(--garage-gca-g), var(--garage-gca-b), 0.22) 0%,
+    transparent 72%
+  );
+  mix-blend-mode: plus-lighter;
+  filter: blur(48px);
+  opacity: 0.4;
+}
+
+.garage-scene__glow--blue {
+  inset: -25% -35% 10% 35%;
+  background: radial-gradient(
+    ellipse 52% 48% at 88% 40%,
+    rgba(var(--garage-cda-r), var(--garage-cda-g), var(--garage-cda-b), 0.45) 0%,
+    transparent 68%
+  );
+}
+
+.garage-scene__glow--blue-core {
+  inset: -15% -20% 25% 50%;
+  background: radial-gradient(
+    ellipse 38% 36% at 78% 46%,
+    rgba(var(--garage-cca-r), var(--garage-cca-g), var(--garage-cca-b), 0.2) 0%,
+    transparent 72%
+  );
+  mix-blend-mode: plus-lighter;
+  filter: blur(44px);
+  opacity: 0.38;
+}
+
+@supports not (mix-blend-mode: plus-lighter) {
+  .garage-scene__glow--red-core,
+  .garage-scene__glow--blue-core {
+    mix-blend-mode: screen;
+  }
+}
+
+.garage-scene__floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 44%;
+  z-index: 4;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 12, 20, 0) 0%,
+    rgba(8, 10, 18, 0.5) 32%,
+    rgba(3, 4, 10, 0.96) 100%
+  );
+  pointer-events: none;
+}
+
+.garage-scene__floor-sheen {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28%;
+  z-index: 5;
+  background: linear-gradient(
+    185deg,
+    transparent 0%,
+    rgba(80, 90, 120, 0.04) 40%,
+    rgba(40, 50, 80, 0.07) 100%
+  );
+  pointer-events: none;
+}
+
+.garage-stage {
+  position: relative;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: min(1100px, 94vw);
+  transform: translateZ(40px);
+}
+
+/* Titlu premium — performance / automotive */
+.garage-title {
+  margin: 0 0 0.85rem;
+  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.12rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.62em;
+  line-height: 1.05;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: garage-title-reveal 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+}
+
+.garage-title__line {
+  display: block;
+  font-size: clamp(0.62rem, 1.85vw, 0.78rem);
+  color: rgba(248, 250, 252, 0.42);
+  text-shadow:
+    0 0 40px rgba(var(--garage-gda-r), var(--garage-gda-g), var(--garage-gda-b), 0.15),
+    0 0 80px rgba(var(--garage-cda-r), var(--garage-cda-g), var(--garage-cda-b), 0.08);
+}
+
+.garage-title__line--accent {
+  letter-spacing: 0.72em;
+  padding-left: 0.35em;
+  background: linear-gradient(92deg, #f8fafc 0%, #cbd5e1 45%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(var(--garage-gca-r), var(--garage-gca-g), var(--garage-gca-b), 0.35))
+    drop-shadow(0 0 36px rgba(var(--garage-cca-r), var(--garage-cca-g), var(--garage-cca-b), 0.2));
+}
+
+@keyframes garage-title-reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.garage-car-stack {
+  position: relative;
+  width: min(92vw, 800px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: -0.4rem;
+  --garage-car-paint: #dc2626;
+  --garage-car-paint-body: #dc2626;
+  --garage-paint-w-base: 0;
+  --garage-paint-w-hue: 0;
+}
+
+.garage-car-stack--empty .garage-car-stack__hero,
+.garage-car-stack--empty .garage-car-stack__reflection {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.garage-car-stack--empty .garage-car-stack__shadow {
+  opacity: 0;
+}
+
+.garage-car-stack__paint--hero-dim {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .garage-car-stack__paint--hero-dim {
+    transition: none;
+  }
+}
+
+.garage-stl-mount {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: min(92vw, 800px);
+  height: min(52vh, 420px);
+  max-height: 100%;
+  pointer-events: auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.15);
+}
+
+.garage-stl-mount canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.garage-stl-status {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  transform: translateX(-50%);
+  z-index: 6;
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  max-width: min(90%, 360px);
+  text-align: center;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: rgba(248, 250, 252, 0.92);
+  background: rgba(6, 8, 14, 0.82);
+  border: 1px solid rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.35);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.garage-body--stl-active .garage-car-stack__hero,
+.garage-body--stl-active .garage-car-stack__reflection {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.garage-body--stl-active .garage-car-stack__shadow {
+  opacity: 0.15;
+}
+
+/* Container pentru blend vopsea (păstrează lumini/umbre pe imagine) */
+.garage-car-stack__paint {
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  isolation: isolate;
+}
+
+/*
+ * Fotografii în `assets/garage-cars/bmw/` pe fundal negru mat (fără canal alfa).
+ * lighten + isolation auto: #000 din fișier preia lumina scenei — dispare chenarul dreptunghiular.
+ */
+.garage-car-stack__paint--knockout-dark {
+  isolation: auto;
+}
+
+.garage-car-stack__paint--knockout-dark .garage-car-stack__img--photo {
+  mix-blend-mode: lighten;
+  filter:
+    brightness(1.14)
+    contrast(1.1)
+    drop-shadow(0 3px 2px rgba(0, 0, 0, 0.92))
+    drop-shadow(0 16px 26px rgba(0, 0, 0, 0.48))
+    drop-shadow(-18px 0 42px rgba(var(--garage-gda-r), var(--garage-gda-g), var(--garage-gda-b), 0.08))
+    drop-shadow(18px 0 42px rgba(var(--garage-cda-r), var(--garage-cda-g), var(--garage-cda-b), 0.07));
+}
+
+/* Strat comun: mască = silueta mașinii */
+.garage-car-stack__paint-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 1px;
+  transition: opacity 0.18s ease;
+  mask-image: var(--garage-car-mask, none);
+  mask-mode: alpha;
+  mask-size: contain;
+  mask-position: center bottom;
+  mask-repeat: no-repeat;
+  -webkit-mask-image: var(--garage-car-mask, none);
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center bottom;
+  -webkit-mask-repeat: no-repeat;
+}
+
+/* Bază: adâncime / alb; pentru negru folosim soft-light (vezi data-paint-base-mode) */
+.garage-car-stack__paint-layer--base {
+  z-index: 1;
+  background: var(--garage-car-paint-body, var(--garage-car-paint));
+  mix-blend-mode: multiply;
+  opacity: var(--garage-paint-w-base, 0);
+}
+
+.garage-car-stack[data-paint-base-mode="soft-light"] .garage-car-stack__paint-layer--base {
+  mix-blend-mode: soft-light;
+}
+
+/* Nuanță: păstrează saturația originală (crom, grile deschise) și schimbă doar hue-ul */
+.garage-car-stack__paint-layer--hue {
+  z-index: 2;
+  background: var(--garage-car-paint);
+  mix-blend-mode: hue;
+  opacity: var(--garage-paint-w-hue, 0);
+}
+
+.garage-car-stack__paint--reflect .garage-car-stack__paint-layer {
+  mask-position: center top;
+  -webkit-mask-position: center top;
+}
+
+/* Plutire dinamică — pivot la sol */
+.garage-car-stack__hero {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  transform-origin: 50% 100%;
+  animation: garage-car-float 5.2s ease-in-out infinite;
+}
+
+@keyframes garage-car-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+.garage-car-stack__hero::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: 2px;
+  height: 18px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, transparent 100%);
+  filter: blur(10px);
+  opacity: 0.75;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.garage-car-stack__img {
+  display: block;
+  width: 100%;
+  max-width: min(720px, 90vw);
+  height: auto;
+  max-height: min(26vh, 248px);
+  margin: 0 auto;
+  position: relative;
+  z-index: 0;
+  object-fit: contain;
+  object-position: center bottom;
+  filter:
+    brightness(0.78)
+    contrast(1.08)
+    drop-shadow(0 2px 1px rgba(0, 0, 0, 0.95))
+    drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55));
+  user-select: none;
+  pointer-events: none;
+}
+
+/* BMW E46 / fotografie 3/4 — puțin mai mare, integrată în lumina de garaj */
+.garage-car-stack__img--photo {
+  max-height: min(34vh, 300px);
+  max-width: min(820px, 94vw);
+  filter:
+    brightness(0.84)
+    contrast(1.06)
+    drop-shadow(0 3px 2px rgba(0, 0, 0, 0.92))
+    drop-shadow(0 16px 26px rgba(0, 0, 0, 0.48))
+    drop-shadow(-18px 0 42px rgba(var(--garage-gda-r), var(--garage-gda-g), var(--garage-gda-b), 0.08))
+    drop-shadow(18px 0 42px rgba(var(--garage-cda-r), var(--garage-cda-g), var(--garage-cda-b), 0.07));
+}
+
+/* Umbră realistă: nucleu dens + halou difuz */
+.garage-car-stack__shadow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.garage-car-stack__shadow--core {
+  bottom: -2%;
+  width: 64%;
+  height: clamp(28px, 5.5vw, 44px);
+  transform: translateX(-50%) scaleY(0.38);
+  background: radial-gradient(
+    ellipse 48% 100% at 50% 50%,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.55) 48%,
+    transparent 78%
+  );
+  filter: blur(8px);
+}
+
+.garage-car-stack__shadow--halo {
+  bottom: -5%;
+  width: 88%;
+  height: clamp(52px, 11vw, 76px);
+  transform: translateX(-50%) scaleY(0.5);
+  background: radial-gradient(
+    ellipse 50% 100% at 50% 50%,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.18) 45%,
+    transparent 72%
+  );
+  filter: blur(22px);
+  opacity: 0.95;
+}
+
+/* Reflexie pe podea lucioasă */
+.garage-car-stack__reflection {
+  position: relative;
+  width: 100%;
+  margin-top: -0.35rem;
+  height: clamp(52px, 11.5vh, 96px);
+  overflow: hidden;
+  z-index: 0;
+  opacity: 0;
+  animation: garage-reflect-in 1.35s cubic-bezier(0.22, 1, 0.36, 1) 0.65s forwards;
+}
+
+.garage-car-stack__reflection-floor {
+  position: absolute;
+  inset: 0;
+  top: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(25, 30, 48, 0.12) 0%,
+    rgba(12, 14, 24, 0.28) 45%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes garage-reflect-in {
+  to {
+    opacity: 1;
+  }
+}
+
+.garage-car-stack__reflection-inner {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  transform: scaleY(-1) translateY(-2px);
+  transform-origin: center top;
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.28) 42%,
+    rgba(0, 0, 0, 0.06) 72%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.28) 42%,
+    rgba(0, 0, 0, 0.06) 72%,
+    transparent 100%
+  );
+  filter: blur(2.2px);
+  z-index: 0;
+}
+
+.garage-car-stack__reflection-inner img {
+  display: block;
+  width: 100%;
+  max-width: min(720px, 90vw);
+  margin: 0 auto;
+  max-height: min(26vh, 248px);
+  object-fit: contain;
+  object-position: center top;
+  opacity: 0.22;
+  filter: brightness(0.42) contrast(1.05);
+}
+
+.garage-car-stack__reflection-inner img.garage-car-stack__img--photo {
+  max-height: min(34vh, 300px);
+  max-width: min(820px, 94vw);
+  opacity: 0.18;
+  filter: brightness(0.38) contrast(1.04) blur(0.5px);
+}
+
+.garage-hud__empty-text code {
+  font-size: 0.72em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #e2e8f0;
+}
+
+.garage-hud__origin {
+  margin: 0.5rem 0 0;
+  font-size: 0.65rem;
+  line-height: 1.35;
+  color: rgba(148, 163, 184, 0.75);
+  word-break: break-all;
+}
+
+/* Fâșie verticală stânga-sus: date vehicul */
+.garage-vehicle-rail {
+  position: fixed;
+  top: calc(
+    env(safe-area-inset-top, 0px) + var(--garage-top-carousel-h) + clamp(0.75rem, 3vh, 1.35rem)
+  );
+  left: clamp(0.5rem, 2vw, 1rem);
+  z-index: 26;
+  width: min(248px, calc(100vw - 5.5rem));
+  max-height: min(52vh, 420px);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.garage-vehicle-rail__panel,
+.garage-hud__panel {
+  pointer-events: auto;
+  padding: 0.9rem 1rem 1rem;
+  border-radius: 0 12px 12px 0;
+  border: 1px solid rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.32);
+  border-left-width: 3px;
+  border-left-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.55);
+  background: rgba(6, 8, 14, 0.82);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 36px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.08),
+    8px 12px 40px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  animation: garage-hud-in 0.9s ease 0.85s forwards;
+  overflow-y: auto;
+}
+
+/* Panou dreapta: doar switch caroserie (separat de caseta vehicul) */
+.garage-body-rail {
+  position: fixed;
+  top: calc(
+    env(safe-area-inset-top, 0px) + var(--garage-top-carousel-h) + clamp(0.75rem, 3vh, 1.35rem)
+  );
+  right: clamp(0.5rem, 2vw, 1rem);
+  left: auto;
+  z-index: 26;
+  width: min(220px, calc(100vw - 5.5rem));
+  max-height: min(40vh, 280px);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.garage-body-rail__panel {
+  pointer-events: auto;
+  padding: 0.85rem 0.95rem;
+  border-radius: 12px 0 0 12px;
+  border: 1px solid rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.32);
+  border-right-width: 3px;
+  border-right-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.55);
+  background: rgba(6, 8, 14, 0.82);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 36px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.08),
+    -8px 12px 40px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  animation: garage-hud-in 0.9s ease 0.85s forwards;
+}
+
+.garage-body-rail .garage-hud__body-type {
+  margin: 0;
+}
+
+@keyframes garage-hud-in {
+  to {
+    opacity: 1;
+  }
+}
+
+.garage-hud__empty-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.88);
+}
+
+.garage-hud__empty-text {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: rgba(203, 213, 225, 0.82);
+}
+
+.garage-hud__empty-cta {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b));
+  text-decoration: none;
+  border-bottom: 1px solid rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.45);
+  padding-bottom: 0.12rem;
+}
+
+.garage-hud__empty-cta:hover {
+  color: #fff;
+  border-bottom-color: rgba(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b), 0.75);
+}
+
+.garage-hud__brand-row {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 0.55rem;
+}
+
+@media (min-width: 380px) {
+  .garage-hud__brand-row {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.garage-hud__logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+}
+
+.garage-hud__titles {
+  min-width: 0;
+}
+
+.garage-hud__brand {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.9);
+}
+
+.garage-hud__model {
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  line-height: 1.25;
+}
+
+.garage-hud__engine {
+  margin: 0.45rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: rgba(186, 198, 216, 0.92);
+}
+
+.garage-hud__body-type {
+  margin: 0.65rem 0 0;
+}
+
+.garage-hud__body-label {
+  margin: 0 0 0.38rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.88);
+}
+
+.garage-hud__body-seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.garage-hud__body-chip {
+  padding: 0.32rem 0.5rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.88);
+  background: rgba(30, 41, 59, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.garage-hud__body-chip:hover {
+  background: rgba(51, 65, 85, 0.62);
+  border-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.32);
+}
+
+.garage-hud__body-chip--active {
+  color: #f8fafc;
+  background: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.22);
+  border-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.55);
+}
+
+.garage-hud__count {
+  margin: 0.55rem 0 0;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: rgba(148, 163, 184, 0.85);
+}
+
+.garage-hud__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.garage-hud__btn {
+  width: 100%;
+  padding: 0.42rem 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.92);
+  background: rgba(30, 41, 59, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.garage-hud__btn:hover:not(:disabled) {
+  background: rgba(51, 65, 85, 0.75);
+  border-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.35);
+}
+
+.garage-hud__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Vopsea live — în panoul vehicul */
+.garage-car-paint {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.garage-car-paint__title {
+  margin: 0 0 0.25rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.85);
+}
+
+.garage-car-paint__hint {
+  margin: 0 0 0.55rem;
+  font-size: 0.65rem;
+  line-height: 1.35;
+  color: rgba(148, 163, 184, 0.78);
+}
+
+.garage-car-paint__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.5rem;
+}
+
+.garage-car-paint__color {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.garage-car-paint__color::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.garage-car-paint__color::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.garage-car-paint__range-wrap {
+  flex: 1;
+  min-width: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.garage-car-paint__range-label {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.75);
+}
+
+.garage-car-paint__range {
+  width: 100%;
+  height: 6px;
+  accent-color: rgb(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b));
+  cursor: pointer;
+}
+
+.garage-car-paint__reset {
+  flex-shrink: 0;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.88);
+  background: rgba(30, 41, 59, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.garage-car-paint__reset:hover {
+  border-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.4);
+  background: rgba(51, 65, 85, 0.65);
+}
+
+/* Fâșie orizontală jos: categorii → magazin */
+.garage-category-rail {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 25;
+  pointer-events: none;
+  padding: 0.5rem 0 calc(0.55rem + env(safe-area-inset-bottom, 0));
+  background: linear-gradient(180deg, transparent 0%, rgba(2, 4, 10, 0.88) 38%, rgba(2, 3, 8, 0.96) 100%);
+  border-top: 1px solid rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.22);
+  opacity: 0;
+  animation: garage-hud-in 0.85s ease 0.75s forwards;
+}
+
+.garage-category-rail__scroll {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.15rem clamp(0.5rem, 2vw, 1rem) 0.1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.35) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.garage-category-rail__scroll::-webkit-scrollbar {
+  height: 5px;
+}
+
+.garage-category-rail__scroll::-webkit-scrollbar-thumb {
+  background: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.35);
+  border-radius: 4px;
+}
+
+.garage-category-rail__kicker {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.75);
+  padding-right: 0.35rem;
+  border-right: 1px solid rgba(148, 163, 184, 0.35);
+  margin-right: 0.15rem;
+}
+
+.garage-category-rail__chip {
+  flex-shrink: 0;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(226, 232, 240, 0.92);
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(100, 116, 139, 0.4);
+  border-radius: 999px;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.garage-category-rail__chip:hover {
+  color: #fff;
+  border-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.45);
+  background: rgba(30, 41, 59, 0.9);
+  box-shadow: 0 0 18px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.12);
+}
+
+.garage-category-rail__chip--accent {
+  border-color: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.5);
+  color: rgb(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b));
+}
+
+/* Colț dreapta sus: temă + revenire magazin */
+.garage-top-actions {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + var(--garage-top-carousel-h) + 0.4rem);
+  right: clamp(0.75rem, 3vw, 1.35rem);
+  left: auto;
+  z-index: 30;
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 0.65rem;
+  max-width: min(calc(100vw - 1rem), 540px);
+  pointer-events: none;
+}
+
+.garage-top-actions > * {
+  pointer-events: auto;
+}
+
+.garage-theme {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  padding: 0.35rem 0.55rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.28);
+  background: rgba(6, 8, 14, 0.78);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.garage-theme__label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.72);
+  margin: 0;
+  cursor: pointer;
+}
+
+.garage-theme__input {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.garage-theme__input::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.garage-theme__input::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.garage-theme__presets {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  flex-wrap: wrap;
+}
+
+.garage-theme__swatch {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  background: var(--swatch, #ef4444);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.garage-theme__swatch:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 2px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.45);
+}
+
+.garage-theme__swatch:focus-visible {
+  outline: 2px solid rgba(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b), 0.85);
+  outline-offset: 2px;
+}
+
+/* Revenire magazin */
+.garage-exit {
+  position: relative;
+  padding: 0.5rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(248, 250, 252, 0.9);
+  background: rgba(6, 8, 14, 0.72);
+  border: 1px solid rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.4);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 22px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.12),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  animation: garage-exit-in 0.75s ease 1s forwards;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+@keyframes garage-exit-in {
+  to {
+    opacity: 1;
+  }
+}
+
+.garage-exit:hover {
+  color: #fff;
+  border-color: rgba(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b), 0.55);
+  background: rgba(var(--garage-dh-r), var(--garage-dh-g), var(--garage-dh-b), 0.35);
+  box-shadow:
+    0 0 28px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.22),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.garage-exit:focus-visible {
+  outline: 2px solid rgba(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b), 0.85);
+  outline-offset: 3px;
+}
+
+.garage-3d-view-btn {
+  position: relative;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.9);
+  background: rgba(6, 8, 14, 0.72);
+  border: 1px solid rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.4);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 22px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.12),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  opacity: 0;
+  animation: garage-exit-in 0.75s ease 1s forwards;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.garage-3d-view-btn:hover {
+  color: #fff;
+  border-color: rgba(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b), 0.55);
+  background: rgba(var(--garage-dh-r), var(--garage-dh-g), var(--garage-dh-b), 0.35);
+  box-shadow:
+    0 0 28px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.22),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.garage-3d-view-btn:focus-visible {
+  outline: 2px solid rgba(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b), 0.85);
+  outline-offset: 3px;
+}
+
+.garage-3d-view-btn[aria-pressed="true"] {
+  color: #fff;
+  border-color: rgba(var(--garage-pl-r), var(--garage-pl-g), var(--garage-pl-b), 0.65);
+  background: rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.22);
+  box-shadow:
+    0 0 32px rgba(var(--garage-p-r), var(--garage-p-g), var(--garage-p-b), 0.28),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+/* Mod „3D view”: perspectivă ușoară pe scenă (până la viewer 3D dedicat) */
+.garage-body--3d-view .garage-stage {
+  perspective: min(2000px, 140vw);
+}
+
+.garage-body--3d-view .garage-car-stack {
+  transform: rotateY(-14deg) rotateX(2deg);
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.garage-body--3d-view .garage-car-stack__reflection {
+  opacity: 0.92;
+  transition: opacity 0.45s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .garage-scene,
+  .garage-scene__bg-parallax,
+  .garage-scene__fog--mid,
+  .garage-title,
+  .garage-car-stack__hero,
+  .garage-car-stack__reflection,
+  .garage-exit,
+  .garage-3d-view-btn,
+  .garage-hud__panel,
+  .garage-category-rail,
+  .garage-feature-carousel__inner {
+    animation: none;
+  }
+
+  .garage-scene {
+    opacity: 1;
+    transform: none;
+  }
+
+  .garage-scene__bg-parallax {
+    transform: none;
+  }
+
+  .garage-title {
+    opacity: 1;
+    transform: none;
+  }
+
+  .garage-car-stack__reflection {
+    opacity: 1;
+  }
+
+  .garage-exit,
+  .garage-3d-view-btn {
+    opacity: 1;
+  }
+
+  .garage-body--3d-view .garage-car-stack {
+    transform: none;
+    transition: none;
+  }
+
+  .garage-hud__panel,
+  .garage-category-rail,
+  .garage-feature-carousel__inner {
+    opacity: 1;
+  }
+
+  .garage-car-stack__paint-layer {
+    transition: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .garage-vehicle-rail {
+    top: calc(
+      env(safe-area-inset-top, 0px) + var(--garage-top-carousel-h) + clamp(0.45rem, 6vw, 1rem)
+    );
+    width: min(200px, calc(100vw - 1rem));
+    max-height: 40vh;
+  }
+
+  .garage-title {
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+  }
+}

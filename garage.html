@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Garage Mode — Garage Solutions</title>
+    <link rel="stylesheet" href="assets/css/garage.css" />
+    <link rel="icon" href="assets/garage-solutions-favicon.png" type="image/png" />
+  </head>
+  <body class="garage-body">
+    <!-- Fâșie full-width sus: carusel orizontal cu fade stânga / dreapta -->
+    <div class="garage-feature-carousel" aria-label="Moduri garaj">
+      <div class="garage-feature-carousel__inner">
+        <div class="garage-feature-carousel__track">
+          <span class="garage-feature-carousel__kicker">Garage</span>
+          <a
+            class="garage-feature-carousel__chip garage-feature-carousel__chip--design garage-feature-carousel__chip--suspension"
+            href="garage/suspension-design.html#work"
+          >
+            <span class="garage-feature-carousel__chip-visual" aria-hidden="true">
+              <img
+                class="garage-feature-carousel__chip-img"
+                src="assets/garage-suspension-design-icon.png"
+                width="128"
+                height="128"
+                alt=""
+                decoding="async"
+              />
+            </span>
+            <span class="garage-feature-carousel__chip-label">Suspension design</span>
+          </a>
+          <a
+            id="garage-transmission-link"
+            class="garage-feature-carousel__chip garage-feature-carousel__chip--design garage-feature-carousel__chip--transmission"
+            href="garage/transmission.html"
+          >
+            <span class="garage-feature-carousel__chip-visual" aria-hidden="true">
+              <img
+                class="garage-feature-carousel__chip-img"
+                src="assets/transmission-icon.png"
+                width="128"
+                height="128"
+                alt=""
+                decoding="async"
+              />
+            </span>
+            <span class="garage-feature-carousel__chip-label">Transmission</span>
+          </a>
+          <a
+            class="garage-feature-carousel__chip garage-feature-carousel__chip--design"
+            href="garage/bmw-catalog.html"
+          >
+            <span class="garage-feature-carousel__chip-label">BMW catalog</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="garage-top-actions">
+      <a
+        class="garage-exit"
+        href="index.html"
+        aria-label="Înapoi la magazin — Garage Solutions"
+      >
+        ← Înapoi la magazin
+      </a>
+      <button
+        type="button"
+        id="garage-3d-view-btn"
+        class="garage-3d-view-btn"
+        aria-pressed="false"
+        aria-label="Comută vizualizarea 3D a vehiculului"
+      >
+        3D view
+      </button>
+      <div class="garage-theme">
+        <label class="garage-theme__label" for="garage-theme-color">Culoare</label>
+        <input
+          type="color"
+          id="garage-theme-color"
+          class="garage-theme__input"
+          value="#ef4444"
+          title="Alege culoarea temei în garaj"
+          aria-label="Culoare temă garaj"
+        />
+        <div class="garage-theme__presets" role="group" aria-label="Culori rapide">
+          <button
+            type="button"
+            class="garage-theme__swatch"
+            style="--swatch: #ef4444"
+            data-garage-hex="#ef4444"
+            title="Roșu"
+            aria-label="Roșu"
+          ></button>
+          <button
+            type="button"
+            class="garage-theme__swatch"
+            style="--swatch: #f97316"
+            data-garage-hex="#f97316"
+            title="Portocaliu"
+            aria-label="Portocaliu"
+          ></button>
+          <button
+            type="button"
+            class="garage-theme__swatch"
+            style="--swatch: #eab308"
+            data-garage-hex="#eab308"
+            title="Galben"
+            aria-label="Galben"
+          ></button>
+          <button
+            type="button"
+            class="garage-theme__swatch"
+            style="--swatch: #22c55e"
+            data-garage-hex="#22c55e"
+            title="Verde"
+            aria-label="Verde"
+          ></button>
+          <button
+            type="button"
+            class="garage-theme__swatch"
+            style="--swatch: #14b8a6"
+            data-garage-hex="#14b8a6"
+            title="Turcoaz"
+            aria-label="Turcoaz"
+          ></button>
+          <button
+            type="button"
+            class="garage-theme__swatch"
+            style="--swatch: #3b82f6"
+            data-garage-hex="#3b82f6"
+            title="Albastru"
+            aria-label="Albastru"
+          ></button>
+          <button
+            type="button"
+            class="garage-theme__swatch"
+            style="--swatch: #a855f7"
+            data-garage-hex="#a855f7"
+            title="Mov"
+            aria-label="Mov"
+          ></button>
+          <button
+            type="button"
+            class="garage-theme__swatch"
+            style="--swatch: #ec4899"
+            data-garage-hex="#ec4899"
+            title="Roz"
+            aria-label="Roz"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fâșie verticală stânga-sus: vehicul din garaj -->
+    <aside class="garage-vehicle-rail" id="garage-hud" aria-label="Mașina din garaj">
+      <div class="garage-vehicle-rail__panel garage-hud__panel">
+        <div id="garage-hud-empty" class="garage-hud__empty" hidden>
+          <p class="garage-hud__empty-title">Garajul este gol</p>
+          <p class="garage-hud__empty-text">
+            Mașinile apar aici după <strong>Salvează</strong> în magazin (buton sub selectorul de marcă). Folosește
+            același URL pentru tot site-ul (ex. doar <code>http://127.0.0.1:8080</code> — nu amesteca cu
+            <code>localhost</code> sau alt port). Contul demo / Supabase nu umple automat acest garaj.
+          </p>
+          <p id="garage-hud-origin" class="garage-hud__origin" aria-live="polite"></p>
+          <a class="garage-hud__empty-cta" href="index.html">Deschide magazinul</a>
+        </div>
+
+        <div id="garage-hud-vehicle" class="garage-hud__vehicle" hidden>
+          <div class="garage-hud__brand-row">
+            <img
+              id="garage-hud-logo"
+              class="garage-hud__logo"
+              width="48"
+              height="48"
+              alt=""
+              hidden
+            />
+            <div class="garage-hud__titles">
+              <p id="garage-hud-brand" class="garage-hud__brand"></p>
+              <p id="garage-hud-model" class="garage-hud__model"></p>
+            </div>
+          </div>
+          <p id="garage-hud-engine" class="garage-hud__engine"></p>
+          <p id="garage-hud-count" class="garage-hud__count"></p>
+          <div id="garage-hud-nav" class="garage-hud__nav" hidden>
+            <button id="garage-hud-prev" type="button" class="garage-hud__btn">Anterioară</button>
+            <button id="garage-hud-next" type="button" class="garage-hud__btn">Următoarea</button>
+          </div>
+          <div class="garage-car-paint" aria-label="Vopsea mașină">
+            <p class="garage-car-paint__title">Vopsea (live)</p>
+            <p class="garage-car-paint__hint">
+              Folosește PNG cu fundal transparent — doar silueta mașinii e vopsită; jante/crom rămân parțial afectate de blend.
+            </p>
+            <div class="garage-car-paint__row">
+              <input
+                type="color"
+                id="garage-car-paint-color"
+                class="garage-car-paint__color"
+                value="#dc2626"
+                title="Culoare vopsea"
+                aria-label="Culoare vopsea"
+              />
+              <label class="garage-car-paint__range-wrap">
+                <span class="garage-car-paint__range-label">Intensitate</span>
+                <input
+                  type="range"
+                  id="garage-car-paint-strength"
+                  class="garage-car-paint__range"
+                  min="0"
+                  max="100"
+                  value="0"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                />
+              </label>
+              <button type="button" id="garage-car-paint-reset" class="garage-car-paint__reset">
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <aside
+      class="garage-body-rail"
+      id="garage-hud-body-rail"
+      aria-label="Tip caroserie"
+      hidden
+    >
+      <div class="garage-body-rail__panel">
+        <div class="garage-hud__body-type">
+          <p class="garage-hud__body-label">Caroserie</p>
+          <div
+            id="garage-hud-body-seg"
+            class="garage-hud__body-seg"
+            role="group"
+            aria-label="Tip caroserie (schimbă silueta în scenă)"
+          ></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Fâșie orizontală: categorii piese & tuning → magazin -->
+    <nav class="garage-category-rail" aria-label="Categorii piese si tuning">
+      <div class="garage-category-rail__scroll">
+        <span class="garage-category-rail__kicker">Piese & tuning</span>
+        <a class="garage-category-rail__chip" href="categorii/motor.html">Motor</a>
+        <a class="garage-category-rail__chip" href="categorii/esapament.html">Esapament</a>
+        <a class="garage-category-rail__chip" href="categorii/suspensie.html">Suspensie</a>
+        <a class="garage-category-rail__chip" href="categorii/instalatie-franare.html">Franare</a>
+        <a class="garage-category-rail__chip" href="categorii/ambreiaj.html">Ambreiaj</a>
+        <a class="garage-category-rail__chip" href="categorii/directie-roti.html">Directie / roti</a>
+        <a class="garage-category-rail__chip" href="categorii/electrice.html">Electrice</a>
+        <a class="garage-category-rail__chip" href="categorii/filtre.html">Filtre</a>
+        <a class="garage-category-rail__chip" href="categorii/racire-motor.html">Racire motor</a>
+        <a class="garage-category-rail__chip" href="categorii/caroserie.html">Caroserie</a>
+        <a class="garage-category-rail__chip" href="categorii/accesorii.html">Accesorii</a>
+        <a class="garage-category-rail__chip" href="anvelope.html">Anvelope</a>
+        <a class="garage-category-rail__chip" href="universale.html">Universale</a>
+        <a class="garage-category-rail__chip garage-category-rail__chip--accent" href="index.html#categorii"
+          >Toate categoriile</a
+        >
+      </div>
+    </nav>
+
+    <div class="garage-scene" aria-label="Garaj cinematic">
+      <div class="garage-scene__bg-parallax" aria-hidden="true">
+        <div class="garage-scene__bg"></div>
+      </div>
+
+      <div class="garage-scene__fog garage-scene__fog--deep" aria-hidden="true"></div>
+      <div class="garage-scene__fog garage-scene__fog--mid" aria-hidden="true"></div>
+      <div class="garage-scene__fog garage-scene__fog--floor" aria-hidden="true"></div>
+
+      <div class="garage-scene__vignette" aria-hidden="true"></div>
+
+      <div class="garage-scene__glow garage-scene__glow--red" aria-hidden="true"></div>
+      <div class="garage-scene__glow garage-scene__glow--red-core" aria-hidden="true"></div>
+      <div class="garage-scene__glow garage-scene__glow--blue" aria-hidden="true"></div>
+      <div class="garage-scene__glow garage-scene__glow--blue-core" aria-hidden="true"></div>
+
+      <div class="garage-scene__floor" aria-hidden="true"></div>
+      <div class="garage-scene__floor-sheen" aria-hidden="true"></div>
+
+      <div class="garage-stage">
+        <h1 class="garage-title">
+          <span class="garage-title__line">Garage</span>
+          <span class="garage-title__line garage-title__line--accent">Mode</span>
+        </h1>
+
+        <div class="garage-car-stack">
+          <div
+            id="garage-stl-mount"
+            class="garage-stl-mount"
+            hidden
+            aria-hidden="true"
+          ></div>
+          <p id="garage-stl-status" class="garage-stl-status" hidden aria-live="polite"></p>
+          <div class="garage-car-stack__hero">
+            <div class="garage-car-stack__paint">
+              <img
+                class="garage-car-stack__img"
+                src="assets/garage-car-cutout.png"
+                width="920"
+                height="340"
+                alt="Vehicle"
+              />
+              <span
+                class="garage-car-stack__paint-layer garage-car-stack__paint-layer--base"
+                aria-hidden="true"
+              ></span>
+              <span
+                class="garage-car-stack__paint-layer garage-car-stack__paint-layer--hue"
+                aria-hidden="true"
+              ></span>
+            </div>
+            <div class="garage-car-stack__shadow garage-car-stack__shadow--core" aria-hidden="true"></div>
+            <div class="garage-car-stack__shadow garage-car-stack__shadow--halo" aria-hidden="true"></div>
+          </div>
+          <div class="garage-car-stack__reflection" aria-hidden="true">
+            <div class="garage-car-stack__reflection-floor"></div>
+            <div class="garage-car-stack__reflection-inner">
+              <div class="garage-car-stack__paint garage-car-stack__paint--reflect">
+                <img
+                  class="garage-car-stack__img"
+                  src="assets/garage-car-cutout.png"
+                  width="920"
+                  height="340"
+                  alt=""
+                />
+                <span
+                  class="garage-car-stack__paint-layer garage-car-stack__paint-layer--base"
+                  aria-hidden="true"
+                ></span>
+                <span
+                  class="garage-car-stack__paint-layer garage-car-stack__paint-layer--hue"
+                  aria-hidden="true"
+                ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initGarageTheme } from "./assets/js/garage-theme.mjs";
+      import { initGarageView } from "./assets/js/garage-view.mjs";
+
+      initGarageTheme(document);
+      try {
+        initGarageView(document);
+        const txLink = document.getElementById("garage-transmission-link");
+        txLink?.addEventListener("click", (e) => {
+          const a = e.currentTarget;
+          if (!(a instanceof HTMLAnchorElement)) return;
+          const idx = new URLSearchParams(window.location.search).get("car") || "0";
+          a.href = `garage/transmission.html?car=${encodeURIComponent(idx)}`;
+        });
+      } catch (err) {
+        console.error("[garage-view]", err);
+        const empty = document.getElementById("garage-hud-empty");
+        const vehicle = document.getElementById("garage-hud-vehicle");
+        vehicle?.setAttribute("hidden", "");
+        if (empty) {
+          empty.removeAttribute("hidden");
+          const p = empty.querySelector(".garage-hud__empty-text");
+          if (p) {
+            p.textContent =
+              "Nu s-a putut încărca garajul (verifică consola). Deschide pagina prin http://127.0.0.1:8080/garage.html dacă folosești module ES.";
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

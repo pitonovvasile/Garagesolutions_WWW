@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 340" width="920" height="340" aria-hidden="true">
+  <title>Vehicle cutout</title>
+  <!-- Side-profile silhouette: transparent outside shape; reads as one object in a lit garage -->
+  <defs>
+    <linearGradient id="body" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#1a1f28"/>
+      <stop offset="35%" stop-color="#2a3140"/>
+      <stop offset="55%" stop-color="#252b38"/>
+      <stop offset="100%" stop-color="#12161c"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3d4a5c" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#1e2530" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a5568"/>
+      <stop offset="100%" stop-color="#1f2937"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <!-- Ground contact: flat line under tires (visual anchor) -->
+    <path
+      fill="url(#body)"
+      d="M120 238 L118 228 L125 205 L142 188 L168 178 L520 165 L620 168 L695 178 L738 195 L758 218 L765 238 L752 252 L738 258 L698 262 L672 258 L658 248 L652 232 L648 218 L620 208 L580 202 L280 208 L232 218 L218 232 L212 252 L198 262 L158 265 L132 258 Z"
+    />
+    <!-- Cabin / roof -->
+    <path
+      fill="url(#body)"
+      d="M268 178 L298 118 L338 88 L398 78 L468 82 L528 98 L568 128 L588 165 L520 165 L268 178 Z"
+    />
+    <!-- Hood -->
+    <path
+      fill="url(#body)"
+      d="M120 238 L125 205 L142 188 L168 178 L268 178 L298 118 L268 178 L180 195 L145 215 Z"
+    />
+    <!-- Windshield -->
+    <path
+      fill="url(#glass)"
+      d="M298 118 L338 88 L398 78 L468 82 L498 98 L518 128 L528 148 L488 155 L358 142 Z"
+    />
+    <!-- Side window -->
+    <path
+      fill="url(#glass)"
+      d="M358 142 L488 155 L528 148 L568 128 L588 165 L548 168 L368 162 Z"
+    />
+    <!-- Rear wheel well dark -->
+    <ellipse cx="678" cy="238" rx="52" ry="48" fill="#0a0c10"/>
+    <!-- Front wheel well dark -->
+    <ellipse cx="188" cy="242" rx="50" ry="46" fill="#0a0c10"/>
+    <!-- Rear wheel -->
+    <circle cx="678" cy="238" r="44" fill="#0f1218" stroke="#2a3142" stroke-width="4"/>
+    <circle cx="678" cy="238" r="26" fill="url(#rim)" stroke="#1a2028" stroke-width="2"/>
+    <circle cx="678" cy="238" r="10" fill="#0c0e12"/>
+    <!-- Front wheel -->
+    <circle cx="188" cy="242" r="42" fill="#0f1218" stroke="#2a3142" stroke-width="4"/>
+    <circle cx="188" cy="242" r="24" fill="url(#rim)" stroke="#1a2028" stroke-width="2"/>
+    <circle cx="188" cy="242" r="9" fill="#0c0e12"/>
+    <!-- Skirt shadow under sill -->
+    <path fill="#080a0e" opacity="0.55" d="M232 248 L648 232 L652 242 L238 258 Z"/>
+  </g>
+</svg>

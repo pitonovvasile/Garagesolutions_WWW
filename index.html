@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Garage Solutions</title>
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="icon" href="assets/garage-solutions-favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="assets/garage-solutions-apple-touch.png" />
+    <script>
+      try {
+        if (localStorage.getItem("garage-site-theme") === "bright")
+          document.documentElement.setAttribute("data-site-theme", "bright");
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div class="site-top site-top--hero">
+      <header class="header header--secondary-apex">
+      <a class="logo-link" href="index.html" aria-label="Garage Solutions — acasa">
+        <img
+          class="logo-img"
+            src="assets/garage-solutions-logo.png"
+            alt="Garage Solutions"
+            width="333"
+            height="222"
+          loading="eager"
+        />
+      </a>
+      <nav class="main-nav" aria-label="Navigare principala">
+        <a href="#">Piese auto</a>
+        <a href="anvelope.html">Anvelope</a>
+          <a href="universale/jante-auto.html">Jante</a>
+        <a href="universale.html">Universale</a>
+        <a href="#">Oferte</a>
+        <a href="#">Contact</a>
+          <a href="catalog/live.html">Catalog Live</a>
+          <div class="header-account-cluster">
+            <div class="header-account-cluster__buttons">
+        <button id="garage-btn" class="account-link" type="button" aria-label="Zona garaj utilizator">
+          Garajul meu
+        </button>
+        <button
+          id="account-btn"
+          class="account-link account-link--secondary"
+          type="button"
+          aria-label="Contul meu"
+          aria-expanded="false"
+          aria-controls="account-panel"
+        >
+          Contul meu
+        </button>
+            </div>
+          </div>
+      </nav>
+        <div class="header-apex" aria-label="Cont, favorite, cos">
+          <button type="button" class="header-apex__identity" id="header-identity-btn" aria-controls="account-panel" aria-label="Deschide contul">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.35" />
+              <path fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" d="M5 20.2c1.3-4.2 4.8-6.5 7-6.5s5.7 2.3 7 6.5" />
+            </svg>
+            <span class="header-apex__user-text" id="header-user-label">Autentificate!</span>
+          </button>
+          <span class="header-apex__favorites-wrap" id="header-favorites-wrap" hidden>
+            <button type="button" class="header-apex__icon-btn" id="header-favorites-btn" aria-label="Piese favorite salvate" title="Favorite">
+              <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.35"
+                  stroke-linejoin="round"
+                  d="M12 20.2S5 15.7 5 10.3c0-2.8 2.2-5 4.9-5 1.5 0 2.9.7 3.6 1.9.7-1.1 2-1.9 3.5-1.9 2.8 0 5 2.2 5 5 0 5.4-7 9.9-7 9.9Z"
+                />
+              </svg>
+            </button>
+          </span>
+          <button type="button" class="header-apex__icon-btn" id="header-cart-btn" aria-label="Cos cumparaturi" title="Cos">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.35"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5V4a3 3 0 0 1 6 0v1M6 6h12l-1.4 12.2a1.5 1.5 0 0 1-1.5 1.3H8.9a1.5 1.5 0 0 1-1.5-1.3L6 6Z"
+              />
+              <circle cx="10" cy="20" r="0.95" fill="currentColor" stroke="none" />
+              <circle cx="17" cy="20" r="0.95" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="theme-switch-wrap theme-switch-wrap--header-corner"
+          aria-label="Comutator temă"
+        >
+          <span class="theme-switch__txt">Dark</span>
+          <label class="theme-switch">
+            <input
+              type="checkbox"
+              id="site-theme-toggle"
+              class="theme-switch__input"
+              role="switch"
+              aria-checked="false"
+              aria-label="Comută tema între dark și bright"
+            />
+            <span class="theme-switch__slider"></span>
+          </label>
+          <span class="theme-switch__txt">Bright</span>
+        </div>
+    </header>
+      <div class="promo-banner" role="region" aria-label="Beneficii exclusive — Go Premium">
+        <div class="promo-banner__pattern" aria-hidden="true"></div>
+        <div class="promo-banner__body">
+          <p class="promo-banner__text">
+            Beneficii exclusive! <span class="promo-banner__accent">Go Premium!</span>
+          </p>
+        </div>
+      </div>
+    <section class="partners-strip" aria-label="Producatori piese si tuning">
+      <div class="partners-strip__track" id="partners-track">
+        <div class="partners-strip__items">
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/bosch/ffffff" alt="Bosch" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/shell/ffffff" alt="Shell" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/bmw/ffffff" alt="BMW OEM" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/volkswagen/ffffff" alt="VAG OEM" />
+      <img class="partners-strip__logo" src="https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg" alt="Mercedes OEM" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/audi/ffffff" alt="Audi OEM" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/toyota/ffffff" alt="Toyota OEM" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/ford/ffffff" alt="Ford OEM" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/opel/ffffff" alt="Opel OEM" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/renault/ffffff" alt="Renault OEM" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/dacia/ffffff" alt="Dacia OEM" />
+      <img class="partners-strip__logo" src="https://cdn.simpleicons.org/skoda/ffffff" alt="Skoda OEM" />
+      <span class="partners-strip__wordmark">D2 RACING</span>
+      <span class="partners-strip__wordmark">KW</span>
+      <span class="partners-strip__wordmark">AKRAPOVIČ</span>
+      <span class="partners-strip__wordmark">SUPERSPRINT</span>
+      <span class="partners-strip__wordmark">SCHMIEDMANN</span>
+      <span class="partners-strip__wordmark">K&amp;N</span>
+      <span class="partners-strip__wordmark">MANN-FILTER</span>
+      <span class="partners-strip__wordmark">MAHLE</span>
+      <span class="partners-strip__wordmark">BREMBO</span>
+      <span class="partners-strip__wordmark">FEBI BILSTEIN</span>
+      <span class="partners-strip__wordmark">H&amp;R</span>
+        </div>
+      </div>
+    </section>
+    </div>
+    <section class="brand-strip" aria-label="Selectie marca auto">
+      <div class="brand-strip__controls">
+        <div class="brand-strip__field">
+          <p class="brand-strip__text">Alege marca ta auto</p>
+          <label class="brand-strip__label" for="car-brand">Marca</label>
+          <select id="car-brand" name="car-brand" class="brand-strip__select">
+            <option value="" selected disabled>Selecteaza marca</option>
+            <option value="audi">Audi</option>
+            <option value="bmw">BMW</option>
+            <option value="mercedes">Mercedes-Benz</option>
+            <option value="volkswagen">Volkswagen</option>
+            <option value="skoda">Skoda</option>
+            <option value="renault">Renault</option>
+            <option value="dacia">Dacia</option>
+            <option value="ford">Ford</option>
+            <option value="opel">Opel</option>
+            <option value="toyota">Toyota</option>
+          </select>
+          <div id="brand-logo-box" class="brand-strip__logo-box" aria-live="polite">
+            <img id="brand-logo" class="brand-strip__logo" alt="" />
+          </div>
+        </div>
+        <div class="brand-strip__field">
+          <p class="brand-strip__text">Alege model</p>
+          <label class="brand-strip__label" for="car-model">Model</label>
+          <select id="car-model" name="car-model" class="brand-strip__select">
+            <option value="" selected disabled>Selecteaza model</option>
+            <option value="generic-1">Model 1</option>
+            <option value="generic-2">Model 2</option>
+            <option value="generic-3">Model 3</option>
+            <option value="generic-4">Model 4</option>
+          </select>
+          <p id="model-market-label" class="brand-strip__market-label">-- / -- / --</p>
+        </div>
+        <div class="brand-strip__field" id="bmw-generation-field" hidden>
+          <p class="brand-strip__text">Alege generație</p>
+          <label class="brand-strip__label" for="car-generation">Generație</label>
+          <select id="car-generation" name="car-generation" class="brand-strip__select" disabled>
+            <option value="" selected disabled>Selectează model</option>
+          </select>
+        </div>
+        <div class="brand-strip__field">
+          <p class="brand-strip__text">Alege caroserie</p>
+          <label class="brand-strip__label" for="car-chassis">Caroserie</label>
+          <select id="car-chassis" name="car-chassis" class="brand-strip__select">
+            <option value="" selected disabled>Selecteaza mai intai model</option>
+          </select>
+        </div>
+        <div class="brand-strip__field">
+          <p class="brand-strip__text">Tip cutie viteze</p>
+          <label class="brand-strip__label" for="car-gearbox">Cutie</label>
+          <select id="car-gearbox" name="car-gearbox" class="brand-strip__select">
+            <option value="" selected disabled>Selecteaza mai intai model</option>
+          </select>
+        </div>
+        <div class="brand-strip__field">
+          <p class="brand-strip__text">Tip tracțiune</p>
+          <label class="brand-strip__label" for="car-drivetrain">Tracțiune</label>
+          <select id="car-drivetrain" name="car-drivetrain" class="brand-strip__select">
+            <option value="" selected disabled>Selecteaza mai intai model</option>
+          </select>
+        </div>
+        <div class="brand-strip__field">
+          <p class="brand-strip__text">Alege motorizare</p>
+          <label class="brand-strip__label" for="car-engine">Motorizare</label>
+          <select id="car-engine" name="car-engine" class="brand-strip__select">
+            <option value="" selected disabled>Selecteaza mai intai model</option>
+          </select>
+          <p id="engine-spec-label" class="brand-strip__market-label">-- / -- / --</p>
+        </div>
+      </div>
+      <div class="brand-strip__actions">
+        <button id="parts-list-btn" class="brand-strip__btn" type="button">Lista piese</button>
+        <button id="save-car-btn" class="brand-strip__btn brand-strip__btn--secondary" type="button">
+          Salveaza
+        </button>
+        <div id="parts-search" class="brand-strip__search">
+          <button
+            id="search-toggle-btn"
+            class="brand-strip__search-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="search-input"
+          >
+            <span class="brand-strip__search-icon" aria-hidden="true"></span>
+            Cauta
+          </button>
+          <input
+            id="search-input"
+            class="brand-strip__search-input"
+            type="search"
+            placeholder="Cod piesa, brand..."
+            aria-label="Cauta piese"
+          />
+        </div>
+      </div>
+    </section>
+    <section id="categorii" class="categories-grid" aria-label="Categorii piese">
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/ambreiaj.html" aria-label="Categorie Ambreiaj">
+          <span class="category-card__icon category-card__icon--image">
+            <img src="assets/clutch-icon-alpha.png" alt="" />
+          </span>
+          <h3>Ambreiaj</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/antrenare-punte.html" aria-label="Categorie Antrenare punte">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/antrenare-punte-icon-alpha.png" alt="" />
+          </span>
+          <h3>Antrenare punte</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/caroserie.html" aria-label="Categorie Caroserie">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/caroserie-icon-alpha.png" alt="" />
+          </span>
+          <h3>Caroserie</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/directie-roti.html" aria-label="Categorie Directie / roti">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/directie-roti-icon-alpha.png" alt="" />
+          </span>
+          <h3>Directie / roti</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/electrice.html" aria-label="Categorie Electrice">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/electrice-icon-alpha.png" alt="" />
+          </span>
+          <h3>Electrice</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/filtre.html" aria-label="Categorie Filtre">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/filtre-icon-alpha.png" alt="" />
+          </span>
+          <h3>Filtre</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/instalatie-franare.html" aria-label="Categorie Instalatie de franare">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/franare-instalatie-icon-alpha.png" alt="" />
+          </span>
+          <h3>Instalatie de franare</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/motor.html" aria-label="Categorie Motor">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/motor-icon-alpha.png" alt="" />
+          </span>
+          <h3>Motor</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/piese-service.html" aria-label="Categorie Piese de service, inspectie, intretinere">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/piese-service-icon-alpha.png" alt="" />
+          </span>
+          <h3>Piese de service / inspectie / intretinere</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/aer-conditionat.html" aria-label="Categorie Sistem de aer conditionat">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/aer-conditionat-icon-alpha.png" alt="" />
+          </span>
+          <h3>Sistem de aer conditionat</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/racire-motor.html" aria-label="Categorie Sistem de racire motor">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/racire-motor-icon-alpha.png" alt="" />
+          </span>
+          <h3>Sistem de racire motor</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/esapament.html" aria-label="Categorie Sistemul de esapament">
+          <span class="category-card__icon category-card__icon--image">
+            <img src="assets/exhaust-icon-alpha.png" alt="" />
+          </span>
+          <h3>Sistemul de esapament</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/suspensie.html" aria-label="Categorie Suspensie">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/suspensie-icon-alpha.png" alt="" />
+          </span>
+          <h3>Suspensie</h3>
+        </a>
+      </article>
+      <article class="category-card">
+        <a class="category-card__link" href="categorii/accesorii.html" aria-label="Categorie Accesorii">
+          <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+            <img src="assets/accesorii-icon-alpha.png" alt="" />
+          </span>
+          <h3>Accesorii</h3>
+        </a>
+      </article>
+    </section>
+    <section class="service-strip" aria-label="Categorii service auto partenere si procese RAR">
+      <div class="service-strip__head">
+        <h2>RAR & Omologări + ITP & Inspecții Tehnice</h2>
+        <p>RAR este prezentat ca asistență pentru procese reglementate de stat, iar ITP ca serviciu partener rezervabil.</p>
+      </div>
+      <div class="service-strip__track" id="service-partners-track">
+        <div class="service-strip__items">
+          <a class="service-strip__logo" href="parteneri/rar-homologare.html" aria-label="RAR si Omologari - asistență">
+            <span class="service-strip__badge">RAR</span><span class="service-strip__name">RAR & Omologări</span>
+          </a>
+          <a class="service-strip__logo" href="parteneri/itp-inspectii-tehnice.html" aria-label="ITP si Inspectii Tehnice - parteneri">
+            <span class="service-strip__badge">ITP</span><span class="service-strip__name">ITP & Inspecții Tehnice</span>
+          </a>
+          <a class="service-strip__logo" href="parteneri/wash-rapid.html" aria-label="Wash Rapid">
+            <span class="service-strip__badge">WR</span><span class="service-strip__name">Wash Rapid</span>
+          </a>
+          <a class="service-strip__logo" href="parteneri/detailing-atelier.html" aria-label="Detailing Atelier Pro">
+            <span class="service-strip__badge">DP</span><span class="service-strip__name">Detailing Atelier Pro</span>
+          </a>
+          <a class="service-strip__logo" href="parteneri/wrap-skin-studio.html" aria-label="Wrap Skin Studio">
+            <span class="service-strip__badge">WS</span><span class="service-strip__name">Wrap Skin Studio</span>
+          </a>
+          <a class="service-strip__logo" href="parteneri/bodypaint-line.html" aria-label="BodyPaint Line">
+            <span class="service-strip__badge">BP</span><span class="service-strip__name">BodyPaint Line</span>
+          </a>
+          <a class="service-strip__logo" href="parteneri/general-garage-hub.html" aria-label="General Garage Hub">
+            <span class="service-strip__badge">GH</span><span class="service-strip__name">General Garage Hub</span>
+          </a>
+          <a class="service-strip__logo" href="parteneri/tuning-forge.html" aria-label="Tuning Forge Motorsport">
+            <span class="service-strip__badge">TF</span><span class="service-strip__name">Tuning Forge Motorsport</span>
+          </a>
+          <a class="service-strip__logo" href="parteneri/premium-multimarca-center.html" aria-label="Premium Multimarca Center">
+            <span class="service-strip__badge">PMC</span><span class="service-strip__name">Premium Multimarca Center</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <aside id="account-panel" class="account-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-panel-title">
+      <div class="account-panel__header">
+        <h2 id="account-panel-title">Contul meu</h2>
+        <button id="account-close-btn" type="button" class="account-panel__close">Inchide</button>
+      </div>
+      <div class="account-panel__section account-panel__section--auth" id="auth-section">
+        <h3>Cont (demo)</h3>
+        <p class="account-panel__hint" style="margin-top: 0; margin-bottom: 0.55rem; font-size: 0.76rem">
+          <a class="account-panel__cont-link" href="cont.html">Pagină cont (nume, firmă, parolă) — baza de date</a>
+        </p>
+        <div id="auth-logged-out">
+          <div class="account-panel__subnav" role="tablist" aria-label="Autentificare și cont">
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-login"
+              aria-selected="true"
+              aria-controls="auth-panel-login"
+            >
+              Conectează-te
+            </button>
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-register"
+              aria-selected="false"
+              aria-controls="auth-panel-register"
+            >
+              Creare cont
+            </button>
+            <button
+              type="button"
+              class="account-panel__tab"
+              role="tab"
+              id="auth-tab-forgot"
+              aria-selected="false"
+              aria-controls="auth-panel-forgot"
+            >
+              Parolă uitată
+            </button>
+          </div>
+          <div id="auth-panel-login" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-login">
+            <p class="account-panel__hint">
+              Parola de demonstrație: <strong>demo</strong> — orice e-mail valid (ex.
+              <code>eu@exemplu.ro</code>).
+            </p>
+            <form id="demo-login-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-email"
+                  name="email"
+                  type="email"
+                  autocomplete="username"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input
+                  id="demo-password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="demo"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-auth-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-login-btn">Conectează-te</button>
+            </form>
+          </div>
+          <div id="auth-panel-register" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-register" hidden>
+            <p class="account-panel__hint">
+              Alege o parolă de cel puțin 6 caractere. După creare ești conectat automat; la următoarea vizită folosește
+              același e-mail cu parola <strong>demo</strong> (mod demonstrație).
+            </p>
+            <form id="demo-register-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-register-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input
+                  id="demo-register-password"
+                  name="password"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="6"
+                  class="account-panel__input"
+                />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Confirmă parola</span>
+                <input
+                  id="demo-register-password2"
+                  name="password2"
+                  type="password"
+                  autocomplete="new-password"
+                  required
+                  minlength="6"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-register-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-register-btn">Creează contul</button>
+            </form>
+          </div>
+          <div id="auth-panel-forgot" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-forgot" hidden>
+            <p class="account-panel__hint">
+              Introdu adresa de e-mail asociată contului. În modul demonstrație nu se trimite un e-mail real.
+            </p>
+            <form id="demo-forgot-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input
+                  id="demo-forgot-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="nume@domeniu.ro"
+                  class="account-panel__input"
+                />
+              </label>
+              <p id="demo-forgot-error" class="account-panel__error" role="alert" hidden></p>
+              <p id="demo-forgot-success" class="account-panel__success" role="status" aria-live="polite" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-forgot-btn">Trimite instrucțiuni</button>
+            </form>
+          </div>
+        </div>
+        <div id="auth-logged-in" hidden>
+          <p id="demo-user-line" class="account-panel__welcome"></p>
+          <p id="demo-session-meta" class="account-panel__meta"></p>
+          <p style="margin: 0 0 0.5rem; font-size: 0.8rem">
+            <a class="account-panel__cont-link" href="cont.html">Deschide pagina de cont (Supabase) →</a>
+          </p>
+          <button type="button" class="account-panel__logout" id="demo-logout-btn">Deconectare</button>
+        </div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Mașinile salvate</h3>
+        <ul id="garage-saved-list"></ul>
+      </div>
+      <div class="account-panel__section" id="cos-cumparaturi-section">
+        <h3>Istoric comenzi (demo)</h3>
+        <div id="orders-demo-container"></div>
+      </div>
+      <div class="account-panel__section" id="favorite-articles-section">
+        <h3>Piese favorite (demo)</h3>
+        <div id="favorites-demo-container"></div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Activitate recentă (demo)</h3>
+        <div id="activity-demo-container"></div>
+      </div>
+    </aside>
+
+    <footer class="footer" aria-label="Footer principal">
+      <div class="footer__grid">
+        <section class="footer__col">
+          <h3>Garage Solutions</h3>
+          <p>
+            Platformă auto pentru piese, service-uri partenere și gestionarea garajului personal într-o interfață unică.
+          </p>
+        </section>
+        <section class="footer__col">
+          <h3>Navigare</h3>
+          <ul class="footer__list">
+            <li><a href="#categorii">Categorii piese</a></li>
+            <li><a href="garage.html">Garajul meu</a></li>
+            <li><a href="garage/transmission.html">Transmission</a></li>
+            <li><a href="cont.html">Contul meu</a></li>
+          </ul>
+        </section>
+        <section class="footer__col">
+          <h3>Servicii</h3>
+          <ul class="footer__list">
+            <li><a href="parteneri/rar-homologare.html">RAR & Omologări (asistență)</a></li>
+            <li><a href="parteneri/itp-inspectii-tehnice.html">ITP & Inspecții Tehnice</a></li>
+            <li><a href="parteneri/general-garage-hub.html">Service multimarcă</a></li>
+            <li><a href="parteneri/tuning-forge.html">Tuning & performanță</a></li>
+            <li><a href="parteneri/detailing-atelier.html">Detailing auto</a></li>
+          </ul>
+        </section>
+        <section class="footer__col">
+          <h3>Suport</h3>
+          <ul class="footer__list">
+            <li><a href="#">Întrebări frecvente</a></li>
+            <li><a href="#">Termeni și condiții</a></li>
+            <li><a href="#">Politică de confidențialitate</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </section>
+      </div>
+      <div class="footer__bottom">
+        <small>© <span id="y"></span> Garage Solutions. Toate drepturile rezervate.</small>
+      </div>
+    </footer>
+    <script src="assets/js/site-theme.js" defer></script>
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      import {
+        setPlaceholder,
+        loadModelsForBrand,
+        loadEnginesForModel,
+        fillEngineSelectFromFallback,
+      } from "./assets/js/vehicle-garage-loaders.mjs";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./assets/js/supabase-config.mjs";
+      import { fetchBmwVariantsForGenerationAndBodyStyle } from "./assets/js/bmw-dropdown-variants.mjs";
+      import {
+        fetchModelsForBrand as fetchDbModelsForBrand,
+        fetchGenerationsForModel,
+        fetchGenerationBodyStylesJoined,
+        formatBmwVariantLabel,
+        distinctGearboxPairs,
+        distinctDrivetrainPairs,
+      } from "./assets/js/bmw-garage-schema.mjs";
+      import { initAccountPanel } from "./assets/js/account-panel.mjs";
+      import { initDemoAuthUI } from "./assets/js/demo-auth-ui.mjs";
+      import {
+        readSavedCars,
+        writeSavedCars,
+        stashGarageForTransfer,
+      } from "./assets/js/garage-saved-cars.mjs";
+      import { fetchModelsDisplayOrFallback } from "./assets/js/models-display-fallback.mjs";
+
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      const brandSelect = document.getElementById("car-brand");
+      const modelSelect = document.getElementById("car-model");
+      const generationSelect = document.getElementById("car-generation");
+      const bmwGenerationField = document.getElementById("bmw-generation-field");
+      const chassisSelect = document.getElementById("car-chassis");
+      const gearboxSelect = document.getElementById("car-gearbox");
+      const drivetrainSelect = document.getElementById("car-drivetrain");
+      const engineSelect = document.getElementById("car-engine");
+      const partsListBtn = document.getElementById("parts-list-btn");
+      const saveCarBtn = document.getElementById("save-car-btn");
+      const partsSearch = document.getElementById("parts-search");
+      const searchToggleBtn = document.getElementById("search-toggle-btn");
+      const searchInput = document.getElementById("search-input");
+      const garageBtn = document.getElementById("garage-btn");
+      const GARAGE_ENTER_MS = 800;
+      const accountBtn = document.getElementById("account-btn");
+      const accountPanel = document.getElementById("account-panel");
+      const accountCloseBtn = document.getElementById("account-close-btn");
+      const garageSavedList = document.getElementById("garage-saved-list");
+      let refreshDemoAuthUi = () => {};
+      const accountPanelApi = initAccountPanel({
+        accountBtn: null,
+        accountPanel,
+        accountCloseBtn,
+        savedCarsList: garageSavedList,
+        onOpen: () => refreshDemoAuthUi(),
+      });
+      refreshDemoAuthUi = initDemoAuthUI();
+
+      accountBtn?.addEventListener("click", () => {
+        window.location.assign("cont.html");
+      });
+
+      function scrollAccountSection(id) {
+        const el = document.getElementById(id);
+        el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+
+      document.getElementById("header-identity-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+      });
+      document.getElementById("header-favorites-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("favorite-articles-section"));
+      });
+      document.getElementById("header-cart-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("cos-cumparaturi-section"));
+      });
+
+      const brandLogoBox = document.getElementById("brand-logo-box");
+      const brandLogo = document.getElementById("brand-logo");
+      const modelMarketLabel = document.getElementById("model-market-label");
+      const engineSpecLabel = document.getElementById("engine-spec-label");
+      const typingIntervals = new Map();
+      let bmwVariantRows = [];
+      /** @type {import("@supabase/supabase-js").SupabaseClient | null} */
+      let bmwSupabase = null;
+      /** @type {{ model_id?: string | null; generation_id?: string | null }} */
+      let bmwSelection = {};
+      const logoFallbackByBrand = {
+        audi: "assets/Audi-logo-icon-on-transparent-background-PNG.avif",
+        /* Simple Icons fără /ffffff → culoare marcă implicită, lizibil pe fundal deschis */
+        bmw: "https://cdn.simpleicons.org/bmw",
+        "mercedes-benz": "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg",
+        volkswagen: "https://cdn.simpleicons.org/volkswagen",
+        skoda: "https://cdn.simpleicons.org/skoda",
+        renault: "https://cdn.simpleicons.org/renault",
+        dacia: "https://cdn.simpleicons.org/dacia",
+        ford: "https://cdn.simpleicons.org/ford",
+        opel: "https://cdn.simpleicons.org/opel",
+        toyota: "https://cdn.simpleicons.org/toyota",
+      };
+
+      function isBmwBrandSelected() {
+        const opt = brandSelect.options[brandSelect.selectedIndex];
+        if (!opt) return false;
+        const slug = String(opt.dataset?.brandSlug || "").trim().toLowerCase();
+        if (slug === "bmw") return true;
+        const name = String(opt.textContent || "").trim().toUpperCase();
+        return name === "BMW";
+      }
+
+      function updatePartsButtonState() {
+        const bmw = isBmwBrandSelected();
+        const needsGeneration =
+          bmw && generationSelect && !generationSelect.disabled && generationSelect.options.length > 1;
+        const needsChassis =
+          !chassisSelect.disabled && chassisSelect.options.length > 1;
+        const needsGearbox =
+          !gearboxSelect.disabled && gearboxSelect.options.length > 1;
+        const needsDrivetrain =
+          !drivetrainSelect.disabled && drivetrainSelect.options.length > 1;
+        const isReady =
+          brandSelect.value &&
+          modelSelect.value &&
+          (!bmw || !needsGeneration || generationSelect.value) &&
+          (!needsChassis || chassisSelect.value) &&
+          (!needsGearbox || gearboxSelect.value) &&
+          (!needsDrivetrain || drivetrainSelect.value) &&
+          engineSelect.value;
+        partsListBtn.disabled = !isReady;
+        saveCarBtn.disabled = !isReady;
+      }
+
+      function setBmwVariantControlsDisabled() {
+        if (generationSelect) {
+          setPlaceholder(generationSelect, "Selectează model");
+          generationSelect.disabled = true;
+        }
+        setPlaceholder(chassisSelect, "Selectează generația");
+        chassisSelect.disabled = true;
+        setPlaceholder(engineSelect, "—");
+        engineSelect.disabled = true;
+        setPlaceholder(gearboxSelect, "—");
+        gearboxSelect.disabled = true;
+        setPlaceholder(drivetrainSelect, "—");
+        drivetrainSelect.disabled = true;
+      }
+
+      function logBmwSelected(extra = {}) {
+        const selected = {
+          ...bmwSelection,
+          body_style_id: chassisSelect.value || null,
+          generation_id: generationSelect?.value || bmwSelection.generation_id,
+          ...extra,
+        };
+        console.log("BMW selected:", selected);
+        return selected;
+      }
+
+      function assertBmwGenerationForVariants(selected) {
+        const gid = selected.generation_id;
+        if (gid == null || String(gid).trim() === "") return false;
+        return true;
+      }
+
+      function resetBmwEngineDrivetrainTransmission() {
+        setPlaceholder(engineSelect, "—");
+        engineSelect.disabled = true;
+        setPlaceholder(drivetrainSelect, "—");
+        drivetrainSelect.disabled = true;
+        setPlaceholder(gearboxSelect, "—");
+        gearboxSelect.disabled = true;
+      }
+
+      function rebuildBmwEngineOptions() {
+        if (!bmwVariantRows.length) {
+          resetBmwEngineDrivetrainTransmission();
+          return;
+        }
+        const prev = String(engineSelect.value || "").trim();
+        setPlaceholder(engineSelect, "Selectează motorizarea");
+        const seen = new Set();
+        bmwVariantRows.forEach((v, idx) => {
+          const vid = v.variant_id ?? v.id;
+          const dedupeKey = String(vid ?? `idx-${idx}`);
+          if (!dedupeKey || seen.has(dedupeKey)) return;
+          seen.add(dedupeKey);
+          const opt = document.createElement("option");
+          opt.value = dedupeKey;
+          const label = formatBmwVariantLabel(v);
+          opt.textContent = label || String(v.slug || v.variant_name || dedupeKey);
+          engineSelect.appendChild(opt);
+        });
+        engineSelect.disabled = false;
+        const opts = [...engineSelect.options].filter((o) => !o.disabled && o.value);
+        if (prev && opts.some((o) => o.value === prev)) engineSelect.value = prev;
+        else if (opts.length) engineSelect.value = opts[0].value;
+      }
+
+      /** Tracțiune depinde de generation/body_style (date brute din bmw_variants). */
+      function rebuildBmwDrivetrainOptions() {
+        const pairs = distinctDrivetrainPairs(bmwVariantRows);
+        const prev = drivetrainSelect.value;
+        setPlaceholder(drivetrainSelect, pairs.length ? "Selectează tracțiunea" : "—");
+        if (!pairs.length) {
+          drivetrainSelect.disabled = true;
+          return;
+        }
+        pairs.forEach((p, idx) => {
+          const o = document.createElement("option");
+          o.value = `dt:${idx}`;
+          o.dataset.drivetrainLayout = p.drivetrain_layout;
+          o.dataset.drivetrainLabel = p.drivetrain_label;
+          o.textContent = (p.drivetrain_label || p.drivetrain_layout || "—").trim() || "—";
+          drivetrainSelect.appendChild(o);
+        });
+        drivetrainSelect.disabled = false;
+        const opts = [...drivetrainSelect.options].filter((o) => !o.disabled && o.value);
+        if (prev && opts.some((o) => o.value === prev)) drivetrainSelect.value = prev;
+        else if (opts.length) drivetrainSelect.value = opts[0].value;
+      }
+
+      /** Cutie depinde de generation/body_style (date brute din bmw_variants). */
+      function rebuildBmwGearboxOptions() {
+        const pairs = distinctGearboxPairs(bmwVariantRows);
+        // #region agent log
+        fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B19',location:'index.html:rebuildBmwGearboxOptions',message:'gearbox pairs from variants',data:{variantRows:bmwVariantRows.length,pairsCount:pairs.length,pairsSample:pairs.slice(0,5)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        // #region agent log
+        fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B21',location:'index.html:rebuildBmwGearboxOptions',message:'raw transmission fields snapshot',data:{sample:bmwVariantRows.slice(0,6).map((v)=>({id:v?.id??null,transmission_type:v?.transmission_type??null,gear_count:v?.gear_count??null}))},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        const prev = gearboxSelect.value;
+        const transmissionTypes = [
+          ...new Set(
+            pairs
+              .map((p) => String(p?.transmission_type ?? "").trim().toLowerCase())
+              .filter(Boolean),
+          ),
+        ];
+        setPlaceholder(gearboxSelect, transmissionTypes.length ? "Selectează cutia" : "—");
+        if (!transmissionTypes.length) {
+          gearboxSelect.disabled = true;
+          return;
+        }
+        transmissionTypes.forEach((tt, idx) => {
+          const o = document.createElement("option");
+          o.value = `gb:${idx}`;
+          o.dataset.transmissionType = tt;
+          if (tt === "automatic") o.textContent = "Automată";
+          else if (tt === "manual") o.textContent = "Manuală";
+          else o.textContent = tt;
+          gearboxSelect.appendChild(o);
+        });
+        gearboxSelect.disabled = false;
+        const opts = [...gearboxSelect.options].filter((o) => !o.disabled && o.value);
+        if (prev && opts.some((o) => o.value === prev)) gearboxSelect.value = prev;
+        else if (opts.length) gearboxSelect.value = opts[0].value;
+      }
+
+      function resetBmwGearboxAndTraction() {
+        setPlaceholder(drivetrainSelect, "—");
+        drivetrainSelect.disabled = true;
+        setPlaceholder(gearboxSelect, "—");
+        gearboxSelect.disabled = true;
+      }
+
+      /**
+       * Caroserii: `generation_body_styles` → `body_styles` (id, name, code).
+       * @param {Array<{ body_style_id: string | number; label: string }>} bodyStyleRows
+       */
+      async function setupBmwBodyStyleDropdown(bodyStyleRows) {
+        bmwVariantRows = [];
+        setPlaceholder(chassisSelect, "Selectează caroseria");
+        const rows = Array.isArray(bodyStyleRows) ? bodyStyleRows : [];
+        if (!rows.length) {
+          setPlaceholder(chassisSelect, "—");
+          chassisSelect.disabled = true;
+          // #region agent log
+          fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B10',location:'index.html:setupBmwBodyStyleDropdown',message:'no body styles for generation, stop downstream selectors',data:{generationId:generationSelect?.value||bmwSelection?.generation_id||null},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          resetBmwEngineDrivetrainTransmission();
+          return;
+        }
+        for (const r of rows) {
+          const o = document.createElement("option");
+          o.value = String(r.body_style_id);
+          o.textContent = r.label;
+          chassisSelect.appendChild(o);
+        }
+        chassisSelect.disabled = false;
+        resetBmwEngineDrivetrainTransmission();
+        if (rows.length === 1) {
+          chassisSelect.value = String(rows[0].body_style_id);
+          await loadBmwVariantsForSelection();
+        }
+      }
+
+      async function loadBmwVariantsForSelection() {
+        if (!bmwSupabase) {
+          console.error("[BMW] Client Supabase indisponibil.");
+          return;
+        }
+        const selected = logBmwSelected();
+        // #region agent log
+        fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B18',location:'index.html:loadBmwVariantsForSelection',message:'selected ids before variants query',data:{brand_id:brandSelect.value||null,model_id:modelSelect.value||null,generation_id:selected.generation_id||null,body_style_id:chassisSelect.value||null},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        if (!assertBmwGenerationForVariants(selected)) {
+          setPlaceholder(engineSelect, "—");
+          engineSelect.disabled = true;
+          updatePartsButtonState();
+          return;
+        }
+        setPlaceholder(engineSelect, "Se încarcă…");
+        engineSelect.disabled = true;
+
+        const bodyRaw = String(chassisSelect.value || "").trim();
+        const bodyForQuery =
+          bodyRaw === "" ? "" : bodyRaw;
+
+        const pack = await fetchBmwVariantsForGenerationAndBodyStyle(
+          bmwSupabase,
+          selected.generation_id,
+          bodyForQuery,
+        );
+        const loadErr = pack.error;
+        const rawVariants = pack.data || [];
+        // #region agent log
+        fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B7',location:'index.html:loadBmwVariantsForSelection',message:'variants fetched',data:{generationId:selected.generation_id||null,bodyStyleId:bodyForQuery||null,rowCount:rawVariants.length,errorMsg:loadErr?String(loadErr.message||loadErr):null},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+
+        if (loadErr) {
+          console.error("[BMW] Eroare încărcare variante:", loadErr);
+          setPlaceholder(engineSelect, "—");
+          engineSelect.disabled = true;
+          updatePartsButtonState();
+          return;
+        }
+        bmwVariantRows = rawVariants.map((v) => {
+          const { variant_body_styles: _vbs, ...rest } = v;
+          const vid = v.variant_id ?? v.id;
+          return {
+            ...rest,
+            id: vid,
+            variant_id: vid,
+          };
+        });
+        rebuildBmwEngineOptions();
+        rebuildBmwDrivetrainOptions();
+        rebuildBmwGearboxOptions();
+        updatePartsButtonState();
+      }
+
+      function saveCurrentCarToGarage() {
+        const selectedBrand = brandSelect.options[brandSelect.selectedIndex]?.textContent?.trim();
+        const selectedModel = modelSelect.options[modelSelect.selectedIndex]?.textContent?.trim();
+        const selectedEngine = engineSelect.options[engineSelect.selectedIndex]?.textContent?.trim();
+        if (!selectedBrand || !selectedModel || !selectedEngine) return;
+        const cars = readSavedCars();
+        const newEntry = {
+          brand: selectedBrand,
+          model: selectedModel,
+          engine: selectedEngine,
+          savedAt: new Date().toISOString(),
+        };
+        const exists = cars.some(
+          (car) => car.brand === newEntry.brand && car.model === newEntry.model && car.engine === newEntry.engine
+        );
+        if (!exists) {
+          cars.unshift(newEntry);
+          writeSavedCars(cars);
+        } else {
+          stashGarageForTransfer();
+        }
+      }
+
+      function enterGarage() {
+        if (document.body.classList.contains("fade-out")) return;
+        stashGarageForTransfer();
+        document.body.classList.add("fade-out");
+        window.setTimeout(() => {
+          window.location.assign("garage.html?car=0");
+        }, GARAGE_ENTER_MS);
+      }
+
+      window.enterGarage = enterGarage;
+
+      function openSearch() {
+        partsSearch.classList.add("is-open");
+        searchToggleBtn.setAttribute("aria-expanded", "true");
+        searchInput.focus();
+      }
+
+      function closeSearch() {
+        partsSearch.classList.remove("is-open");
+        searchToggleBtn.setAttribute("aria-expanded", "false");
+      }
+
+      function toggleSearch() {
+        if (partsSearch.classList.contains("is-open")) {
+          closeSearch();
+        } else {
+          openSearch();
+        }
+      }
+
+      function setupMarqueeTrack(trackId, itemClass) {
+        const track = document.getElementById(trackId);
+        if (!track) return;
+        const items = track.querySelector(itemClass);
+        if (!items) return;
+        const clone = items.cloneNode(true);
+        clone.setAttribute("aria-hidden", "true");
+        track.appendChild(clone);
+      }
+
+      function resetLogo() {
+        brandLogo.removeAttribute("src");
+        brandLogo.alt = "";
+        brandLogo.style.visibility = "hidden";
+        brandLogo.classList.remove("brand-logo--enter");
+        brandLogoBox.classList.remove("has-content");
+      }
+
+      function resetModelMarketLabel() {
+        const timer = typingIntervals.get("model");
+        if (timer) clearInterval(timer);
+        typingIntervals.delete("model");
+        modelMarketLabel.textContent = "";
+        modelMarketLabel.classList.remove("has-content");
+      }
+
+      function resetEngineSpecLabel() {
+        const timer = typingIntervals.get("engine");
+        if (timer) clearInterval(timer);
+        typingIntervals.delete("engine");
+        engineSpecLabel.textContent = "";
+        engineSpecLabel.classList.remove("has-content");
+      }
+
+      function typewriteLabel(targetEl, key, text) {
+        const active = typingIntervals.get(key);
+        if (active) clearInterval(active);
+        typingIntervals.delete(key);
+
+        if (!text) {
+          targetEl.textContent = "";
+          targetEl.classList.remove("has-content");
+          return;
+        }
+
+        targetEl.textContent = "";
+        targetEl.classList.add("has-content");
+        let idx = 0;
+        const interval = setInterval(() => {
+          idx += 1;
+          targetEl.textContent = text.slice(0, idx);
+          if (idx >= text.length) {
+            clearInterval(interval);
+            typingIntervals.delete(key);
+          }
+        }, 22);
+        typingIntervals.set(key, interval);
+      }
+
+      function updateModelMarketLabel(modelText) {
+        const raw = (modelText || "").trim();
+        if (!raw || !raw.includes("|")) {
+          resetModelMarketLabel();
+          return;
+        }
+        const parts = raw.split("|").map((item) => item.trim());
+        const nameAndGen = parts[0] || "";
+        const bodyType = parts[parts.length - 1] || "";
+        const tokens = nameAndGen.split(/\s+/).filter(Boolean);
+        if (tokens.length < 2 || !bodyType) {
+          resetModelMarketLabel();
+          return;
+        }
+        const generation = tokens[tokens.length - 1].toUpperCase();
+        const modelName = tokens.slice(0, -1).join(" ").toUpperCase();
+        typewriteLabel(modelMarketLabel, "model", `${bodyType.toUpperCase()} / ${modelName} / ${generation}`);
+      }
+
+      function updateEngineSpecLabel(engineText) {
+        const raw = (engineText || "").trim();
+        if (!raw || !raw.includes("|")) {
+          resetEngineSpecLabel();
+          return;
+        }
+
+        const parts = raw.split("|").map((item) => item.trim()).filter(Boolean);
+        const engineCode = parts[0] || "--";
+        const displacementAndFuel = parts.find((part) => /l\s+/i.test(part)) || "";
+
+        let fuelType = "--";
+        let displacement = "--";
+        if (displacementAndFuel) {
+          const match = displacementAndFuel.match(/^([0-9]+(?:\.[0-9]+)?L)\s+(.+)$/i);
+          if (match) {
+            displacement = match[1].toUpperCase();
+            fuelType = match[2].toUpperCase();
+          } else {
+            displacement = displacementAndFuel.toUpperCase();
+          }
+        }
+
+        typewriteLabel(engineSpecLabel, "engine", `${fuelType} / ${engineCode.toUpperCase()} / ${displacement}`);
+      }
+
+      function toBrandKey(optionEl) {
+        const fromValue = optionEl?.value?.trim().toLowerCase();
+        const fromText = optionEl?.textContent
+          ?.trim()
+          .toLowerCase()
+          .replace(/\s+/g, "-");
+        return fromValue || fromText || "";
+      }
+
+      function resolveLogoUrl(optionEl) {
+        const dbLogoUrl = optionEl?.dataset?.logoUrl?.trim() || "";
+        const keyFromValue = optionEl?.value?.trim().toLowerCase() || "";
+        const keyFromText =
+          optionEl?.textContent?.trim().toLowerCase().replace(/\s+/g, "-") || "";
+        const selectedKey = toBrandKey(optionEl);
+        const fallbackLogo = logoFallbackByBrand[selectedKey] || "";
+        if (dbLogoUrl) return dbLogoUrl;
+        return fallbackLogo;
+      }
+
+      function applyBrandLogo(optionEl) {
+        const logoUrl = resolveLogoUrl(optionEl);
+        if (!logoUrl) {
+          resetLogo();
+          return;
+        }
+        brandLogo.src = logoUrl;
+        brandLogo.alt = `${optionEl.textContent} logo`;
+        brandLogo.style.visibility = "visible";
+        brandLogoBox.classList.add("has-content");
+        brandLogo.classList.remove("brand-logo--enter");
+        void brandLogo.offsetWidth;
+        brandLogo.classList.add("brand-logo--enter");
+      }
+
+      async function initBrandAndModelSelectors() {
+        function wirePartsSearchAndGarageUi() {
+          saveCarBtn.addEventListener("click", () => {
+            saveCurrentCarToGarage();
+            accountPanelApi.open();
+          });
+          garageBtn.addEventListener("click", () => {
+            enterGarage();
+          });
+          searchToggleBtn.addEventListener("click", toggleSearch);
+          searchInput.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+              closeSearch();
+              searchToggleBtn.focus();
+            }
+          });
+          document.addEventListener("click", (event) => {
+            if (!partsSearch.contains(event.target)) {
+              closeSearch();
+            }
+          });
+        }
+        wirePartsSearchAndGarageUi();
+
+        if (
+          SUPABASE_URL.includes("YOUR-PROJECT") ||
+          SUPABASE_ANON_KEY.includes("YOUR-ANON-KEY")
+        ) {
+          setBmwVariantControlsDisabled();
+          brandSelect.addEventListener("change", () => {
+            const selectedOption = brandSelect.options[brandSelect.selectedIndex];
+            applyBrandLogo(selectedOption);
+            resetModelMarketLabel();
+            resetEngineSpecLabel();
+            setPlaceholder(modelSelect, "Selecteaza model");
+            modelSelect.disabled = true;
+            setPlaceholder(engineSelect, "Selecteaza mai intai model");
+            engineSelect.disabled = true;
+            updatePartsButtonState();
+          });
+          modelSelect.addEventListener("change", () => {
+            const selectedModelOption = modelSelect.options[modelSelect.selectedIndex];
+            updateModelMarketLabel(selectedModelOption?.textContent);
+            resetEngineSpecLabel();
+            if (selectedModelOption?.dataset?.localGarageExtra === "1") {
+              fillEngineSelectFromFallback(
+                engineSelect,
+                selectedModelOption.dataset.modelSlug || "",
+                selectedModelOption.textContent || ""
+              );
+            } else {
+              setPlaceholder(engineSelect, "Selecteaza marca cu catalog online (Supabase)");
+              engineSelect.disabled = true;
+            }
+            updatePartsButtonState();
+          });
+          engineSelect.addEventListener("change", () => {
+            const selectedEngineOption = engineSelect.options[engineSelect.selectedIndex];
+            updateEngineSpecLabel(selectedEngineOption?.textContent);
+            updatePartsButtonState();
+          });
+          console.warn(
+            "Seteaza SUPABASE_URL si SUPABASE_ANON_KEY in assets/js/supabase-config.mjs pentru date live."
+          );
+          return;
+        }
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        bmwSupabase = supabase;
+        // #region agent log
+        fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B14',location:'index.html:initBrandAndModelSelectors',message:'supabase client anon key fingerprint',data:{url:SUPABASE_URL,keyPrefix:String(SUPABASE_ANON_KEY||'').slice(0,18),keySuffix:String(SUPABASE_ANON_KEY||'').slice(-6)},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        setPlaceholder(brandSelect, "Se incarca marci...");
+        setPlaceholder(modelSelect, "Selecteaza mai intai marca");
+        setPlaceholder(engineSelect, "Selecteaza mai intai model");
+        setBmwVariantControlsDisabled();
+        modelSelect.disabled = true;
+        engineSelect.disabled = true;
+        partsListBtn.disabled = true;
+        saveCarBtn.disabled = true;
+        resetLogo();
+        accountPanelApi.refreshSavedCars();
+
+        let brands = [];
+        let error = null;
+        const firstTry = await supabase
+          .from("brands")
+          .select("*")
+          .eq("is_active", true)
+          .order("name", { ascending: true });
+        brands = firstTry.data || [];
+        error = firstTry.error;
+
+        if (error) {
+          const secondTry = await supabase
+            .from("brands")
+            .select("*")
+            .order("name", { ascending: true });
+          brands = secondTry.data || [];
+          error = secondTry.error;
+        }
+
+        const modelsTry = await fetchModelsDisplayOrFallback(supabase);
+        const rModelsBrandIds = await supabase.from("models").select("brand_id").limit(8000);
+        const modelTableBrandIds = new Set(
+          (rModelsBrandIds.data || [])
+            .map((r) => String(r?.brand_id ?? "").trim())
+            .filter(Boolean),
+        );
+        const activeBrandIds = new Set(
+          (modelsTry.data || []).map((r) => String(r?.brand_id || "").trim()).filter(Boolean)
+        );
+        const modelBrandLabelById = new Map();
+        (modelsTry.data || []).forEach((r) => {
+          const id = String(r?.brand_id || "").trim();
+          if (!id) return;
+          const label = String(
+            r?.brand_name ?? r?.brand ?? r?.manufacturer ?? r?.make ?? ""
+          ).trim();
+          if (label && !modelBrandLabelById.has(id)) modelBrandLabelById.set(id, label);
+        });
+
+        let finalBrands = brands
+          .filter(
+            (b) =>
+              activeBrandIds.size === 0 ||
+              activeBrandIds.has(String(b.id)) ||
+              modelTableBrandIds.has(String(b.id)),
+          )
+          .map((b) => ({
+            id: b.id,
+            name: String(b.name || "").trim() || modelBrandLabelById.get(String(b.id)) || "",
+            slug: String(b.slug ?? "").trim(),
+            logo_url: b.logo_url || "",
+            source: "brands",
+          }))
+          .filter((b) => b.name)
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        if (!finalBrands.length && !modelsTry.error) {
+          finalBrands = Array.from(activeBrandIds)
+            .map((id) => ({
+              id,
+              name: modelBrandLabelById.get(id) || `Brand ${id}`,
+              logo_url: "",
+              source: "models_display",
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        if (!finalBrands.length) {
+          const modelsFallbackTry = await supabase.from("models").select("*").limit(4000);
+          if (!modelsFallbackTry.error) {
+            const brandsById = new Map(
+              (brands || []).map((b) => [String(b?.id ?? "").trim(), String(b?.name ?? b?.display_name ?? "").trim()])
+            );
+            const names = Array.from(
+              new Set(
+                (modelsFallbackTry.data || [])
+                  .map((r) =>
+                    String(
+                      brandsById.get(String(r?.brand_id ?? "").trim()) ??
+                      r?.brand_name ??
+                        r?.brand ??
+                        r?.make ??
+                        r?.manufacturer ??
+                        r?.marque ??
+                        r?.marca ??
+                        ""
+                    ).trim()
+                  )
+                  .filter(Boolean)
+              )
+            ).sort((a, b) => a.localeCompare(b));
+            finalBrands = names.map((name, idx) => ({
+              id: `m-${idx + 1}`,
+              name,
+              logo_url: "",
+              source: "models",
+            }));
+          }
+        }
+
+        if (!finalBrands.length) {
+          console.error(
+            "Eroare la incarcare marci:",
+            error?.message ||
+              modelsTry.error?.message ||
+              "fara rezultate in brands/models_display/models"
+          );
+          setPlaceholder(brandSelect, "Eroare incarcare marci");
+          return;
+        }
+
+        setPlaceholder(brandSelect, "Selecteaza marca");
+        finalBrands.forEach((brand) => {
+          const option = document.createElement("option");
+          option.value = String(brand.id);
+          option.textContent = brand.name;
+          option.dataset.logoUrl = brand.logo_url || "";
+          option.dataset.source = brand.source;
+          if (brand.slug) option.dataset.brandSlug = brand.slug;
+          brandSelect.appendChild(option);
+        });
+
+        brandSelect.addEventListener("change", async () => {
+          bmwSelection = {};
+          bmwVariantRows = [];
+          const selectedOption = brandSelect.options[brandSelect.selectedIndex];
+          // #region agent log
+          fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B1',location:'index.html:brandSelect.change',message:'brand changed',data:{brandId:selectedOption?.value||null,brandName:(selectedOption?.textContent||'').trim(),brandSlug:(selectedOption?.dataset?.brandSlug||'').trim(),isBmw:isBmwBrandSelected()},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          applyBrandLogo(selectedOption);
+          resetModelMarketLabel();
+          resetEngineSpecLabel();
+          if (bmwGenerationField) {
+            bmwGenerationField.hidden = !isBmwBrandSelected();
+          }
+          setBmwVariantControlsDisabled();
+          // BMW: models (public.models) → generations → generation_body_styles / bmw_variants
+          if (isBmwBrandSelected()) {
+            if (bmwGenerationField) bmwGenerationField.hidden = false;
+            setPlaceholder(modelSelect, "Se încarcă…");
+            modelSelect.disabled = true;
+            setPlaceholder(engineSelect, "—");
+            engineSelect.disabled = true;
+            if (generationSelect) {
+              setPlaceholder(generationSelect, "Selectează modelul");
+              generationSelect.disabled = true;
+            }
+
+            const { data, error } = await fetchDbModelsForBrand(supabase, selectedOption.value);
+            // #region agent log
+            fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B2',location:'index.html:fetchDbModelsForBrand',message:'models for BMW brand',data:{brandId:selectedOption?.value||null,rowCount:(data||[]).length,errorMsg:error?String(error.message||error):null},timestamp:Date.now()})}).catch(()=>{});
+            // #endregion
+            if (error) {
+              console.error("[BMW] models:", error);
+              setPlaceholder(modelSelect, "—");
+              modelSelect.disabled = true;
+              updatePartsButtonState();
+              return;
+            }
+            if (!(data || []).length) {
+              setPlaceholder(modelSelect, "—");
+              modelSelect.disabled = true;
+              updatePartsButtonState();
+              return;
+            }
+            setPlaceholder(modelSelect, "Selectează modelul");
+            (data || []).forEach((m) => {
+              const o = document.createElement("option");
+              o.value = String(m.id);
+              o.textContent = String(m.name || m.slug || m.id);
+              o.dataset.slug = String(m.slug || "");
+              modelSelect.appendChild(o);
+            });
+            modelSelect.disabled = false;
+            updatePartsButtonState();
+            return;
+          }
+          if (generationSelect) {
+            setPlaceholder(generationSelect, "—");
+            generationSelect.disabled = true;
+          }
+          if (selectedOption?.dataset?.source === "models") {
+            setPlaceholder(modelSelect, "Se incarca modele...");
+            modelSelect.disabled = true;
+            setPlaceholder(engineSelect, "Selecteaza mai intai model");
+            engineSelect.disabled = true;
+            setBmwVariantControlsDisabled();
+            const selectedBrandName = String(selectedOption?.textContent || "").trim().toLowerCase();
+            const { data: allModels, error: modelsError } = await supabase
+              .from("models")
+              .select("*")
+              .limit(4000);
+            if (modelsError) {
+              setPlaceholder(modelSelect, "Eroare incarcare modele");
+              modelSelect.disabled = true;
+              updatePartsButtonState();
+              return;
+            }
+            const matched = (allModels || []).filter((r) => {
+              const labels = [
+                r?.brand_name,
+                r?.brand,
+                r?.make,
+                r?.manufacturer,
+                r?.marque,
+                r?.marca,
+              ]
+                .map((v) => String(v || "").trim().toLowerCase())
+                .filter(Boolean);
+              return labels.includes(selectedBrandName);
+            });
+            if (!matched.length) {
+              setPlaceholder(modelSelect, "Nu exista modele pentru marca selectata");
+              modelSelect.disabled = true;
+              updatePartsButtonState();
+              return;
+            }
+            setPlaceholder(modelSelect, "Selecteaza model");
+            const seen = new Set();
+            matched.forEach((m, idx) => {
+              const label = String(
+                m?.display_name ?? m?.name ?? m?.model_name ?? m?.slug ?? `Model ${idx + 1}`
+              ).trim();
+              const key = `${m?.id ?? ""}|${label}`;
+              if (!label || seen.has(key)) return;
+              seen.add(key);
+              const opt = document.createElement("option");
+              opt.value = String(m?.id ?? `model-${idx + 1}`);
+              opt.textContent = label;
+              opt.dataset.modelSlug = String(m?.slug ?? label).trim();
+              modelSelect.appendChild(opt);
+            });
+            modelSelect.disabled = false;
+            updatePartsButtonState();
+            return;
+          }
+          await loadModelsForBrand(
+            supabase,
+            brandSelect.value,
+            modelSelect,
+            engineSelect
+          );
+          setBmwVariantControlsDisabled();
+          updatePartsButtonState();
+        });
+
+        modelSelect.addEventListener("change", async () => {
+          const selectedModelOption = modelSelect.options[modelSelect.selectedIndex];
+          updateModelMarketLabel(selectedModelOption?.textContent);
+          resetEngineSpecLabel();
+          // BMW: public.generations după model; caroserii apoi în pasul „Generație”.
+          if (isBmwBrandSelected()) {
+            // #region agent log
+            fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B3',location:'index.html:modelSelect.change',message:'BMW model changed',data:{modelId:modelSelect.value||null,modelLabel:(selectedModelOption?.textContent||'').trim()},timestamp:Date.now()})}).catch(()=>{});
+            // #endregion
+            bmwVariantRows = [];
+            bmwSelection = { model_id: modelSelect.value || null, generation_id: null };
+            setPlaceholder(engineSelect, "—");
+            engineSelect.disabled = true;
+            setPlaceholder(chassisSelect, "Selectează generația");
+            chassisSelect.disabled = true;
+            resetBmwEngineDrivetrainTransmission();
+
+            if (!modelSelect.value) {
+              if (generationSelect) {
+                setPlaceholder(generationSelect, "Selectează modelul");
+                generationSelect.disabled = true;
+              }
+              updatePartsButtonState();
+              return;
+            }
+
+            if (generationSelect) {
+              setPlaceholder(generationSelect, "Se încarcă…");
+              generationSelect.disabled = true;
+            }
+
+            const { data: genRows, error: genErr } = await fetchGenerationsForModel(
+              supabase,
+              modelSelect.value,
+            );
+            // #region agent log
+            fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B4',location:'index.html:fetchGenerationsForModel',message:'generations for BMW model',data:{modelId:modelSelect.value||null,rowCount:(genRows||[]).length,errorMsg:genErr?String(genErr.message||genErr):null},timestamp:Date.now()})}).catch(()=>{});
+            // #endregion
+            if (genErr) {
+              console.error("[BMW] generations:", genErr);
+              if (generationSelect) {
+                setPlaceholder(generationSelect, "—");
+                generationSelect.disabled = true;
+              }
+              updatePartsButtonState();
+              return;
+            }
+            if (!generationSelect) {
+              updatePartsButtonState();
+              return;
+            }
+            setPlaceholder(generationSelect, "Selectează generația");
+            (genRows || []).forEach((g) => {
+              const o = document.createElement("option");
+              o.value = String(g.id);
+              const ys = [g.production_start_year, g.production_end_year]
+                .filter((x) => x != null && x !== "")
+                .join("–");
+              const code = String(g.code ?? "").trim() || String(g.id);
+              o.textContent = ys ? `${code} (${ys})` : code;
+              generationSelect.appendChild(o);
+            });
+            generationSelect.disabled = !(genRows || []).length;
+            if (!(genRows || []).length) {
+              setPlaceholder(generationSelect, "—");
+            }
+            updatePartsButtonState();
+            return;
+          }
+          setBmwVariantControlsDisabled();
+          if (selectedModelOption?.dataset?.localGarageExtra === "1") {
+            fillEngineSelectFromFallback(
+              engineSelect,
+              selectedModelOption.dataset.modelSlug || "",
+              selectedModelOption.textContent || ""
+            );
+          } else {
+          await loadEnginesForModel(
+            supabase,
+            {
+              modelId: modelSelect.value,
+              modelLabel: selectedModelOption?.textContent,
+              modelSlug: selectedModelOption?.dataset?.modelSlug,
+            },
+            engineSelect
+          );
+          }
+          updatePartsButtonState();
+        });
+
+        generationSelect?.addEventListener("change", async () => {
+          if (!isBmwBrandSelected()) {
+            return;
+          }
+          bmwVariantRows = [];
+          const gid = generationSelect.value;
+          // #region agent log
+          fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B5',location:'index.html:generationSelect.change',message:'BMW generation changed',data:{generationId:gid||null},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          bmwSelection = {
+            model_id: modelSelect.value || null,
+            generation_id: gid || null,
+          };
+          if (!gid) {
+            setPlaceholder(chassisSelect, "Selectează generația");
+            chassisSelect.disabled = true;
+            setPlaceholder(engineSelect, "—");
+            engineSelect.disabled = true;
+            resetBmwEngineDrivetrainTransmission();
+            updatePartsButtonState();
+            return;
+          }
+
+          const bsRes = await fetchGenerationBodyStylesJoined(supabase, gid);
+          // #region agent log
+          fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B6',location:'index.html:fetchGenerationBodyStylesJoined',message:'body styles joined',data:{generationId:gid||null,rowCount:(bsRes.data||[]).length,errorMsg:bsRes.error?String(bsRes.error.message||bsRes.error):null},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          if (bsRes.error) {
+            console.error("[BMW] generation_body_styles / body_styles:", bsRes.error);
+            setPlaceholder(chassisSelect, "—");
+            chassisSelect.disabled = true;
+            setPlaceholder(engineSelect, "—");
+            engineSelect.disabled = true;
+            resetBmwEngineDrivetrainTransmission();
+            updatePartsButtonState();
+            return;
+          }
+          await setupBmwBodyStyleDropdown(bsRes.data || []);
+          logBmwSelected();
+          updatePartsButtonState();
+        });
+
+        engineSelect.addEventListener("change", () => {
+          const selectedEngineOption = engineSelect.options[engineSelect.selectedIndex];
+          updateEngineSpecLabel(selectedEngineOption?.textContent);
+          if (!isBmwBrandSelected()) {
+            updatePartsButtonState();
+            return;
+          }
+          updatePartsButtonState();
+        });
+        chassisSelect.addEventListener("change", () => {
+          if (!isBmwBrandSelected()) {
+            return;
+          }
+          resetBmwEngineDrivetrainTransmission();
+          // #region agent log
+          fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B17',location:'index.html:chassisSelect.change',message:'body style changed',data:{brand_id:brandSelect.value||null,model_id:modelSelect.value||null,generation_id:generationSelect?.value||null,body_style_id:chassisSelect.value||null},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          void loadBmwVariantsForSelection();
+        });
+        drivetrainSelect.addEventListener("change", () => {
+          if (!isBmwBrandSelected()) return;
+          updatePartsButtonState();
+        });
+        gearboxSelect.addEventListener("change", () => {
+          updatePartsButtonState();
+        });
+      }
+
+      setupMarqueeTrack("partners-track", ".partners-strip__items");
+      setupMarqueeTrack("service-partners-track", ".service-strip__items");
+      initBrandAndModelSelectors();
+
+      stashGarageForTransfer();
+      window.addEventListener("pageshow", () => stashGarageForTransfer());
+    </script>
+  </body>
+</html>
+

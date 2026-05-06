@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  min-height: 100dvh;
+  height: 100%;
+}
+
+body {
+  @apply bg-neutral-950 text-neutral-200 antialiased;
+  margin: 0;
+}
+
+/* Range input — engineering dark */
+input[type="range"].sd-rail {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.25), rgba(59, 130, 246, 0.35));
+}
+input[type="range"].sd-rail::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #22d3ee, #3b82f6);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+input[type="range"].sd-rail::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #22d3ee, #3b82f6);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}

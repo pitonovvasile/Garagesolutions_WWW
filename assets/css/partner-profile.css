@@ -1,0 +1,66 @@
+.partner-page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+}
+
+.partner-card {
+  background: linear-gradient(155deg, rgba(20, 17, 34, 0.92), rgba(10, 12, 18, 0.94));
+  border: 1px solid rgba(124, 58, 237, 0.34);
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 14px 34px rgba(2, 6, 23, 0.35);
+}
+
+.partner-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.partner-head__logo {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 1px solid rgba(167, 139, 250, 0.6);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(56, 189, 248, 0.85));
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.partner-head h1 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.partner-head p {
+  margin: 0.2rem 0 0;
+  color: #afbdd4;
+  font-size: 0.88rem;
+}
+
+.partner-services {
+  margin-top: 1rem;
+}
+
+.partner-services h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+}
+
+.partner-services ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.36rem;
+}
+
+.partner-services li {
+  color: #dbe6ff;
+  font-size: 0.9rem;
+}

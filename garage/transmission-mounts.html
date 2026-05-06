@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transmission - Transmission Mounts</title>
+    <style>
+      body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #07070d; color: #f4f1ff; }
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 24px; } .hero { display: grid; gap: 18px; grid-template-columns: 1fr auto; background: #121025; border: 1px solid #30234e; border-radius: 16px; padding: 20px; }
+      .hero img { width: 72px; height: 72px; object-fit: contain; } .sub { color: #bcaee5; margin: 0; } .car { color: #cdbdff; margin-top: 10px; }
+      .chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; } .tx-chip { padding: 8px 12px; border-radius: 999px; border: 1px solid #4a3d73; text-decoration: none; color: #e8ddff; } .tx-chip--active { background: #6f4cff; border-color: #8a6cff; color: #fff; }
+      .filters { display: grid; gap: 10px; grid-template-columns: 2fr 1fr 1fr 1fr; margin-bottom: 14px; } .filters input, .filters select { background: #130f26; color: #f4f1ff; border: 1px solid #3a2d60; border-radius: 10px; padding: 10px; }
+      .tx-products { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; } .tx-products li { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; background: #100d1f; border: 1px solid #31234f; border-radius: 10px; padding: 10px; } .tx-note { color: #bcaee5; }
+      .topbar { display: flex; justify-content: space-between; margin-bottom: 14px; } a { color: #cab8ff; } @media (max-width: 860px) { .filters { grid-template-columns: 1fr; } .tx-products li { grid-template-columns: 1fr; } .hero { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar"><a href="./transmission.html">Back to Transmission</a><a id="tx-back-garage" href="../garage.html">Back to Garage</a></div>
+      <section class="hero"><div><h1 id="tx-cat-title"></h1><p id="tx-cat-subtitle" class="sub"></p><p id="tx-cat-description"></p><p id="tx-selected-car" class="car"></p></div><img id="tx-cat-icon" alt="Category icon" /></section>
+      <div id="tx-subcats" class="chips"></div>
+      <div class="filters"><input id="tx-search" placeholder="Search by name or brand..." /><select id="tx-brand"><option value="">All brands</option></select><select id="tx-engine-code"><option value="">All engine codes</option></select><select id="tx-price"><option value="">All prices</option><option value="0-500">0-500 RON</option><option value="500-1000">500-1000 RON</option><option value="1000+">1000+ RON</option></select></div>
+      <section id="tx-results"></section>
+    </div>
+    <script type="module">
+      import { initTransmissionCategoryPage } from "../assets/js/transmission-category-page.mjs";
+      initTransmissionCategoryPage({
+        categoryKey: "mounts",
+        title: "Transmission Mounts",
+        subtitle: "Drivetrain stability and vibration control",
+        description: "Browse gearbox and differential mount solutions from the product database.",
+        items: ["Gearbox Mounts", "Differential Mounts", "Engine & Box Swap Kits"],
+      });
+    </script>
+  </body>
+</html>

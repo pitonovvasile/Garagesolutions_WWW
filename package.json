@@ -1,0 +1,24 @@
+{
+  "name": "garagesolutions_www",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "favicon": "node scripts/recolor-favicon.mjs",
+    "logo:header": "node scripts/recolor-logo-header.mjs",
+    "garage:car-png": "node scripts/build-garage-car-png.mjs",
+    "preview": "node scripts/preview-server.mjs",
+    "preview:9090": "PORT=9090 node scripts/preview-server.mjs",
+    "suspension:build": "npm --prefix suspension-design-app run build",
+    "suspension:dev": "npm --prefix suspension-design-app run dev",
+    "supabase:types": "npx supabase gen types typescript --project-id nfnamdmdavbaedpesdpy --schema public > assets/types/supabase.generated.ts"
+  },
+  "devDependencies": {
+    "pngjs": "^7.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

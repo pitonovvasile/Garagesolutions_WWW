@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Subcategorie Motor — Garage Solutions</title>
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <style>
+      .subcat-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; margin: 0.7rem 0 0.9rem; }
+      .subcat-filters select { width: 100%; padding: 0.58rem 0.72rem; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.35); background: rgba(15, 23, 42, 0.55); color: #e2e8f0; }
+      .subcat-products { list-style: none; margin: 0.5rem 0 0; padding: 0; display: grid; gap: 0.55rem; }
+      .subcat-products li { border: 1px solid rgba(148, 163, 184, 0.24); border-radius: 10px; background: rgba(15, 23, 42, 0.38); padding: 0.62rem 0.72rem; }
+      .subcat-products strong { display: block; color: #f8fafc; }
+      .subcat-products span { display: inline-block; margin-right: 0.55rem; margin-top: 0.35rem; color: #cbd5e1; font-size: 0.84rem; }
+      .subcat-note { margin: 0.45rem 0 0; color: #b6c3d8; }
+      @media (max-width: 740px) { .subcat-filters { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body class="body--categorie">
+    <main class="categorie-sub">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a class="breadcrumbs__link" href="../index.html">Acasa</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <a class="breadcrumbs__link" href="./motor.html">Motor</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <span class="breadcrumbs__current" id="subcat-name-breadcrumb">Subcategorie</span>
+      </nav>
+
+      <header class="categorie-sub__head categorie-sub__head--solo">
+        <div class="categorie-sub__intro">
+          <h1 class="categorie-sub__title" id="subcat-title">Subcategorie Motor</h1>
+          <p class="categorie-sub__lead">Piese disponibile pentru subcategoria selectată, filtrabile după producător și tip piesă.</p>
+        </div>
+      </header>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">Piese disponibile (DB)</h2>
+        <div class="subcat-filters">
+          <label><span class="brand-strip__label" style="position: static; width: auto; height: auto; margin: 0 0 0.22rem; display: block; color: #cbd5e1;">Filtru după producător</span><select id="filter-producer"><option value="">Toți producătorii</option></select></label>
+          <label><span class="brand-strip__label" style="position: static; width: auto; height: auto; margin: 0 0 0.22rem; display: block; color: #cbd5e1;">Filtru după tip piesă</span><select id="filter-piece-type"><option value="">Toate tipurile</option></select></label>
+        </div>
+        <p class="subcat-note" id="db-state">Se încarcă produsele din baza de date...</p>
+        <ul class="subcat-products" id="db-products-list"></ul>
+        <p class="categorie-sub__actions"><a class="categorie-sub__btn" href="./motor.html">Înapoi la subcategorii motor</a></p>
+      </section>
+    </main>
+
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../assets/js/supabase-config.mjs";
+
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const params = new URLSearchParams(window.location.search);
+      const subcatName = (params.get("name") || "").trim();
+      const titleEl = document.getElementById("subcat-title");
+      const breadcrumbEl = document.getElementById("subcat-name-breadcrumb");
+      if (subcatName) {
+        titleEl.textContent = subcatName;
+        breadcrumbEl.textContent = subcatName;
+        document.title = `${subcatName} — Garage Solutions`;
+      }
+
+      const producerEl = document.getElementById("filter-producer");
+      const pieceTypeEl = document.getElementById("filter-piece-type");
+      const stateEl = document.getElementById("db-state");
+      const listEl = document.getElementById("db-products-list");
+      let rows = [];
+
+      const esc = (s) => String(s ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      const norm = (s) => String(s ?? "").trim().toLowerCase();
+      const getBrand = (r) =>
+        r?.brand ??
+        r?.producer ??
+        r?.manufacturer ??
+        r?.marca ??
+        r?.brand_name ??
+        r?.producer_name ??
+        r?.manufacturer_name ??
+        "";
+      const getName = (r) => r?.name ?? r?.title ?? r?.product_name ?? "Produs fără nume";
+      const getPrice = (r) => {
+        const n = Number(r?.price ?? r?.price_ron ?? r?.sale_price ?? null);
+        return Number.isFinite(n) ? n : null;
+      };
+      const getType = (r) => String(r?.subcategory ?? "").trim() || "Altele";
+
+      function render() {
+        const producer = norm(producerEl.value);
+        const pieceType = norm(pieceTypeEl.value);
+        const filtered = rows.filter((r) => {
+          if (producer && norm(getBrand(r)) !== producer) return false;
+          if (pieceType && norm(getType(r)) !== pieceType) return false;
+          return true;
+        });
+        if (!filtered.length) {
+          stateEl.textContent = rows.length
+            ? "Nu există produse pentru filtrele selectate."
+            : `Nu există piese disponibile momentan pentru "${subcatName || "subcategoria selectată"}".`;
+          listEl.innerHTML = "";
+          return;
+        }
+        stateEl.textContent = `${filtered.length} produs(e) afișate.`;
+        listEl.innerHTML = filtered
+          .map((r) => `<li><strong>${esc(getName(r))}</strong><span>Producător: ${esc(getBrand(r) || "n/a")}</span><span>Tip piesă: ${esc(getType(r))}</span><span>${getPrice(r) !== null ? `${getPrice(r)} RON` : "Preț indisponibil"}</span></li>`)
+          .join("");
+      }
+
+      async function loadProducts() {
+        const term = subcatName || "motor";
+        const bucket = [];
+        const queries = [
+          () => supabase.from("products").select("*").ilike("subcategory", `%${term}%`),
+          () => supabase.from("products").select("*").ilike("name", `%${term}%`),
+          () => supabase.from("products").select("*").eq("category", "motor").ilike("subcategory", "%motor%"),
+        ];
+        for (const q of queries) {
+          const { data, error } = await q();
+          if (!error) bucket.push(...(data ?? []));
+        }
+        const seen = new Set();
+        rows = bucket.filter((r) => {
+          const key = String(r?.id ?? `${r?.category}|${r?.subcategory}|${r?.brand}|${r?.name}`);
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
+        const producers = Array.from(new Set(rows.map((r) => String(getBrand(r) || "").trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+        producerEl.innerHTML = `<option value="">Toți producătorii</option>${producers.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join("")}`;
+
+        const types = Array.from(new Set(rows.map((r) => String(getType(r) || "").trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+        pieceTypeEl.innerHTML = `<option value="">Toate tipurile</option>${types.map((t) => `<option value="${esc(t)}">${esc(t)}</option>`).join("")}`;
+
+        render();
+      }
+
+      producerEl.addEventListener("change", render);
+      pieceTypeEl.addEventListener("change", render);
+      loadProducts();
+    </script>
+  </body>
+</html>
