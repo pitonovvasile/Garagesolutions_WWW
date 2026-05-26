@@ -5,7 +5,8 @@ import {
   loadEnginesForModel,
   loadYearsForModel,
 } from "./vehicle-garage-loaders.mjs";
-import { readSavedCars, GARAGE_STORAGE_KEY } from "./garage-saved-cars.mjs";
+import { readSavedCars, onGarageCarsUpdated } from "./garage-saved-cars.mjs";
+import { getBrandLogoUrl } from "./brand-logo-fallbacks.mjs";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -68,6 +69,37 @@ function findEngineOption(select, fullEngine) {
   return null;
 }
 
+function resolveCarBrandLogoUrl(car) {
+  if (!car) return "";
+  const explicit = typeof car.brandLogoUrl === "string" ? car.brandLogoUrl.trim() : "";
+  if (explicit) return explicit;
+  const brandSel = document.getElementById("anv-a-marca");
+  if (brandSel && car.brand) {
+    const opt = findOptionByLabel(brandSel, car.brand);
+    const fromSelect = opt?.dataset?.logoUrl?.trim();
+    if (fromSelect) return fromSelect;
+  }
+  return getBrandLogoUrl(car.brand) || "";
+}
+
+function updateCarBrandLogo(car) {
+  const wrap = document.getElementById("anv-car-brand-logo-wrap");
+  const img = document.getElementById("anv-car-brand-logo");
+  if (!wrap || !img) return;
+  const url = car ? resolveCarBrandLogoUrl(car) : "";
+  if (url) {
+    img.src = url;
+    img.alt = car?.brand ? `${car.brand} logo` : "";
+    img.hidden = false;
+    wrap.classList.add("anv-selector__car-ico--has-logo");
+  } else {
+    img.removeAttribute("src");
+    img.alt = "";
+    img.hidden = true;
+    wrap.classList.remove("anv-selector__car-ico--has-logo");
+  }
+}
+
 let formReady = false;
 
 /**
@@ -114,6 +146,7 @@ export async function applySavedCarToAnvelopeForm(car) {
   } else {
     console.warn("[anvelope] Motorizare aproximativa — alege manual daca e nevoie.");
   }
+  updateCarBrandLogo(car);
 }
 
 function init() {
@@ -185,6 +218,7 @@ function init() {
       meta.textContent = "";
       up.disabled = true;
       down.disabled = true;
+      updateCarBrandLogo(null);
       return;
     }
     if (cars.length === 0) {
@@ -192,6 +226,7 @@ function init() {
       meta.textContent = "";
       up.disabled = true;
       down.disabled = true;
+      updateCarBrandLogo(null);
       return;
     }
     if (index < 0) index = cars.length - 1;
@@ -209,6 +244,7 @@ function init() {
     meta.textContent = `${index + 1} / ${cars.length}`;
     up.disabled = false;
     down.disabled = false;
+    updateCarBrandLogo(c);
   }
 
   async function step(delta) {
@@ -250,12 +286,11 @@ function init() {
     }
   });
 
-  window.addEventListener("storage", function (e) {
-    if (e.key === GARAGE_STORAGE_KEY) {
-      index = 0;
-      updateUi();
-    }
-  });
+  function onGarageChanged() {
+    index = 0;
+    updateUi();
+  }
+  void onGarageCarsUpdated(onGarageChanged);
 
   document.addEventListener("visibilitychange", function () {
     if (!document.hidden) {
@@ -277,7 +312,12 @@ function init() {
     });
   }
 
-  updateUi();
+  void import("./garage-cloud-sync.mjs")
+    .then((m) => m.syncGarageFromCloudAndLocal())
+    .catch((e) => console.warn("[anvelope] garaj sync", e))
+    .finally(() => {
+      updateUi();
+    });
 
   document.addEventListener("anv-vehicle-form-ready", function onVehReady() {
     document.removeEventListener("anv-vehicle-form-ready", onVehReady);

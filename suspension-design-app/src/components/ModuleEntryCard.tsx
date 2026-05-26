@@ -58,7 +58,7 @@ export function ModuleEntryCard({ compact }: { compact?: boolean }) {
           : "w-full max-w-sm rounded-2xl border border-cyan-500/30 bg-transparent p-6 shadow-glow hover:border-cyan-400/55"
       }`}
       aria-label={
-        compact ? "Reset geometry (current vehicle)" : "Open workspace — BMW E46 baseline"
+        compact ? "Reset geometry (current vehicle)" : "Deschide workspace — alege mașină din garaj"
       }
     >
       <div

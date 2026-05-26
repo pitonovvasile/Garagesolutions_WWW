@@ -3,6 +3,119 @@
  * + acelasi fallback ca pe front. Folosit in index (garaj) si anvelope (cautare automobil).
  */
 import { engineFallbackByModelSlug } from "./engine-fallback-by-model.mjs";
+import { fetchModelsDisplayOrFallback } from "./models-display-fallback.mjs";
+
+/**
+ * @typedef {{ id: string|number, name: string, slug?: string, logo_url?: string, source: string }} VehicleBrandOption
+ */
+
+/**
+ * Incarca mărcile auto disponibile (brands + fallback models).
+ * @param {import("@supabase/supabase-js").SupabaseClient} supabase
+ * @returns {Promise<{ brands: VehicleBrandOption[], error: string|null }>}
+ */
+export async function loadBrandsForSelector(supabase) {
+  const brandsRes = await supabase.from("brands").select("*").order("name", { ascending: true });
+  const brands = brandsRes.data || [];
+  const brandsError = brandsRes.error;
+
+  const modelsTry = await fetchModelsDisplayOrFallback(supabase);
+  const rModelsBrandIds = await supabase.from("models").select("brand_id").limit(8000);
+  const modelTableBrandIds = new Set(
+    (rModelsBrandIds.data || [])
+      .map((r) => String(r?.brand_id ?? "").trim())
+      .filter(Boolean)
+  );
+  const activeBrandIds = new Set(
+    (modelsTry.data || []).map((r) => String(r?.brand_id || "").trim()).filter(Boolean)
+  );
+  const modelBrandLabelById = new Map();
+  (modelsTry.data || []).forEach((r) => {
+    const id = String(r?.brand_id || "").trim();
+    if (!id) return;
+    const label = String(
+      r?.brand_name ?? r?.brand ?? r?.manufacturer ?? r?.make ?? ""
+    ).trim();
+    if (label && !modelBrandLabelById.has(id)) modelBrandLabelById.set(id, label);
+  });
+
+  const brandsById = new Map(
+    brands.map((b) => [String(b?.id ?? "").trim(), String(b?.name ?? b?.display_name ?? "").trim()])
+  );
+
+  let finalBrands = brands
+    .filter(
+      (b) =>
+        activeBrandIds.size === 0 ||
+        activeBrandIds.has(String(b.id)) ||
+        modelTableBrandIds.has(String(b.id))
+    )
+    .map((b) => ({
+      id: b.id,
+      name: String(b.name || "").trim() || modelBrandLabelById.get(String(b.id)) || "",
+      slug: String(b.slug ?? "").trim(),
+      logo_url: b.logo_url || "",
+      source: "brands",
+    }))
+    .filter((b) => b.name)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  if (!finalBrands.length && !modelsTry.error) {
+    finalBrands = Array.from(activeBrandIds)
+      .map((id) => ({
+        id,
+        name: modelBrandLabelById.get(id) || brandsById.get(id) || `Brand ${id}`,
+        slug: "",
+        logo_url: "",
+        source: "models_display",
+      }))
+      .filter((b) => b.name)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  if (!finalBrands.length) {
+    const modelsFallbackTry = await supabase.from("models").select("*").limit(4000);
+    if (!modelsFallbackTry.error) {
+      const names = Array.from(
+        new Set(
+          (modelsFallbackTry.data || [])
+            .map((r) =>
+              String(
+                brandsById.get(String(r?.brand_id ?? "").trim()) ??
+                  r?.brand_name ??
+                  r?.brand ??
+                  r?.make ??
+                  r?.manufacturer ??
+                  r?.marque ??
+                  r?.marca ??
+                  ""
+              ).trim()
+            )
+            .filter(Boolean)
+        )
+      ).sort((a, b) => a.localeCompare(b));
+      finalBrands = names.map((name, idx) => ({
+        id: `m-${idx + 1}`,
+        name,
+        slug: "",
+        logo_url: "",
+        source: "models",
+      }));
+    }
+  }
+
+  if (!finalBrands.length) {
+    return {
+      brands: [],
+      error:
+        brandsError?.message ||
+        modelsTry.error?.message ||
+        "fara rezultate in brands/models",
+    };
+  }
+
+  return { brands: finalBrands, error: null };
+}
 
 export function setPlaceholder(selectEl, label) {
   selectEl.innerHTML = "";

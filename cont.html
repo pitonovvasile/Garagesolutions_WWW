@@ -9,8 +9,12 @@
     <link rel="apple-touch-icon" href="assets/garage-solutions-apple-touch.png" />
     <script>
       try {
-        if (localStorage.getItem("garage-site-theme") === "bright")
-          document.documentElement.setAttribute("data-site-theme", "bright");
+        var COOKIE_NAME = "garage_site_theme";
+        var esc = COOKIE_NAME.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        var m = typeof document !== "undefined" && document.cookie.match(new RegExp("(?:^|; )" + esc + "=([^;]*)"));
+        var fromCookie = m ? decodeURIComponent(m[1]) : "";
+        var theme = fromCookie || localStorage.getItem("garage-site-theme");
+        if (theme === "bright") document.documentElement.setAttribute("data-site-theme", "bright");
       } catch (e) {}
     </script>
   </head>
@@ -116,14 +120,6 @@
         <span class="breadcrumbs__current">Contul meu</span>
       </nav>
 
-      <header class="cont-page__head">
-        <h1 class="cont-page__title">Contul meu</h1>
-        <p class="cont-page__lead">
-          Datele sunt salvate în contul Garage Solutions (Supabase). Autentificarea de pe pagina principală (mod
-          demonstrație) este separată: aici folosești e-mail și parola contului real.
-        </p>
-      </header>
-
       <section id="cont-auth-gate" class="cont-card" aria-labelledby="cont-auth-title">
         <h2 id="cont-auth-title" class="cont-card__title">Autentificare</h2>
         <p id="cont-auth-error" class="cont-message" role="alert" hidden></p>
@@ -164,16 +160,32 @@
       </section>
 
       <div id="cont-app" class="cont-app" hidden>
-        <div class="cont-app__bar">
-          <p class="cont-app__session">
-            <span class="cont-app__label">E-mail conectat:</span>
-            <strong id="cont-header-email" class="cont-app__email">—</strong>
-          </p>
-          <button type="button" class="cont-btn cont-btn--ghost" id="cont-sign-out-btn">Deconectare</button>
-        </div>
+        <div class="cont-app-layout">
+          <nav class="cont-app-nav" aria-label="Secțiuni cont">
+            <p class="cont-app-nav__label">Navigare rapidă</p>
+            <ul class="cont-app-nav__list">
+              <li><a class="cont-app-nav__link" href="#cont-profile-section">Datele contului</a></li>
+              <li><a class="cont-app-nav__link" href="#cont-delivery-section">Adrese livrare</a></li>
+              <li><a class="cont-app-nav__link" href="#cont-garage-saved-section">Mașini salvate</a></li>
+              <li><a class="cont-app-nav__link" href="#cont-billing-section">Date facturare</a></li>
+              <li><a class="cont-app-nav__link" href="#cont-password-section">Date de conectare</a></li>
+            </ul>
+          </nav>
 
-        <form id="cont-profile-form" class="cont-card" novalidate>
-          <h2 class="cont-card__title">Datele contului</h2>
+          <div class="cont-app-main">
+        <div id="cont-profile-section" class="cont-section-anchor">
+        <form id="cont-profile-form" class="cont-card cont-profile-form" novalidate>
+          <div class="cont-profile-head">
+            <h2 class="cont-card__title">Datele contului</h2>
+            <div class="cont-profile-head__actions">
+              <button type="button" class="cont-btn cont-btn--secondary" id="cont-profile-edit-btn">
+                Editează datele
+              </button>
+              <button type="button" class="cont-btn cont-btn--ghost" id="cont-profile-cancel-btn" hidden>
+                Renunță
+              </button>
+            </div>
+          </div>
           <p id="cont-form-message" class="cont-message" role="status" aria-live="polite" hidden></p>
           <div class="cont-form cont-form--2col">
             <label class="cont-field">
@@ -248,9 +260,10 @@
             <button type="submit" class="cont-btn cont-btn--primary">Salvează datele</button>
           </div>
         </form>
+        </div>
 
-        <section class="cont-card" id="cont-delivery-section" aria-labelledby="cont-delivery-title">
-          <div class="cont-block__head">
+        <section class="cont-card cont-section-anchor" id="cont-delivery-section" aria-labelledby="cont-delivery-title">
+          <div class="cont-block__head cont-block__head--delivery-courier">
             <span class="cont-block__icon" aria-hidden="true">
               <svg class="cont-block__icon-svg" viewBox="0 0 24 24" width="32" height="32" role="img" focusable="false">
                 <rect x="1" y="3" width="15" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" />
@@ -263,42 +276,210 @@
                 />
               </svg>
             </span>
-            <div>
+            <div class="cont-delivery-head__intro">
               <h2 id="cont-delivery-title" class="cont-card__title cont-card__title--with-icon">Adrese livrare</h2>
               <p class="cont-block__desc">
                 Stochează oricâte adrese dorești (acasă, serviciu, atelier). Poți adăuga adrese noi, le poți modifica
                 pe fiecare sau le poți șterge. Adresa marcată ca implicită poate fi folosită la finalizarea comenzilor.
               </p>
             </div>
+            <div class="cont-courier-partners__copy">
+              <p id="cont-courier-partners-title" class="cont-courier-partners__title">Curieri parteneri</p>
+              <p class="cont-courier-partners__hint">Livrări prin curieri parteneri</p>
+            </div>
           </div>
-          <p id="cont-delivery-message" class="cont-message" role="status" aria-live="polite" hidden></p>
-          <div id="delivery-addresses-list" class="cont-delivery-list" aria-label="Listă adrese de livrare"></div>
-          <p class="cont-delivery-empty" id="delivery-empty-hint" hidden>
-            Nu ai încă nicio adresă. Folosește butonul de mai jos.
-          </p>
-          <div class="cont-actions">
-            <button type="button" class="cont-btn cont-btn--secondary" id="delivery-add-btn">+ Adaugă adresă de livrare</button>
+
+          <div class="cont-delivery-split">
+            <div class="cont-delivery-split__main">
+              <p id="cont-delivery-message" class="cont-message" role="status" aria-live="polite" hidden></p>
+              <div class="cont-delivery-saved" aria-labelledby="cont-delivery-saved-title">
+                <h3 id="cont-delivery-saved-title" class="cont-delivery-saved__title">Adrese salvate</h3>
+                <p class="cont-delivery-empty cont-delivery-empty--saved" id="delivery-empty-hint" hidden>
+                  Nu există adrese salvate. Adaugă prima adresă cu butonul de mai jos.
+                </p>
+                <div
+                  id="delivery-addresses-list"
+                  class="cont-delivery-list"
+                  role="region"
+                  aria-label="Adrese de livrare salvate"
+                ></div>
+              </div>
+              <div class="cont-actions">
+                <button type="button" class="cont-btn cont-btn--secondary" id="delivery-add-btn">
+                  + Adaugă adresă de livrare
+                </button>
+              </div>
+            </div>
+            <aside class="cont-delivery-split__aside cont-courier-partners" aria-labelledby="cont-courier-partners-title">
+              <div class="cont-courier-partners__rail">
+                <div
+                  class="cont-courier-marquee cont-courier-marquee--vertical"
+                  role="region"
+                  aria-roledescription="carusel"
+                  aria-label="Logo-uri curieri parteneri"
+                  tabindex="0"
+                >
+                  <div class="cont-courier-marquee__strip">
+                    <ul class="cont-courier-partners__logos cont-courier-marquee__row" role="list">
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/fan-courier.png"
+                      width="200"
+                      height="126"
+                      alt="FAN Courier"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/dpd.png"
+                      width="1024"
+                      height="533"
+                      alt="DPD"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/gls.png"
+                      width="1024"
+                      height="275"
+                      alt="GLS"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/sameday.png"
+                      width="471"
+                      height="105"
+                      alt="Sameday"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/cargus.png"
+                      width="820"
+                      height="630"
+                      alt="Cargus"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    </li>
+                  </ul>
+                    <ul class="cont-courier-partners__logos cont-courier-marquee__row" aria-hidden="true">
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/fan-courier.png"
+                      width="200"
+                      height="126"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/dpd.png"
+                      width="1024"
+                      height="533"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/gls.png"
+                      width="1024"
+                      height="275"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/sameday.png"
+                      width="471"
+                      height="105"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                  <li class="cont-courier-partners__item">
+                    <img
+                      class="cont-courier-partners__logo"
+                      src="assets/couriers/cargus.png"
+                      width="820"
+                      height="630"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </li>
+                </ul>
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
         </section>
 
-        <section class="cont-card" id="cont-garage-saved-section" aria-labelledby="cont-garage-saved-title">
+        <section class="cont-card cont-section-anchor" id="cont-garage-saved-section" aria-labelledby="cont-garage-saved-title">
           <div class="cont-block__head">
             <div>
               <h2 id="cont-garage-saved-title" class="cont-card__title">Mașini salvate în garaj</h2>
               <p class="cont-block__desc">
                 Gestionează rapid mașinile salvate din selectorul principal. Poți șterge individual fiecare mașină sau
-                poți goli lista complet.
+                poți goli lista complet. În coloana din dreapta vezi logo-ul mărcii și detaliile care diferențiază
+                configurațiile (motor, ani de producție, VIN dacă l-ai salvat).
               </p>
             </div>
           </div>
-          <p id="cont-garage-cars-message" class="cont-message" role="status" aria-live="polite" hidden></p>
-          <ul id="cont-saved-cars-list" class="cont-delivery-list" aria-label="Listă mașini salvate"></ul>
-          <p class="cont-delivery-empty" id="cont-saved-cars-empty" hidden>Nu ai mașini salvate în garaj.</p>
-          <div class="cont-actions">
-            <button type="button" class="cont-btn cont-btn--ghost" id="cont-saved-cars-clear-btn">Șterge toate mașinile</button>
+          <div class="cont-delivery-split cont-garage-split">
+            <div class="cont-delivery-split__main cont-garage-split__main">
+              <p id="cont-garage-cars-message" class="cont-message" role="status" aria-live="polite" hidden></p>
+              <div class="cont-delivery-saved" aria-labelledby="cont-garage-saved-list-title">
+                <h3 id="cont-garage-saved-list-title" class="cont-delivery-saved__title">Mașini salvate</h3>
+                <p class="cont-delivery-empty" id="cont-saved-cars-empty" hidden>
+                  Nu ai mașini salvate în garaj.
+                </p>
+                <ul id="cont-saved-cars-list" class="cont-delivery-list" aria-label="Listă mașini salvate"></ul>
+              </div>
+              <div class="cont-actions">
+                <button type="button" class="cont-btn cont-btn--ghost" id="cont-saved-cars-clear-btn">
+                  Șterge toate mașinile
+                </button>
+              </div>
+            </div>
+            <aside
+              class="cont-delivery-split__aside cont-garage-split__aside"
+              aria-label="Previzualizare mașini salvate"
+              id="cont-saved-cars-aside"
+              hidden
+            >
+              <div id="cont-saved-cars-rail" class="cont-garage-rail"></div>
+            </aside>
           </div>
         </section>
 
+        <div id="cont-billing-section" class="cont-section-anchor">
         <form id="cont-billing-form" class="cont-card" novalidate>
           <div class="cont-block__head cont-block__head--billing">
             <span class="cont-block__icon cont-block__icon--billing" aria-hidden="true">
@@ -418,7 +599,9 @@
             <button type="submit" class="cont-btn cont-btn--primary" id="cont-billing-save">Salvează datele de facturare</button>
           </div>
         </form>
+        </div>
 
+        <div id="cont-password-section" class="cont-section-anchor">
         <form id="cont-password-form" class="cont-card cont-card--password" novalidate>
           <h2 class="cont-card__title">Date de conectare</h2>
           <p class="cont-card__meta" id="cont-connect-meta">Ultima autentificare: —</p>
@@ -462,6 +645,17 @@
             <button type="submit" class="cont-btn cont-btn--accent" id="cont-password-submit">ACTUALIZEAZĂ</button>
           </div>
         </form>
+        </div>
+
+        <div class="cont-app__bar">
+          <p class="cont-app__session">
+            <span class="cont-app__label">E-mail conectat:</span>
+            <strong id="cont-header-email" class="cont-app__email">—</strong>
+          </p>
+          <button type="button" class="cont-btn cont-btn--ghost" id="cont-sign-out-btn">Deconectare</button>
+        </div>
+        </div>
+        </div>
       </div>
     </main>
 

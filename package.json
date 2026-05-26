@@ -10,13 +10,17 @@
     "logo:header": "node scripts/recolor-logo-header.mjs",
     "garage:car-png": "node scripts/build-garage-car-png.mjs",
     "preview": "node scripts/preview-server.mjs",
+    "preview:serve": "serve . -l tcp://127.0.0.1:8844 -l \"tcp://[::1]:8844\" -n --no-request-logging",
+    "preview:no-open": "PREVIEW_OPEN=0 node scripts/preview-server.mjs",
+    "preview:ipv4": "HOST=127.0.0.1 node scripts/preview-server.mjs",
     "preview:9090": "PORT=9090 node scripts/preview-server.mjs",
     "suspension:build": "npm --prefix suspension-design-app run build",
     "suspension:dev": "npm --prefix suspension-design-app run dev",
     "supabase:types": "npx supabase gen types typescript --project-id nfnamdmdavbaedpesdpy --schema public > assets/types/supabase.generated.ts"
   },
   "devDependencies": {
-    "pngjs": "^7.0.0"
+    "pngjs": "^7.0.0",
+    "serve": "^14.2.6"
   },
   "keywords": [],
   "author": "",

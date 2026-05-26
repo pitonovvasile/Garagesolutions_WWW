@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Garage Solutions: preview (server + browser)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/preview-server.mjs",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {
+        "PREVIEW_OPEN": "0"
+      },
+      "serverReadyAction": {
+        "pattern": "PREVIEW_READY (https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      }
+    }
+  ]
+}

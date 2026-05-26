@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lista piese pentru mașina aleasă | Garage Solutions</title>
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="icon" href="assets/garage-solutions-favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="assets/garage-solutions-apple-touch.png" />
+    <script>
+      try {
+        if (localStorage.getItem("garage-site-theme") === "bright") {
+          document.documentElement.setAttribute("data-site-theme", "bright");
+        }
+      } catch (e) {}
+    </script>
+    <style>
+      .parts-page {
+        width: min(1180px, calc(100% - 2rem));
+        margin: 1rem auto 2rem;
+      }
+      .parts-head {
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        background: linear-gradient(180deg, rgba(10, 12, 28, 0.8), rgba(7, 9, 22, 0.85));
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 0.85rem 1rem;
+        align-items: start;
+        width: 100vw;
+        max-width: none;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        box-sizing: border-box;
+      }
+      .parts-brand-logo-wrap {
+        width: 92px;
+        height: 92px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 14px;
+        background: rgba(2, 6, 23, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        align-self: center;
+      }
+      .parts-brand-logo {
+        width: 78%;
+        height: 78%;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 10px rgba(2, 6, 23, 0.35));
+      }
+      .parts-brand-logo-wrap[hidden] {
+        display: none;
+      }
+      .parts-head-main {
+        min-width: 0;
+        grid-column: 2;
+      }
+      .parts-head.parts-head--no-logo {
+        grid-template-columns: 1fr;
+      }
+      .parts-head.parts-head--no-logo .parts-head-main {
+        grid-column: 1 / -1;
+      }
+      .parts-head-main h1 {
+        margin: 0;
+        font-size: clamp(1.05rem, 2.1vw, 1.45rem);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .parts-head-main p {
+        margin: 0.5rem 0 0;
+        color: #cbd5e1;
+      }
+      .parts-description {
+        margin-top: 0.45rem;
+        color: #e2e8f0;
+        line-height: 1.45;
+        font-size: 0.92rem;
+      }
+      .parts-meta {
+        margin-top: 0.75rem;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+        width: 100%;
+      }
+      .parts-meta-col {
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 12px;
+        padding: 0.6rem;
+        background: rgba(2, 6, 23, 0.24);
+      }
+      .parts-meta-col__title {
+        margin: 0 0 0.5rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fca5a5;
+      }
+      .parts-extra-lines {
+        display: grid;
+        gap: 0.35rem;
+        margin-bottom: 0.5rem;
+      }
+      .parts-meta-note {
+        margin: 0 0 0.5rem;
+        font-size: 0.83rem;
+        color: #e2e8f0;
+        line-height: 1.35;
+      }
+      .parts-meta-note strong {
+        color: #f8fafc;
+      }
+      .parts-extra-line {
+        margin: 0;
+        font-size: 0.83rem;
+        color: #e2e8f0;
+        line-height: 1.35;
+      }
+      .parts-extra-line strong {
+        color: #f8fafc;
+      }
+      .parts-meta-list {
+        display: grid;
+        gap: 0.45rem;
+      }
+      #parts-meta-selected {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+      }
+      #parts-meta-selected .parts-chip {
+        min-height: 2.05rem;
+        align-items: center;
+        border: 0 !important;
+        outline: none;
+        box-shadow: none !important;
+      }
+      #parts-meta-extra .parts-chip {
+        border: 0 !important;
+        outline: none;
+        box-shadow: none !important;
+      }
+      .parts-chip {
+        display: inline-flex;
+        border: 1px solid rgba(239, 68, 68, 0.28);
+        border-radius: 999px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.78rem;
+        color: #f8fafc;
+        background: rgba(15, 23, 42, 0.46);
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .parts-grid {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+      .parts-item {
+        display: block;
+        text-decoration: none;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 12px;
+        padding: 0.75rem 0.8rem;
+        color: #f8fafc;
+        background: linear-gradient(180deg, rgba(10, 12, 24, 0.9), rgba(6, 8, 18, 0.95));
+      }
+      .parts-item:hover,
+      .parts-item:focus-visible {
+        border-color: rgba(248, 113, 113, 0.45);
+        outline: none;
+      }
+      .parts-item strong {
+        display: block;
+        font-size: 0.86rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .parts-actions {
+        margin-top: 1rem;
+      }
+      .parts-back {
+        color: #fca5a5;
+      }
+      @media (max-width: 980px) {
+        .parts-meta {
+          grid-template-columns: 1fr;
+        }
+        #parts-meta-selected {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .parts-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 640px) {
+        .parts-head {
+          grid-template-columns: 1fr;
+        }
+        .parts-brand-logo-wrap {
+          width: 72px;
+          height: 72px;
+        }
+        .parts-meta {
+          grid-template-columns: 1fr;
+        }
+        #parts-meta-selected {
+          grid-template-columns: 1fr;
+        }
+        .parts-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      html[data-site-theme="bright"] .parts-head {
+        background: linear-gradient(180deg, #ffffff, var(--bright-fd-mist));
+        border-color: rgba(78, 79, 117, 0.22);
+      }
+      html[data-site-theme="bright"] .parts-head p {
+        color: var(--bright-fd-muted);
+      }
+      html[data-site-theme="bright"] .parts-description {
+        color: var(--bright-fd-muted);
+      }
+      html[data-site-theme="bright"] .parts-brand-logo-wrap {
+        border-color: rgba(78, 79, 117, 0.22);
+        background: rgba(255, 255, 255, 0.85);
+      }
+      html[data-site-theme="bright"] .parts-chip {
+        color: var(--bright-fd-ink);
+        border-color: rgba(78, 79, 117, 0.24);
+        background: rgba(255, 255, 255, 0.88);
+      }
+      html[data-site-theme="bright"] #parts-meta-selected .parts-chip {
+        border: 0 !important;
+        box-shadow: none !important;
+      }
+      html[data-site-theme="bright"] #parts-meta-extra .parts-chip {
+        border: 0 !important;
+        box-shadow: none !important;
+      }
+      html[data-site-theme="bright"] .parts-meta-col {
+        border-color: rgba(78, 79, 117, 0.2);
+        background: rgba(255, 255, 255, 0.7);
+      }
+      html[data-site-theme="bright"] .parts-meta-col__title {
+        color: rgba(78, 79, 117, 0.9);
+      }
+      html[data-site-theme="bright"] .parts-extra-line {
+        color: var(--bright-fd-muted);
+      }
+      html[data-site-theme="bright"] .parts-extra-line strong {
+        color: var(--bright-fd-ink);
+      }
+      html[data-site-theme="bright"] .parts-meta-note {
+        color: var(--bright-fd-muted);
+      }
+      html[data-site-theme="bright"] .parts-meta-note strong {
+        color: var(--bright-fd-ink);
+      }
+      html[data-site-theme="bright"] .parts-item {
+        color: var(--bright-fd-ink);
+        border-color: rgba(78, 79, 117, 0.2);
+        background: linear-gradient(180deg, #ffffff, var(--bright-fd-mist));
+      }
+    </style>
+  </head>
+  <body class="body--categorie">
+    <div class="site-top site-top--hero">
+      <header class="header header--secondary-apex">
+        <a class="logo-link" href="index.html" aria-label="Garage Solutions — acasa">
+          <img
+            class="logo-img"
+            src="assets/garage-solutions-logo.png"
+            alt="Garage Solutions"
+            width="333"
+            height="222"
+            loading="eager"
+          />
+        </a>
+        <nav class="main-nav" aria-label="Navigare principala">
+          <a href="index.html#categorii">Piese auto</a>
+          <a href="anvelope.html">Anvelope</a>
+          <a href="universale/jante-auto.html">Jante</a>
+          <a href="universale.html">Universale</a>
+          <a href="index.html">Oferte</a>
+          <a href="index.html">Contact</a>
+          <a href="catalog/live.html">Catalog Live</a>
+          <div class="header-account-cluster">
+            <div class="header-account-cluster__buttons">
+              <button id="garage-btn" class="account-link" type="button" aria-label="Zona garaj utilizator">
+                Garajul meu
+              </button>
+              <button
+                id="account-btn"
+                class="account-link account-link--secondary"
+                type="button"
+                aria-label="Contul meu"
+                aria-expanded="false"
+                aria-controls="account-panel"
+              >
+                Contul meu
+              </button>
+            </div>
+          </div>
+        </nav>
+        <div class="header-apex" aria-label="Cont, favorite, cos">
+          <button
+            type="button"
+            class="header-apex__identity"
+            id="header-identity-btn"
+            aria-controls="account-panel"
+            aria-label="Deschide contul"
+          >
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.35" />
+              <path fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" d="M5 20.2c1.3-4.2 4.8-6.5 7-6.5s5.7 2.3 7 6.5" />
+            </svg>
+            <span class="header-apex__user-text" id="header-user-label">Autentificate!</span>
+          </button>
+          <button type="button" class="header-apex__icon-btn" id="header-cart-btn" aria-label="Cos cumparaturi" title="Cos">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.35"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5V4a3 3 0 0 1 6 0v1M6 6h12l-1.4 12.2a1.5 1.5 0 0 1-1.5 1.3H8.9a1.5 1.5 0 0 1-1.5-1.3L6 6Z"
+              />
+              <circle cx="10" cy="20" r="0.95" fill="currentColor" stroke="none" />
+              <circle cx="17" cy="20" r="0.95" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="theme-switch-wrap theme-switch-wrap--header-corner"
+          aria-label="Comutator temă"
+        >
+          <span class="theme-switch__txt">Dark</span>
+          <label class="theme-switch">
+            <input
+              type="checkbox"
+              id="site-theme-toggle"
+              class="theme-switch__input"
+              role="switch"
+              aria-checked="false"
+              aria-label="Comută tema între dark și bright"
+            />
+            <span class="theme-switch__slider"></span>
+          </label>
+          <span class="theme-switch__txt">Bright</span>
+        </div>
+      </header>
+    </div>
+
+    <main class="parts-page">
+      <section class="parts-head" aria-label="Rezumat mașină selectată">
+        <div id="parts-brand-logo-wrap" class="parts-brand-logo-wrap" hidden>
+          <img id="parts-brand-logo" class="parts-brand-logo" src="" alt="" />
+        </div>
+        <div class="parts-head-main">
+          <h1>Lista de piese pentru mașina aleasă</h1>
+          <p id="parts-summary-text">Selectează o mașină din configurator pentru un rezultat complet.</p>
+          <p id="parts-description" class="parts-description"></p>
+          <div id="parts-meta" class="parts-meta" aria-live="polite">
+            <section class="parts-meta-col" aria-label="Date selectate de utilizator">
+              <h2 class="parts-meta-col__title">Date selectate</h2>
+              <div id="parts-meta-selected" class="parts-meta-list"></div>
+            </section>
+            <section class="parts-meta-col" aria-label="Informații suplimentare">
+              <h2 class="parts-meta-col__title">Informații suplimentare</h2>
+              <div id="parts-extra-lines" class="parts-extra-lines"></div>
+              <div id="parts-meta-extra" class="parts-meta-list"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="categories-grid" aria-label="Categorii de piese disponibile">
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/ambreiaj.html" aria-label="Categorie Ambreiaj">
+            <span class="category-card__icon category-card__icon--image">
+              <img src="assets/clutch-icon-alpha.png" alt="" />
+            </span>
+            <h3>Ambreiaj</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/antrenare-punte.html" aria-label="Categorie Antrenare punte">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/antrenare-punte-icon-alpha.png" alt="" />
+            </span>
+            <h3>Antrenare punte</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/caroserie.html" aria-label="Categorie Caroserie">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/caroserie-icon-alpha.png" alt="" />
+            </span>
+            <h3>Caroserie</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/directie-roti.html" aria-label="Categorie Directie / roti">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/directie-roti-icon-alpha.png" alt="" />
+            </span>
+            <h3>Directie / articulatie</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/electrice.html" aria-label="Categorie Electrice">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/electrice-icon-alpha.png" alt="" />
+            </span>
+            <h3>Electrice</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/filtre.html" aria-label="Categorie Filtre">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/filtre-icon-alpha.png" alt="" />
+            </span>
+            <h3>Filtre</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/instalatie-franare.html" aria-label="Categorie Instalatie de franare">
+            <span class="category-card__icon category-card__icon--image">
+              <img src="assets/franare-instalatie-icon-nou.png" alt="" />
+            </span>
+            <h3>Instalatie de franare</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/motor.html" aria-label="Categorie Motor">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/motor-icon-alpha.png" alt="" />
+            </span>
+            <h3>Motor</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/piese-service.html" aria-label="Categorie Piese de service, inspectie, intretinere">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/piese-service-icon-alpha.png" alt="" />
+            </span>
+            <h3>Piese de service / inspectie / intretinere</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/aer-conditionat.html" aria-label="Categorie Sistem de aer conditionat">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/aer-conditionat-icon-alpha.png" alt="" />
+            </span>
+            <h3>Sistem de aer conditionat</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/racire-motor.html" aria-label="Categorie Sistem de racire motor">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/racire-motor-icon-alpha.png" alt="" />
+            </span>
+            <h3>Sistem de racire motor</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/esapament.html" aria-label="Categorie Sistemul de esapament">
+            <span class="category-card__icon category-card__icon--image">
+              <img src="assets/esapament-combo-transparent.png" alt="" />
+            </span>
+            <h3>Sistemul de esapament</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/suspensie.html" aria-label="Categorie Suspensie">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/suspensie-icon-alpha.png" alt="" />
+            </span>
+            <h3>Suspensie</h3>
+          </a>
+        </article>
+        <article class="category-card">
+          <a class="category-card__link" href="categorii/accesorii.html" aria-label="Categorie Accesorii">
+            <span class="category-card__icon category-card__icon--image category-card__icon--image-bright">
+              <img src="assets/accesorii-icon-alpha.png" alt="" />
+            </span>
+            <h3>Accesorii</h3>
+          </a>
+        </article>
+      </section>
+
+      <p class="parts-actions"><a class="parts-back" href="index.html#vehicle-config-section">← Înapoi la configurator</a></p>
+    </main>
+
+    <footer class="footer" aria-label="Footer principal">
+      <div class="footer__grid">
+        <section class="footer__col">
+          <h3>Garage Solutions</h3>
+          <p>
+            Platformă auto pentru piese, service-uri partenere și gestionarea garajului personal într-o
+            interfață unică.
+          </p>
+        </section>
+        <section class="footer__col">
+          <h3>Navigare</h3>
+          <ul class="footer__list">
+            <li><a href="index.html#categorii">Categorii piese</a></li>
+            <li><a href="garage.html">Garajul meu</a></li>
+            <li><a href="garage/transmission.html">Transmission</a></li>
+            <li><a href="cont.html">Contul meu</a></li>
+          </ul>
+        </section>
+        <section class="footer__col">
+          <h3>Servicii</h3>
+          <ul class="footer__list">
+            <li><a href="lista-servicii.html">Lista servisuri</a></li>
+            <li><a href="parteneri/rar-homologare.html">RAR & Omologări (asistență)</a></li>
+            <li><a href="parteneri/itp-inspectii-tehnice.html">ITP & Inspecții Tehnice</a></li>
+            <li><a href="parteneri/general-garage-hub.html">Service multimarcă</a></li>
+            <li><a href="parteneri/tuning-forge.html">Tuning & performanță</a></li>
+            <li><a href="parteneri/detailing-atelier.html">Detailing auto</a></li>
+          </ul>
+        </section>
+        <section class="footer__col">
+          <h3>Suport</h3>
+          <ul class="footer__list">
+            <li><a href="#">Întrebări frecvente</a></li>
+            <li><a href="#">Termeni și condiții</a></li>
+            <li><a href="#">Politică de confidențialitate</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </section>
+      </div>
+      <div class="footer__bottom">
+        <small>© <span id="y"></span> Garage Solutions. Toate drepturile rezervate.</small>
+      </div>
+    </footer>
+
+    <script src="assets/js/site-theme.js" defer></script>
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+      document.getElementById("garage-btn")?.addEventListener("click", () => {
+        window.location.assign("garage.html?car=0");
+      });
+      document.getElementById("account-btn")?.addEventListener("click", () => {
+        window.location.assign("cont.html");
+      });
+      document.getElementById("header-identity-btn")?.addEventListener("click", () => {
+        window.location.assign("cont.html");
+      });
+      document.getElementById("header-cart-btn")?.addEventListener("click", () => {
+        window.location.assign("cont.html#orders");
+      });
+
+      const summaryKeys = [
+        "brand",
+        "model",
+        "generation",
+        "body",
+        "engine",
+        "gearbox",
+        "drivetrain",
+        "differential",
+        "powerKw",
+        "powerCp",
+        "torqueNm",
+        "productionYears",
+        "brandLogoUrl",
+      ];
+      const prettyLabel = {
+        brand: "Marcă",
+        model: "Model",
+        generation: "Generație",
+        body: "Caroserie",
+        engine: "Motor",
+        gearbox: "Cutie",
+        drivetrain: "Tracțiune",
+        differential: "Diferențial",
+        powerKw: "Putere",
+        powerCp: "CP",
+        torqueNm: "Cuplu",
+        productionYears: "Ani fabricație",
+      };
+
+      function readSummary() {
+        const params = new URLSearchParams(window.location.search);
+        const out = {};
+        for (const key of summaryKeys) {
+          const v = String(params.get(key) || "").trim();
+          if (v) out[key] = v;
+        }
+        if (Object.keys(out).length) return out;
+        try {
+          const raw = sessionStorage.getItem("garageSolutionsSelectedVehicleSummaryV1");
+          const parsed = raw ? JSON.parse(raw) : null;
+          if (parsed && typeof parsed === "object") return parsed;
+        } catch (e) {}
+        return {};
+      }
+
+      const summary = readSummary();
+      const partsHead = document.querySelector(".parts-head");
+      const chipsSelected = document.getElementById("parts-meta-selected");
+      const chipsExtra = document.getElementById("parts-meta-extra");
+      const extraLines = document.getElementById("parts-extra-lines");
+      const summaryText = document.getElementById("parts-summary-text");
+      const descriptionEl = document.getElementById("parts-description");
+      const brandLogoWrap = document.getElementById("parts-brand-logo-wrap");
+      const brandLogo = document.getElementById("parts-brand-logo");
+      const explicitLogoUrl = String(summary.brandLogoUrl || "").trim();
+      const brandUpper = String(summary.brand || "").trim().toUpperCase();
+      const logoFallbackByBrand = {
+        BMW: "https://cdn.simpleicons.org/bmw",
+        AUDI: "assets/Audi-logo-icon-on-transparent-background-PNG.avif",
+        VOLKSWAGEN: "https://cdn.simpleicons.org/volkswagen",
+        MERCEDES: "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg",
+        "MERCEDES-BENZ": "https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg",
+        SKODA: "https://cdn.simpleicons.org/skoda",
+        RENAULT: "https://cdn.simpleicons.org/renault",
+        DACIA: "https://cdn.simpleicons.org/dacia",
+        FORD: "https://cdn.simpleicons.org/ford",
+        OPEL: "https://cdn.simpleicons.org/opel",
+        TOYOTA: "https://cdn.simpleicons.org/toyota",
+      };
+      const logoUrl = explicitLogoUrl || logoFallbackByBrand[brandUpper] || "";
+      if (logoUrl && brandLogo && brandLogoWrap) {
+        brandLogo.src = logoUrl;
+        brandLogo.alt = `${String(summary.brand || "").trim()} logo`;
+        brandLogo.addEventListener(
+          "error",
+          () => {
+            brandLogoWrap.hidden = true;
+            partsHead?.classList.add("parts-head--no-logo");
+          },
+          { once: true },
+        );
+        brandLogoWrap.hidden = false;
+        partsHead?.classList.remove("parts-head--no-logo");
+      } else {
+        partsHead?.classList.add("parts-head--no-logo");
+      }
+
+      const entries = summaryKeys
+        .filter((k) => !["brandLogoUrl", "powerKw", "powerCp", "torqueNm", "productionYears"].includes(k))
+        .map((k) => [k, String(summary[k] || "").trim()])
+        .map(([k, v]) => {
+          if (k !== "engine") return [k, v];
+          const cleaned = v
+            .split("/")
+            .map((s) => String(s || "").trim())
+            .filter(Boolean)
+            .filter((s) => !/\b\d+(?:\.\d+)?\s*KW\b/i.test(s))
+            .filter((s) => !/\b\d+(?:\.\d+)?\s*CP\b/i.test(s))
+            .filter((s) => !/\b\d+(?:\.\d+)?\s*NM\b/i.test(s))
+            .join(" / ");
+          return [k, cleaned || v];
+        })
+        .filter(([, v]) => v);
+      const powerBits = [];
+      if (String(summary.powerKw || "").trim()) powerBits.push(`${String(summary.powerKw).trim()} kW`);
+      if (String(summary.powerCp || "").trim()) powerBits.push(`${String(summary.powerCp).trim()} CP`);
+      if (String(summary.torqueNm || "").trim()) powerBits.push(`${String(summary.torqueNm).trim()} Nm`);
+      if (String(summary.productionYears || "").trim()) powerBits.push(`An fabricație: ${String(summary.productionYears).trim()}`);
+      const engineRaw = String(summary.engine || "").trim();
+      const metricsFromEngineRaw = [];
+      const kwFromRaw = engineRaw.match(/(\d+(?:\.\d+)?)\s*KW\b/i);
+      const cpFromRaw = engineRaw.match(/(\d+(?:\.\d+)?)\s*CP\b/i);
+      const nmFromRaw = engineRaw.match(/(\d+(?:\.\d+)?)\s*NM\b/i);
+      if (!powerBits.length) {
+        if (kwFromRaw) metricsFromEngineRaw.push(`${kwFromRaw[1]} kW`);
+        if (cpFromRaw) metricsFromEngineRaw.push(`${cpFromRaw[1]} CP`);
+        if (nmFromRaw) metricsFromEngineRaw.push(`${nmFromRaw[1]} Nm`);
+      }
+
+      function estimateVehicleMassKg(data) {
+        const brand = String(data.brand || "").toUpperCase();
+        const model = String(data.model || "").toUpperCase();
+        const gen = String(data.generation || "").toUpperCase();
+        const body = String(data.body || "").toUpperCase();
+        if (brand.includes("BMW") && model.includes("3 SERIES") && gen.includes("E46")) {
+          if (body.includes("SEDAN")) return { kg: 1435, source: "estimare" };
+          if (body.includes("COUPE")) return { kg: 1450, source: "estimare" };
+          if (body.includes("TOURING")) return { kg: 1490, source: "estimare" };
+          if (body.includes("CABRIO")) return { kg: 1560, source: "estimare" };
+          return { kg: 1470, source: "estimare" };
+        }
+        return { kg: null, source: "n/a" };
+      }
+
+      const cpNumeric = Number(String(summary.powerCp || (cpFromRaw ? cpFromRaw[1] : "")).replace(",", "."));
+      const massInfo = estimateVehicleMassKg(summary);
+      const massKg = Number.isFinite(massInfo.kg) ? massInfo.kg : null;
+      const calPerKg = massKg && Number.isFinite(cpNumeric) && cpNumeric > 0 ? cpNumeric / massKg : null;
+
+      if (entries.length) {
+        summaryText.textContent = "Piese recomandate pentru configurația selectată:";
+        if (descriptionEl) {
+          descriptionEl.textContent = powerBits.length
+            ? `Date motor din DB: ${powerBits.join(" / ")}`
+            : "Specificațiile selectate sunt afișate în câmpurile de mai jos.";
+        }
+        if (extraLines) {
+          const massText = massKg
+            ? `${massKg} kg (${massInfo.source})`
+            : "nedisponibilă";
+          const ratioText = calPerKg != null ? `${calPerKg.toFixed(3)} cal/kg` : "nedisponibil";
+          extraLines.innerHTML = `
+            <p class="parts-extra-line"><strong>Masă proprie:</strong> ${massText}</p>
+            <p class="parts-extra-line"><strong>Raport cal/kg:</strong> ${ratioText}</p>
+          `;
+        }
+        if (chipsSelected) {
+          chipsSelected.innerHTML = entries
+          .map(([k, v]) => `<span class="parts-chip"><strong>${prettyLabel[k]}:</strong>&nbsp;${v}</span>`)
+          .join("");
+        }
+        if (chipsExtra) {
+          const extra = [];
+          if (String(summary.powerKw || "").trim())
+            extra.push(`<span class="parts-chip"><strong>Putere:</strong>&nbsp;${String(summary.powerKw).trim()} kW</span>`);
+          if (String(summary.powerCp || "").trim())
+            extra.push(`<span class="parts-chip"><strong>CP:</strong>&nbsp;${String(summary.powerCp).trim()}</span>`);
+          if (String(summary.torqueNm || "").trim())
+            extra.push(`<span class="parts-chip"><strong>Cuplu:</strong>&nbsp;${String(summary.torqueNm).trim()} Nm</span>`);
+          if (String(summary.productionYears || "").trim())
+            extra.push(
+              `<span class="parts-chip"><strong>Ani fabricație:</strong>&nbsp;${String(summary.productionYears).trim()}</span>`,
+            );
+          chipsExtra.innerHTML = extra.join("");
+          if (!extra.length && metricsFromEngineRaw.length) {
+            chipsExtra.innerHTML = `<p class="parts-meta-note"><strong>Date motor:</strong> ${metricsFromEngineRaw.join(" / ")}</p>`;
+          }
+        }
+      } else {
+        summaryText.textContent =
+          "Nu s-a detectat o mașină selectată. Revino în configurator, alege modelul și apasă Lista piese.";
+        if (descriptionEl) descriptionEl.textContent = "";
+        if (extraLines) {
+          extraLines.innerHTML = `
+            <p class="parts-extra-line"><strong>Masă proprie:</strong> nedisponibilă</p>
+            <p class="parts-extra-line"><strong>Raport cal/kg:</strong> nedisponibil</p>
+          `;
+        }
+        if (chipsSelected) chipsSelected.innerHTML = `<span class="parts-chip"><strong>Info:</strong>&nbsp;Nicio selecție activă.</span>`;
+        if (chipsExtra) chipsExtra.innerHTML = `<span class="parts-chip"><strong>Info:</strong>&nbsp;Nicio informație suplimentară disponibilă.</span>`;
+      }
+    </script>
+  </body>
+</html>

@@ -13,7 +13,15 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@site-garage-cloud": ["../assets/js/garage-cloud-sync.mjs"],
+      "@site-garage-saved-cars": ["../assets/js/garage-saved-cars.mjs"],
+      "@site-bmw-technical-specs": ["../assets/js/bmw-technical-specs.mjs"],
+      "@site-user-saved-resolved": ["../assets/js/user-saved-vehicles-resolved.mjs"],
+      "@site-supabase-config": ["../assets/js/supabase-config.mjs"]
+    }
   },
   "include": ["src"]
 }

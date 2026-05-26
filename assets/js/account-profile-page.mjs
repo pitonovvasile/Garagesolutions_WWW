@@ -1,8 +1,24 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./supabase-config.mjs";
+import { createSupabaseCookieMirrorStorage } from "./supabase-session-cookie-mirror.mjs";
 import { onGarageCarsUpdated, readSavedCars, writeSavedCars } from "./garage-saved-cars.mjs";
+import { syncGarageFromCloudAndLocal, pushLocalGarageToCloud } from "./garage-cloud-sync.mjs";
+import { garageOemSuspensionFromCar } from "./garage-oem-suspension.mjs";
+import { getBrandLogoUrl } from "./brand-logo-fallbacks.mjs";
+import {
+  ensureRoGeoData,
+  injectCountyDatalistOnce,
+  normalizeBucharestCountyCity,
+  wireAddressCardGeo,
+} from "./ro-address-geo.mjs";
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    storage: createSupabaseCookieMirrorStorage(),
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
 
 const elGate = document.getElementById("cont-auth-gate");
 const elApp = document.getElementById("cont-app");
@@ -18,6 +34,8 @@ const deliveryEmptyHint = document.getElementById("delivery-empty-hint");
 const savedCarsListEl = document.getElementById("cont-saved-cars-list");
 const savedCarsEmptyHintEl = document.getElementById("cont-saved-cars-empty");
 const savedCarsClearBtn = document.getElementById("cont-saved-cars-clear-btn");
+const savedCarsAsideEl = document.getElementById("cont-saved-cars-aside");
+const savedCarsRailEl = document.getElementById("cont-saved-cars-rail");
 const billingForm = document.getElementById("cont-billing-form");
 const billTypeEl = document.getElementById("bill-type");
 const billPfWrap = document.getElementById("bill-pf-wrap");
@@ -26,6 +44,8 @@ const billPjWrap = document.getElementById("bill-pj-wrap");
 const loginForm = document.getElementById("cont-login-form");
 const registerForm = document.getElementById("cont-register-form");
 const profileForm = document.getElementById("cont-profile-form");
+const contProfileEditBtn = document.getElementById("cont-profile-edit-btn");
+const contProfileCancelBtn = document.getElementById("cont-profile-cancel-btn");
 const passwordForm = document.getElementById("cont-password-form");
 const signOutBtn = document.getElementById("cont-sign-out-btn");
 const contHeaderEmail = document.getElementById("cont-header-email");
@@ -38,6 +58,8 @@ const inpEmail = document.getElementById("cont-login-email");
 const inpPwd = document.getElementById("cont-pwd-new");
 const inpPwd2 = document.getElementById("cont-pwd-confirm");
 const inpProfileEmail = document.getElementById("cont-profile-email");
+const RECONFIGURE_CAR_KEY = "garageSolutionsReconfigureCarV1";
+const RECONFIGURE_CAR_EDIT_CONTEXT_KEY = "garageSolutionsReconfigureCarEditContextV1";
 
 function setMsg(el, text, isError) {
   if (!el) return;
@@ -53,11 +75,147 @@ function setMsg(el, text, isError) {
   el.classList.toggle("cont-message--ok", !isError);
 }
 
+function formatSupabaseErr(err) {
+  if (!err) return "Eroare necunoscută.";
+  const parts = [err.message, err.details, err.hint].filter(Boolean);
+  return parts.join(" — ");
+}
+
+/** Sesiune locală mai fiabilă decât getUser() la click rapid după login. */
+async function getContAuthUser() {
+  const { data: s, error: se } = await supabase.auth.getSession();
+  if (se) return { user: null, error: se.message };
+  const fromSession = s?.session?.user;
+  if (fromSession) return { user: fromSession, error: null };
+  const { data: gu, error: ue } = await supabase.auth.getUser();
+  if (ue) return { user: null, error: ue.message };
+  if (gu?.user) return { user: gu.user, error: null };
+  return { user: null, error: null };
+}
+
+/** @type {(() => void) | null} */
+let teardownContNavSpy = null;
+/** Re-evaluare highlight nav după layout (ex. liste încărcate async). */
+let refreshContNavFromScroll = () => {};
+
+/** Linie de referință (px): ultima secțiune cu top ≤ marker devine activă. Aliniat cu scroll-margin pe ancore. */
+function contNavScrollMarkerPx() {
+  const el = document.getElementById("cont-profile-section");
+  if (el) {
+    const sm = parseFloat(getComputedStyle(el).scrollMarginTop);
+    if (Number.isFinite(sm) && sm > 0) return Math.round(sm + 8);
+  }
+  const root = document.documentElement;
+  const raw = getComputedStyle(root).getPropertyValue("--header-height-hero-apex").trim();
+  if (raw) {
+    const probe = document.createElement("div");
+    probe.style.cssText = `position:absolute;visibility:hidden;height:${raw};width:0;pointer-events:none`;
+    document.body.appendChild(probe);
+    const h = probe.getBoundingClientRect().height;
+    probe.remove();
+    if (Number.isFinite(h) && h > 0) return Math.round(h + 12);
+  }
+  return 100;
+}
+
+function setupContSectionNavSpy() {
+  teardownContNavSpy?.();
+  teardownContNavSpy = null;
+  const nav = document.querySelector(".cont-app-nav");
+  if (!nav || elApp?.hidden) return;
+  const links = [...nav.querySelectorAll("a.cont-app-nav__link")];
+  const sections = links
+    .map((a) => {
+      const href = a.getAttribute("href");
+      if (!href || !href.startsWith("#")) return null;
+      return document.querySelector(href);
+    })
+    .filter(Boolean);
+  if (!sections.length) return;
+
+  const setActive = (id) => {
+    links.forEach((l) => l.classList.toggle("is-active", l.getAttribute("href") === `#${id}`));
+  };
+
+  const updateActiveFromScroll = () => {
+    const marker = contNavScrollMarkerPx();
+    const docBottom = window.scrollY + window.innerHeight;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight - 2;
+    if (maxScroll > 40 && docBottom >= maxScroll + 40) {
+      const last = sections[sections.length - 1];
+      if (last?.id) setActive(last.id);
+      return;
+    }
+    let chosen = sections[0];
+    for (let i = sections.length - 1; i >= 0; i -= 1) {
+      const el = sections[i];
+      const top = el.getBoundingClientRect().top;
+      if (top <= marker) {
+        chosen = el;
+        break;
+      }
+    }
+    if (chosen?.id) setActive(chosen.id);
+  };
+
+  refreshContNavFromScroll = updateActiveFromScroll;
+
+  let ticking = false;
+  const onScrollOrResize = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      updateActiveFromScroll();
+    });
+  };
+
+  const scrollMarginTopPx = (el) => {
+    const v = parseFloat(getComputedStyle(el).scrollMarginTop);
+    return Number.isFinite(v) ? v : 0;
+  };
+
+  const ac = new AbortController();
+  const { signal } = ac;
+
+  nav.addEventListener(
+    "click",
+    (ev) => {
+      const a = ev.target.closest("a.cont-app-nav__link");
+      if (!a || !nav.contains(a)) return;
+      const href = a.getAttribute("href");
+      if (!href || !href.startsWith("#")) return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      ev.preventDefault();
+      const extra = scrollMarginTopPx(target);
+      const y = target.getBoundingClientRect().top + window.scrollY - extra;
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+      const id = target.id;
+      if (id) setActive(id);
+    },
+    { signal },
+  );
+
+  window.addEventListener("scroll", onScrollOrResize, { passive: true, signal });
+  window.addEventListener("resize", onScrollOrResize, { passive: true, signal });
+  teardownContNavSpy = () => {
+    ac.abort();
+    links.forEach((l) => l.classList.remove("is-active"));
+    refreshContNavFromScroll = () => {};
+  };
+  onScrollOrResize();
+}
+
 function showView(session) {
   if (session) {
     if (elGate) elGate.hidden = true;
     if (elApp) elApp.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => setupContSectionNavSpy()));
   } else {
+    teardownContNavSpy?.();
+    teardownContNavSpy = null;
+    refreshContNavFromScroll = () => {};
     if (elGate) elGate.hidden = false;
     if (elApp) elApp.hidden = true;
   }
@@ -88,6 +246,49 @@ async function ensureProfileRow(user) {
     const { error: e2 } = await supabase.from("profiles").insert({ id: user.id });
     if (e2 && e2.code !== "23505") throw e2;
   }
+}
+
+function applyAuthMetadataToProfileFields(user) {
+  const meta =
+    user?.user_metadata && typeof user.user_metadata === "object" ? user.user_metadata : {};
+  const fnEl = document.getElementById("profile-first-name");
+  const lnEl = document.getElementById("profile-last-name");
+  if (!fnEl || !lnEl) return;
+  const hasFn = () => String(fnEl.value || "").trim().length > 0;
+  const hasLn = () => String(lnEl.value || "").trim().length > 0;
+  if (!hasLn() && meta.last_name) lnEl.value = String(meta.last_name).trim();
+  if (!hasFn() && meta.first_name) fnEl.value = String(meta.first_name).trim();
+  if (!hasLn() && meta.family_name) lnEl.value = String(meta.family_name).trim();
+  if (!hasFn() && meta.given_name) fnEl.value = String(meta.given_name).trim();
+  const combinedName = meta.full_name || meta.name;
+  if (!hasFn() && !hasLn() && combinedName) {
+    const parts = String(combinedName).trim().split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      lnEl.value = parts[0];
+      fnEl.value = parts.slice(1).join(" ");
+    } else if (parts.length === 1) {
+      fnEl.value = parts[0];
+    }
+  }
+}
+
+function setProfileFormLocked(locked) {
+  const form = document.getElementById("cont-profile-form");
+  if (!form) return;
+  form
+    .querySelectorAll('input:not([type="submit"]):not([type="button"]), select, textarea')
+    .forEach((el) => {
+      el.disabled = locked;
+    });
+  const submitBtn = form.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = locked;
+  if (contProfileEditBtn) {
+    contProfileEditBtn.hidden = !locked;
+  }
+  if (contProfileCancelBtn) {
+    contProfileCancelBtn.hidden = locked;
+  }
+  form.classList.toggle("cont-profile-form--locked", locked);
 }
 
 function fillForm(row) {
@@ -148,7 +349,53 @@ const PROFILE_BILLING_SELECT = [
   "bill_pj_denumire, bill_pj_cui, bill_pj_reg_com, bill_pj_county, bill_pj_city, bill_pj_street, bill_pj_postal, bill_pj_bank, bill_pj_iban, bill_pj_contact",
 ].join(" ");
 
-function buildAddressCard(addr, _user) {
+function encodeAddrPayload(ar) {
+  try {
+    return btoa(unescape(encodeURIComponent(JSON.stringify(ar))));
+  } catch (_) {
+    return "";
+  }
+}
+
+function decodeAddrPayload(s) {
+  if (!s) return null;
+  try {
+    return JSON.parse(decodeURIComponent(escape(atob(s))));
+  } catch (_) {
+    return null;
+  }
+}
+
+/** O singură bucată de text pentru rezumat; max. 2 rânduri în CSS (line-clamp). */
+function formatAddressSummary(ar) {
+  const segs = [];
+  const name = String(ar.recipient_name || "").trim();
+  const phone = String(ar.phone || "").trim();
+  if (name && phone) segs.push(`${name} · ${phone}`);
+  else if (name || phone) segs.push(name || phone);
+  const streetLine = [ar.street, ar.address_line2]
+    .map((x) => String(x || "").trim())
+    .filter(Boolean)
+    .join(", ");
+  if (streetLine) segs.push(streetLine);
+  const cityPart = [ar.city, ar.county]
+    .map((x) => String(x || "").trim())
+    .filter(Boolean)
+    .join(", ");
+  const postPart = [String(ar.postal_code || "").trim(), String(ar.country || "RO").trim() || "RO"]
+    .filter(Boolean)
+    .join(" ");
+  const tail = [cityPart, postPart].filter(Boolean).join(" · ");
+  if (tail) segs.push(tail);
+  return segs.join(" · ") || "Adresă incompletă";
+}
+
+/**
+ * @param {object|null} addr
+ * @param {object} _user
+ * @param {{ variant?: "form" }} [opts] — pentru rând salvat: implicit rezumat; `form` = același formular ca la adăugare
+ */
+function buildAddressCard(addr, _user, opts = {}) {
   const isNew = !addr?.id;
   const ar = isNew
     ? {
@@ -166,15 +413,46 @@ function buildAddressCard(addr, _user) {
       }
     : { ...addr };
 
+  const variant = isNew ? "form" : opts.variant === "form" ? "form" : "summary";
+
   const el = document.createElement("article");
-  el.className = "cont-addr-card";
-  if (!isNew) el.dataset.id = ar.id;
+  el.className =
+    variant === "summary" ? "cont-addr-card cont-addr-card--summary" : "cont-addr-card";
   el.dataset.draft = isNew ? "1" : "0";
+  if (!isNew) {
+    el.dataset.id = ar.id;
+    el.dataset.addrPayload = encodeAddrPayload(ar);
+  }
 
   const title = (ar.label || "").trim() || (isNew ? "Adresă nouă" : "Adresă fără etichetă");
+
+  if (variant === "summary") {
+    el.innerHTML = `
+    <div class="cont-addr-card__head">
+      <h3 class="cont-addr-card__h">${escAttr(title)}</h3>
+      ${ar.is_default ? '<span class="cont-addr-card__def">Implicită</span>' : ""}
+    </div>
+    <div class="cont-addr-card__body cont-addr-card__body--summary">
+      <p class="cont-addr-card__summary">${escAttr(formatAddressSummary(ar))}</p>
+    </div>
+    <div class="cont-addr-card__actions">
+      <button type="button" class="cont-btn cont-btn--secondary" data-delivery-action="edit">Editează</button>
+      <button type="button" class="cont-btn cont-btn--ghost" data-delivery-action="delete">Șterge adresa</button>
+    </div>
+  `;
+    return el;
+  }
+
+  const actionsHtml = isNew
+    ? `<button type="button" class="cont-btn cont-btn--primary" data-delivery-action="save">Salvează adresa</button>
+        <button type="button" class="cont-btn cont-btn--ghost" data-delivery-action="cancel">Renunță</button>`
+    : `<button type="button" class="cont-btn cont-btn--primary" data-delivery-action="save">Salvează adresa</button>
+        <button type="button" class="cont-btn cont-btn--ghost" data-delivery-action="discard">Renunță</button>
+        <button type="button" class="cont-btn cont-btn--ghost" data-delivery-action="delete">Șterge adresa</button>`;
+
   el.innerHTML = `
     <div class="cont-addr-card__head">
-      <h3 class="cont-addr-card__h">${title}</h3>
+      <h3 class="cont-addr-card__h">${escAttr(title)}</h3>
       ${ar.is_default && !isNew ? '<span class="cont-addr-card__def">Implicită</span>' : ""}
     </div>
     <div class="cont-addr-card__body">
@@ -201,11 +479,14 @@ function buildAddressCard(addr, _user) {
         </label>
         <label class="cont-field">
           <span class="cont-field__label">Localitate <span class="cont-req">*</span></span>
-          <input class="cont-input cont-addr__city" type="text" required value="${escAttr(ar.city)}" />
+          <div class="cont-addr-city-wrap">
+            <input class="cont-input cont-addr__city" type="text" required value="${escAttr(ar.city)}" autocomplete="off" spellcheck="false" placeholder="Oraș / localitate (ex. București)" aria-autocomplete="list" aria-expanded="false" />
+            <ul class="cont-addr-city-sug" role="listbox" hidden></ul>
+          </div>
         </label>
         <label class="cont-field">
           <span class="cont-field__label">Județ / sector</span>
-          <input class="cont-input cont-addr__county" type="text" value="${escAttr(ar.county)}" />
+          <input class="cont-input cont-addr__county" type="text" value="${escAttr(ar.county)}" list="ro-county-sector-datalist" autocomplete="off" placeholder="Județ sau Sectorul 1–6 (pentru București)" />
         </label>
         <label class="cont-field">
           <span class="cont-field__label">Cod poștal</span>
@@ -221,12 +502,7 @@ function buildAddressCard(addr, _user) {
         </label>
       </div>
       <div class="cont-addr-card__actions">
-        <button type="button" class="cont-btn cont-btn--primary" data-delivery-action="save">Salvează adresa</button>
-        ${
-          isNew
-            ? '<button type="button" class="cont-btn cont-btn--ghost" data-delivery-action="cancel">Renunță</button>'
-            : '<button type="button" class="cont-btn cont-btn--ghost" data-delivery-action="delete">Șterge adresa</button>'
-        }
+        ${actionsHtml}
       </div>
     </div>
   `;
@@ -245,30 +521,154 @@ function formatSavedCar(car) {
   return [car?.brand, car?.model, car?.engine].filter(Boolean).join(" | ");
 }
 
+function parseEngineMetrics(engineText) {
+  const raw = String(engineText || "");
+  const kw = raw.match(/(\d+(?:[.,]\d+)?)\s*KW\b/i)?.[1]?.replace(",", ".") || "";
+  const cp = raw.match(/(\d+(?:[.,]\d+)?)\s*CP\b/i)?.[1]?.replace(",", ".") || "";
+  const nm = raw.match(/(\d+(?:[.,]\d+)?)\s*NM\b/i)?.[1]?.replace(",", ".") || "";
+  return { kw, cp, nm };
+}
+
+function toPartsSummaryFromSavedCar(car) {
+  const engine = String(car?.engine || "").trim();
+  const metrics = parseEngineMetrics(engine);
+  return {
+    brand: String(car?.brand || "").trim(),
+    model: String(car?.model || "").trim(),
+    generation: String(car?.generation || car?.gen || "").trim(),
+    body: String(car?.body || car?.bodyType || car?.body_style || "").trim(),
+    engine,
+    gearbox: String(car?.gearbox || car?.transmission || "").trim(),
+    drivetrain: String(car?.drivetrain || car?.drive || "").trim(),
+    differential: String(car?.differential || "").trim(),
+    powerKw: String(car?.powerKw || metrics.kw || "").trim(),
+    powerCp: String(car?.powerCp || metrics.cp || "").trim(),
+    torqueNm: String(car?.torqueNm || metrics.nm || "").trim(),
+    productionYears: String(car?.productionYears || car?.years || "").trim(),
+    brandLogoUrl: String(car?.brandLogoUrl || getBrandLogoUrl(car?.brand) || "").trim(),
+  };
+}
+
+/** VIN dacă există pe obiect (câmpuri uzuale); normalizat 8–17 caractere alfanumerice. */
+function savedCarVin(car) {
+  const raw = car?.vin ?? car?.VIN ?? car?.vehicleVin ?? car?.frameVin;
+  const s = String(raw || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+  return s.length >= 8 && s.length <= 17 ? s : "";
+}
+
+function savedCarProductionYears(car) {
+  return String(car?.productionYears || car?.years || "").trim();
+}
+
+function buildGarageRailPreviewHtml(car, index) {
+  const summary = toPartsSummaryFromSavedCar(car);
+  const logoUrl = String(summary.brandLogoUrl || getBrandLogoUrl(car?.brand) || "").trim();
+  const brand = String(car?.brand || "").trim();
+  const model = String(car?.model || "").trim();
+  const engine = String(car?.engine || summary.engine || "").trim();
+  const years = savedCarProductionYears(car);
+  const vin = savedCarVin(car);
+  const initials = (brand.slice(0, 2).toUpperCase() || "?").slice(0, 2);
+  const chips = [];
+  if (engine) chips.push(`<span class="cont-garage-preview__chip">${escAttr(engine)}</span>`);
+  if (years) chips.push(`<span class="cont-garage-preview__chip">${escAttr(years)}</span>`);
+  if (vin) chips.push(`<span class="cont-garage-preview__chip cont-garage-preview__chip--vin">VIN · ${escAttr(vin)}</span>`);
+  const oem = garageOemSuspensionFromCar(car);
+  const oemFront = oem.front || "—";
+  const oemRear = oem.rear || "—";
+  const metaInner =
+    chips.join("") ||
+    '<span class="cont-garage-preview__muted">Fără detalii suplimentare</span>';
+  const logoBlock = logoUrl
+    ? `<img class="cont-garage-preview__logo" src="${escAttr(logoUrl)}" width="96" height="96" alt="" loading="lazy" decoding="async" />`
+    : `<span class="cont-garage-preview__logo-fallback" aria-hidden="true">${escAttr(initials)}</span>`;
+  const modelLine = [brand, model].filter(Boolean).join(" · ");
+  return `
+    <article class="cont-garage-preview" data-garage-preview-index="${index}">
+      <div class="cont-garage-preview__logo-wrap">${logoBlock}</div>
+      <p class="cont-garage-preview__model">${escAttr(modelLine || `Mașina ${index + 1}`)}</p>
+      <p class="cont-garage-preview__oem" title="Din catalog rezolvat (user_saved_vehicles_resolved)">OEM suspensie: față ${escAttr(oemFront)} · spate ${escAttr(oemRear)}</p>
+      <div class="cont-garage-preview__meta">${metaInner}</div>
+    </article>
+  `;
+}
+
+function openPartsListForSavedCar(car) {
+  const summary = toPartsSummaryFromSavedCar(car);
+  try {
+    sessionStorage.setItem("garageSolutionsSelectedVehicleSummaryV1", JSON.stringify(summary));
+  } catch (_) {}
+  const params = new URLSearchParams();
+  Object.entries(summary).forEach(([k, v]) => {
+    const s = String(v || "").trim();
+    if (s) params.set(k, s);
+  });
+  const qs = params.toString();
+  window.location.assign(`lista-piese.html${qs ? `?${qs}` : ""}`);
+}
+
+function openConfiguratorForSavedCarEdit(car, index) {
+  const summary = toPartsSummaryFromSavedCar(car);
+  try {
+    sessionStorage.setItem(RECONFIGURE_CAR_KEY, JSON.stringify(summary));
+    sessionStorage.setItem(
+      RECONFIGURE_CAR_EDIT_CONTEXT_KEY,
+      JSON.stringify({
+        index,
+        savedAt: String(car?.savedAt || "").trim(),
+        brand: String(car?.brand || "").trim(),
+        model: String(car?.model || "").trim(),
+        engine: String(car?.engine || "").trim(),
+      })
+    );
+  } catch (_) {}
+  window.location.assign("index.html#vehicle-config-section");
+}
+
 function renderSavedCarsForAccount() {
   if (!savedCarsListEl) return;
   const cars = readSavedCars();
   savedCarsListEl.innerHTML = "";
+  if (savedCarsRailEl) savedCarsRailEl.innerHTML = "";
+
   if (!cars.length) {
     if (savedCarsEmptyHintEl) savedCarsEmptyHintEl.hidden = false;
     if (savedCarsClearBtn) savedCarsClearBtn.disabled = true;
+    if (savedCarsAsideEl) savedCarsAsideEl.hidden = true;
+    requestAnimationFrame(() => refreshContNavFromScroll());
     return;
   }
   if (savedCarsEmptyHintEl) savedCarsEmptyHintEl.hidden = true;
   if (savedCarsClearBtn) savedCarsClearBtn.disabled = false;
+  if (savedCarsAsideEl) savedCarsAsideEl.hidden = false;
+  if (savedCarsRailEl) {
+    savedCarsRailEl.innerHTML = cars.map((c, i) => buildGarageRailPreviewHtml(c, i)).join("");
+  }
   cars.forEach((car, index) => {
     const li = document.createElement("li");
-    li.className = "cont-addr-card";
+    li.className = "cont-addr-card cont-garage-saved-card";
+    li.dataset.savedCarIndex = String(index);
+    const title = formatSavedCar(car) || `Mașina ${index + 1}`;
+    const oem = garageOemSuspensionFromCar(car);
+    const oemFront = oem.front || "—";
+    const oemRear = oem.rear || "—";
     li.innerHTML = `
       <div class="cont-addr-card__head">
-        <h3 class="cont-addr-card__h">${escAttr(formatSavedCar(car) || `Mașina ${index + 1}`)}</h3>
+        <h3 class="cont-addr-card__h">${escAttr(title)}</h3>
       </div>
+      <p class="cont-garage-saved-card__oem">OEM suspensie: față ${escAttr(oemFront)} · spate ${escAttr(oemRear)}</p>
       <div class="cont-addr-card__actions">
+        <button type="button" class="cont-btn cont-btn--secondary" data-saved-car-parts="${index}">Lista piese</button>
+        <button type="button" class="cont-btn cont-btn--secondary" data-saved-car-edit="${index}">Editează</button>
         <button type="button" class="cont-btn cont-btn--ghost" data-saved-car-delete="${index}">Șterge</button>
       </div>
     `;
     savedCarsListEl.appendChild(li);
   });
+  requestAnimationFrame(() => refreshContNavFromScroll());
 }
 
 function readAddressCard(card) {
@@ -298,33 +698,64 @@ function bindDeliveryListOnce() {
     const card = btn.closest(".cont-addr-card");
     if (!card) return;
     (async () => {
-      const { data: u } = await supabase.auth.getUser();
-      const user = u?.user;
-      if (!user) return;
-      if (action === "save") {
-        await saveAddressCard(card, user);
-        return;
-      }
-      if (action === "delete") {
-        if (!card.dataset.id) return;
-        if (!confirm("Ștergi definitiv această adresă de livrare?")) return;
-        setMsg(contDeliveryMsg, "", false);
-        const { error } = await supabase
-          .from("delivery_addresses")
-          .delete()
-          .eq("id", card.dataset.id)
-          .eq("user_id", user.id);
-        if (error) {
-          setMsg(contDeliveryMsg, error.message, true);
+      try {
+        const { user, error: authErr } = await getContAuthUser();
+        if (!user) {
+          setMsg(
+            contDeliveryMsg,
+            authErr || "Nu ești autentificat. Reîncarcă pagina și conectează-te din nou.",
+            true
+          );
           return;
         }
-        setMsg(contDeliveryMsg, "Adresa a fost ștearsă.", false);
-        await loadDeliveryAddresses(user);
-        return;
-      }
-      if (action === "cancel") {
-        card.remove();
-        syncDeliveryEmpty();
+        if (action === "save") {
+          await saveAddressCard(card, user);
+          return;
+        }
+        if (action === "edit") {
+          const row = decodeAddrPayload(card.dataset.addrPayload);
+          if (!row?.id) return;
+          const formCard = buildAddressCard(row, user, { variant: "form" });
+          card.replaceWith(formCard);
+          try {
+            injectCountyDatalistOnce();
+            await ensureRoGeoData();
+          } catch (_) {}
+          if (formCard.querySelector(".cont-addr__city")) wireAddressCardGeo(formCard);
+          return;
+        }
+        if (action === "discard") {
+          if (!card.dataset.id || !card.dataset.addrPayload) return;
+          const row = decodeAddrPayload(card.dataset.addrPayload);
+          if (!row?.id) return;
+          const summaryCard = buildAddressCard(row, user);
+          card.replaceWith(summaryCard);
+          return;
+        }
+        if (action === "delete") {
+          if (!card.dataset.id) return;
+          if (!confirm("Ștergi definitiv această adresă de livrare?")) return;
+          setMsg(contDeliveryMsg, "", false);
+          const { error } = await supabase
+            .from("delivery_addresses")
+            .delete()
+            .eq("id", card.dataset.id)
+            .eq("user_id", user.id);
+          if (error) {
+            setMsg(contDeliveryMsg, formatSupabaseErr(error), true);
+            return;
+          }
+          setMsg(contDeliveryMsg, "Adresa a fost ștearsă.", false);
+          await loadDeliveryAddresses(user);
+          return;
+        }
+        if (action === "cancel") {
+          if (card.dataset.id) return;
+          card.remove();
+          syncDeliveryEmpty();
+        }
+      } catch (e) {
+        setMsg(contDeliveryMsg, e?.message || String(e), true);
       }
     })();
   });
@@ -333,21 +764,38 @@ function bindDeliveryListOnce() {
 function syncDeliveryEmpty() {
   if (!deliveryListEl || !deliveryEmptyHint) return;
   const n = deliveryListEl.querySelectorAll(".cont-addr-card").length;
-  deliveryEmptyHint.hidden = n > 0;
+  if (n > 0) {
+    deliveryEmptyHint.hidden = true;
+    deliveryEmptyHint.setAttribute("hidden", "");
+  } else {
+    deliveryEmptyHint.removeAttribute("hidden");
+    deliveryEmptyHint.hidden = false;
+  }
 }
 
 async function saveAddressCard(card, user) {
+  const countyInput = card.querySelector(".cont-addr__county");
+  const cityInput = card.querySelector(".cont-addr__city");
+  normalizeBucharestCountyCity(countyInput, cityInput);
   const partial = readAddressCard(card);
   if (!partial.street || !partial.city) {
-    setMsg(contDeliveryMsg, "Completează strada și localitatea.", true);
+    setMsg(
+      contDeliveryMsg,
+      "Completează strada și localitatea. Pentru București: la localitate „București”, apoi la „Județ / sector” alege sectorul (sau folosește lista de localități după ce ai completat județul).",
+      true
+    );
     return;
   }
   setMsg(contDeliveryMsg, "", false);
   if (partial.is_default) {
-    await supabase
+    const { error: defErr } = await supabase
       .from("delivery_addresses")
       .update({ is_default: false })
       .eq("user_id", user.id);
+    if (defErr) {
+      setMsg(contDeliveryMsg, formatSupabaseErr(defErr), true);
+      return;
+    }
   }
   const id = card.dataset.id;
   if (id) {
@@ -357,20 +805,21 @@ async function saveAddressCard(card, user) {
       .eq("id", id)
       .eq("user_id", user.id);
     if (error) {
-      setMsg(contDeliveryMsg, error.message, true);
+      setMsg(contDeliveryMsg, formatSupabaseErr(error), true);
       return;
     }
   } else {
     const { error } = await supabase
       .from("delivery_addresses")
-      .insert({ user_id: user.id, ...partial });
+      .insert({ user_id: user.id, ...partial })
+      .select("id");
     if (error) {
-      setMsg(contDeliveryMsg, error.message, true);
+      setMsg(contDeliveryMsg, formatSupabaseErr(error), true);
       return;
     }
   }
-  setMsg(contDeliveryMsg, "Adresa de livrare a fost salvată.", false);
   await loadDeliveryAddresses(user);
+  setMsg(contDeliveryMsg, "Adresa de livrare a fost salvată.", false);
 }
 
 async function loadDeliveryAddresses(user) {
@@ -385,68 +834,91 @@ async function loadDeliveryAddresses(user) {
   if (error) {
     setMsg(
       contDeliveryMsg,
-      `Adrese livrare: ${error.message} (asigură-te că rulezi migrarea 002 în Supabase)`,
+      `Adrese livrare: ${formatSupabaseErr(error)} (asigură-te că rulezi migrarea 002 în Supabase)`,
       true
     );
+    deliveryListEl.innerHTML = "";
+    syncDeliveryEmpty();
     return;
   }
-  deliveryListEl.innerHTML = "";
   const rows = data || [];
-  rows.forEach((r) => deliveryListEl.appendChild(buildAddressCard(r, user)));
+  try {
+    injectCountyDatalistOnce();
+    await ensureRoGeoData();
+  } catch (e) {
+    setMsg(contDeliveryMsg, `Listă localități: ${e?.message || String(e)}`, true);
+  }
+  deliveryListEl.innerHTML = "";
+  rows.forEach((r) => {
+    const card = buildAddressCard(r, user);
+    deliveryListEl.appendChild(card);
+    if (card.querySelector(".cont-addr__city")) wireAddressCardGeo(card);
+  });
   syncDeliveryEmpty();
 }
 
 deliveryAddBtn?.addEventListener("click", () => {
   (async () => {
-    const { data: u } = await supabase.auth.getUser();
-    const user = u?.user;
-    if (!user || !deliveryListEl) return;
-    deliveryListEl.appendChild(buildAddressCard(null, user));
-    syncDeliveryEmpty();
-    if (deliveryEmptyHint) deliveryEmptyHint.hidden = true;
+    try {
+      const { user, error: authErr } = await getContAuthUser();
+      if (!user || !deliveryListEl) {
+        if (authErr) setMsg(contDeliveryMsg, authErr, true);
+        return;
+      }
+      const card = buildAddressCard(null, user);
+      deliveryListEl.appendChild(card);
+      try {
+        injectCountyDatalistOnce();
+        await ensureRoGeoData();
+      } catch (_) {}
+      if (card.querySelector(".cont-addr__city")) wireAddressCardGeo(card);
+      syncDeliveryEmpty();
+    } catch (e) {
+      setMsg(contDeliveryMsg, e?.message || String(e), true);
+    }
   })();
 });
 
 async function loadProfile(user) {
+  await refreshUserHeader(user);
   setMsg(contFormMsg, "", false);
   setMsg(contBillingMsg, "", false);
-  await ensureProfileRow(user);
-  let { data, error } = await supabase
-    .from("profiles")
-    .select(PROFILE_BILLING_SELECT)
-    .eq("id", user.id)
-    .maybeSingle();
-  if (error) {
-    const r2 = await supabase
+  try {
+    await ensureProfileRow(user);
+    let { data, error } = await supabase
       .from("profiles")
-      .select("first_name, last_name, birth_date, activity_type, company_name, how_heard, website, newsletter")
+      .select(PROFILE_BILLING_SELECT)
       .eq("id", user.id)
       .maybeSingle();
-    if (r2.error) {
-      setMsg(contFormMsg, error.message, true);
-      return;
+    if (error) {
+      const r2 = await supabase
+        .from("profiles")
+        .select("first_name, last_name, birth_date, activity_type, company_name, how_heard, website, newsletter")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (r2.error) {
+        setMsg(contFormMsg, error.message, true);
+        return;
+      }
+      data = r2.data;
+      setMsg(
+        contBillingMsg,
+        "Rulează migrarea 002 (facturare) în Supabase, apoi reîncarcă pagina, ca să se încarce câmpurile de facturare.",
+        true
+      );
     }
-    data = r2.data;
-    setMsg(
-      contBillingMsg,
-      "Rulează migrarea 002 (facturare) în Supabase, apoi reîncarcă pagina, ca să se încarce câmpurile de facturare.",
-      true
-    );
-  }
-  fillForm(data || {});
-  fillFormBilling(data || {});
-  if (inpProfileEmail) inpProfileEmail.value = user.email || "";
-  if (contHeaderEmail) contHeaderEmail.textContent = user.email || "—";
-  if (contConnectMeta) {
-    const t = user.last_sign_in_at
-      ? new Date(user.last_sign_in_at).toLocaleString("ro-RO")
-      : "—";
-    contConnectMeta.textContent = `Ultima autentificare: ${t}`;
-  }
-  try {
-    await loadDeliveryAddresses(user);
+    fillForm(data || {});
+    fillFormBilling(data || {});
   } catch (e) {
-    setMsg(contDeliveryMsg, e?.message || String(e), true);
+    setMsg(contFormMsg, e?.message || String(e), true);
+  } finally {
+    try {
+      await loadDeliveryAddresses(user);
+    } catch (e) {
+      setMsg(contDeliveryMsg, e?.message || String(e), true);
+    }
+    applyAuthMetadataToProfileFields(user);
+    requestAnimationFrame(() => refreshContNavFromScroll());
   }
 }
 
@@ -467,11 +939,19 @@ async function onSession(session) {
     return;
   }
   showView(true);
+  await refreshUserHeader(session.user);
+  try {
+    await syncGarageFromCloudAndLocal();
+  } catch (e) {
+    console.warn("[cont] sync garaj cloud", e?.message || e);
+  }
   renderSavedCarsForAccount();
   try {
     await loadProfile(session.user);
+    setProfileFormLocked(true);
   } catch (e) {
     setMsg(contFormMsg, e?.message || String(e), true);
+    setProfileFormLocked(false);
   }
 }
 
@@ -550,6 +1030,20 @@ profileForm?.addEventListener("submit", async (e) => {
     return;
   }
   setMsg(contFormMsg, "Datele au fost salvate.", false);
+  setProfileFormLocked(true);
+});
+
+contProfileEditBtn?.addEventListener("click", () => {
+  setProfileFormLocked(false);
+  document.getElementById("profile-last-name")?.focus();
+});
+
+contProfileCancelBtn?.addEventListener("click", async () => {
+  const { data: u, error: ue } = await supabase.auth.getUser();
+  if (ue || !u.user) return;
+  setMsg(contFormMsg, "", false);
+  await loadProfile(u.user);
+  setProfileFormLocked(true);
 });
 
 billingForm?.addEventListener("submit", async (e) => {
@@ -675,6 +1169,26 @@ signOutBtn?.addEventListener("click", async () => {
 });
 
 savedCarsListEl?.addEventListener("click", (ev) => {
+  const editBtn = ev.target.closest("[data-saved-car-edit]");
+  if (editBtn) {
+    const idx = Number.parseInt(editBtn.getAttribute("data-saved-car-edit") || "", 10);
+    if (!Number.isInteger(idx) || idx < 0) return;
+    const cars = readSavedCars();
+    const car = cars[idx];
+    if (!car) return;
+    openConfiguratorForSavedCarEdit(car, idx);
+    return;
+  }
+  const partsBtn = ev.target.closest("[data-saved-car-parts]");
+  if (partsBtn) {
+    const idx = Number.parseInt(partsBtn.getAttribute("data-saved-car-parts") || "", 10);
+    if (!Number.isInteger(idx) || idx < 0) return;
+    const cars = readSavedCars();
+    const car = cars[idx];
+    if (!car) return;
+    openPartsListForSavedCar(car);
+    return;
+  }
   const btn = ev.target.closest("[data-saved-car-delete]");
   if (!btn) return;
   const idx = Number.parseInt(btn.getAttribute("data-saved-car-delete") || "", 10);
@@ -683,6 +1197,7 @@ savedCarsListEl?.addEventListener("click", (ev) => {
   if (!cars[idx]) return;
   cars.splice(idx, 1);
   writeSavedCars(cars);
+  void pushLocalGarageToCloud().catch((e) => console.warn("[cont] push garaj", e));
   renderSavedCarsForAccount();
   setMsg(contGarageCarsMsg, "Mașina a fost ștearsă din garaj.", false);
 });
@@ -692,14 +1207,9 @@ savedCarsClearBtn?.addEventListener("click", () => {
   if (!cars.length) return;
   if (!confirm("Ștergi toate mașinile salvate din garaj?")) return;
   writeSavedCars([]);
+  void pushLocalGarageToCloud().catch((e) => console.warn("[cont] push garaj", e));
   renderSavedCarsForAccount();
   setMsg(contGarageCarsMsg, "Toate mașinile salvate au fost șterse.", false);
-});
-
-window.addEventListener("storage", (e) => {
-  if (e.key === "garageSolutionsSavedCars") {
-    renderSavedCarsForAccount();
-  }
 });
 
 onGarageCarsUpdated(renderSavedCarsForAccount);

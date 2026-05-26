@@ -1,0 +1,11 @@
+{
+  "remote.autoForwardPorts": true,
+  "remote.autoForwardPortsSource": "hybrid",
+  "remote.portsAttributes": {
+    "8844": {
+      "label": "Garage Solutions preview — http://127.0.0.1:8844",
+      "onAutoForward": "notify",
+      "protocol": "http"
+    }
+  }
+}

@@ -1,7 +1,23 @@
 /**
- * BMW — surse DB pentru garaj: brands, models, generations, generation_body_styles,
- * body_styles, bmw_variants (fără engines, fără opțiuni inventate).
+ * BMW — surse DB pentru garaj: brands, models, generations.
+ * Caroseriile pentru generație: **`generation_body_styles` + `body_styles`** (catalog complet);
+ * dacă lipsește catalogul pentru generație, fallback la **`bmw_configuration_lookup`** (doar config încărcate).
+ *
+ * Cutie / tracțiune / motor rămân filtrate din **`bmw_configuration_lookup`** în `bmw-dropdown-variants.mjs`.
  */
+
+import { fetchBodyStylesForGeneration } from "./bmw-dropdown-variants.mjs";
+
+/** @param {unknown} generationId */
+function coerceGenerationIdEq(generationId) {
+  const raw =
+    generationId == null || generationId === ""
+      ? ""
+      : String(generationId).trim();
+  if (!raw) return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : raw;
+}
 
 /**
  * @param {Record<string, unknown>} v
@@ -12,17 +28,205 @@ export function formatBmwVariantLabel(v) {
   const cc = Number(v.displacement_cc);
   const liters =
     Number.isFinite(cc) && cc > 0 ? `${(cc / 1000).toFixed(1)}L` : "";
-  const ec = String(v.engine_code ?? "").trim();
-  const ecf = String(v.engine_code_full ?? "").trim();
+  const code = bestEngineCode(v);
   const pow =
     v.power_value != null && String(v.power_value).trim() !== ""
       ? `${String(v.power_value).trim()}${v.power_unit ? ` ${v.power_unit}` : ""}`.trim()
       : "";
-  const parts = [name, liters, ec || ecf, pow].filter(Boolean);
+  const parts = [name, liters, code, pow].filter(Boolean);
   if (parts.length) return parts.join(" · ");
   const et = String(v.engine_type ?? "").trim();
   if (et) return et;
   return "";
+}
+
+/** CP (PS metric) din kW: 1 PS = 0.73549875 kW (DIN). */
+const KW_TO_PS = 1 / 0.73549875;
+
+/**
+ * Alege codul de motor cel mai informativ (de regulă varianta completă).
+ * @param {Record<string, unknown>} v
+ */
+function bestEngineCode(v) {
+  const candidates = [
+    v.engine_code_full,
+    v.engine_code_complete,
+    v.engine_code_long,
+    v.engine_code_extended,
+    v.engine_code,
+    v.engine,
+  ]
+    .map((x) => String(x ?? "").trim().toUpperCase())
+    .filter(Boolean);
+  if (!candidates.length) return "";
+  candidates.sort((a, b) => b.length - a.length);
+  return candidates[0];
+}
+
+/**
+ * @param {Record<string, unknown>} v
+ */
+function inferBmwFuelUpper(v) {
+  const ft = String(v.fuel_type ?? v.engine_type ?? "").trim();
+  if (ft) return ft.toUpperCase();
+  const ec = String(bestEngineCode(v) || v.engine_code || "").toLowerCase();
+  const vn = String(v.variant_name ?? "").toLowerCase();
+  if (
+    ec.endsWith("d") ||
+    vn.endsWith("d") ||
+    /\bdiesel\b|tdi|cdi/.test(ec + vn)
+  ) {
+    return "DIESEL";
+  }
+  if (
+    ec.endsWith("ci") ||
+    vn.endsWith("ci") ||
+    ec.endsWith("i") ||
+    vn.endsWith("i")
+  ) {
+    return "BENZINĂ";
+  }
+  return "";
+}
+
+/**
+ * @param {Record<string, unknown>} v
+ * @returns {{ kw: number; cp: number } | { other: string } | null}
+ */
+function powerKwCpFromVariant(v) {
+  const kwDirect = Number(v.power_kw);
+  const hpDirect = Number(v.power_hp ?? v.power_ps);
+  if (Number.isFinite(kwDirect) && Number.isFinite(hpDirect)) {
+    return { kw: Math.round(kwDirect), cp: Math.round(hpDirect) };
+  }
+  if (Number.isFinite(kwDirect)) {
+    return {
+      kw: Math.round(kwDirect),
+      cp: Math.round(kwDirect * KW_TO_PS),
+    };
+  }
+  if (Number.isFinite(hpDirect)) {
+    return {
+      cp: Math.round(hpDirect),
+      kw: Math.round(hpDirect / KW_TO_PS),
+    };
+  }
+
+  const pv = v.power_value;
+  if (pv == null || String(pv).trim() === "") return null;
+  const num = Number(pv);
+  if (!Number.isFinite(num)) return null;
+  const unit = String(v.power_unit ?? "").trim().toLowerCase();
+  if (unit === "kw") {
+    return { kw: Math.round(num), cp: Math.round(num * KW_TO_PS) };
+  }
+  if (
+    unit === "hp" ||
+    unit === "cp" ||
+    unit === "ps" ||
+    unit === "cp." ||
+    unit === "bhp"
+  ) {
+    return { cp: Math.round(num), kw: Math.round(num / KW_TO_PS) };
+  }
+  return {
+    other: `${String(pv).trim()}${v.power_unit ? ` ${v.power_unit}` : ""}`.trim(),
+  };
+}
+
+/**
+ * Cuplu din coloane uzuale pe `bmw_configuration_lookup` / `engines`.
+ * @param {Record<string, unknown>} v
+ */
+function torqueSummaryFromVariant(v) {
+  const pairs = [
+    ["torque_nm", "Nm"],
+    ["max_torque_nm", "Nm"],
+    ["torque_max_nm", "Nm"],
+    ["max_torque", "Nm"],
+    ["torque", "Nm"],
+  ];
+  for (const [key, defaultU] of pairs) {
+    const val = v[key];
+    if (val != null && String(val).trim() !== "") {
+      return `${String(val).trim()} ${defaultU}`.trim();
+    }
+  }
+  const tv = v.torque_value;
+  if (tv != null && String(tv).trim() !== "") {
+    const u = String(v.torque_unit ?? "Nm").trim() || "Nm";
+    return `${String(tv).trim()} ${u}`.trim();
+  }
+  return "";
+}
+
+/**
+ * Diferențial din coloane uzuale (tip / cod / raport), dacă există în DB.
+ * @param {Record<string, unknown>} v
+ */
+function differentialSummaryFromVariant(v) {
+  const label = String(
+    v.differential_label ??
+      v.differential_type ??
+      v.diff_type ??
+      v.diff_label ??
+      v.differential ??
+      "",
+  ).trim();
+  const code = String(
+    v.differential_code ??
+      v.diff_code ??
+      v.final_drive_code ??
+      "",
+  ).trim();
+  const ratio = String(
+    v.differential_ratio ??
+      v.final_drive_ratio ??
+      v.diff_ratio ??
+      "",
+  ).trim();
+
+  const bits = [];
+  if (label) bits.push(label);
+  if (code && !bits.includes(code)) bits.push(code);
+  if (ratio) bits.push(ratio.includes(":") ? ratio : `${ratio}:1`);
+  if (!bits.length) return "";
+  return `DIFERENȚIAL ${bits.join(" · ").toUpperCase()}`;
+}
+
+/**
+ * Linie compactă pentru panoul din dreapta: cod, cilindree + combustibil, kW, CP, cuplu, diferențial.
+ * @param {Record<string, unknown>} v
+ */
+export function formatBmwEngineSummaryLine(v) {
+  if (!v || typeof v !== "object") return "";
+  const code = bestEngineCode(v);
+  const name = String(v.variant_name ?? "").trim();
+  const head = code || name;
+  const cc = Number(v.displacement_cc);
+  const liters =
+    Number.isFinite(cc) && cc > 0 ? `${(cc / 1000).toFixed(1)}L` : "";
+  const fuel = inferBmwFuelUpper(v);
+  const segments = [];
+  if (head) segments.push(head);
+  if (liters && fuel) segments.push(`${liters} ${fuel}`);
+  else if (liters) segments.push(liters);
+  else if (fuel) segments.push(fuel);
+
+  const pow = powerKwCpFromVariant(v);
+  if (pow && "other" in pow) {
+    segments.push(pow.other);
+  } else if (pow && "kw" in pow && "cp" in pow) {
+    segments.push(`${pow.kw} kW`, `${pow.cp} CP`);
+  }
+
+  const tq = torqueSummaryFromVariant(v);
+  if (tq) segments.push(tq);
+  const diff = differentialSummaryFromVariant(v);
+  if (diff) segments.push(diff);
+
+  if (segments.length) return segments.join(" / ");
+  return formatBmwVariantLabel(v);
 }
 
 /**
@@ -78,140 +282,84 @@ export async function fetchGenerationsForModel(supabase, modelId) {
 }
 
 /**
- * SELECT DISTINCT bs.id, bs.name, bs.code … prin generation_body_styles → body_styles.
+ * Caroserii pentru generație — catalog (`generation_body_styles`), fallback lookup (`bmw_configuration_lookup`).
  * @param {import("@supabase/supabase-js").SupabaseClient} supabase
  * @param {string | number} generationId
  */
 export async function fetchGenerationBodyStylesJoined(supabase, generationId) {
-  const gid = Number(generationId);
-  const genEq = Number.isFinite(gid) ? gid : generationId;
-  let gbs = await supabase
+  const genEq = coerceGenerationIdEq(generationId);
+  if (genEq == null) return { data: [], error: null };
+
+  let gbsRes = await supabase
     .from("generation_body_styles")
     .select("body_style_id")
     .eq("generation_id", genEq);
 
-  if (!(gbs.data || []).length && Number.isFinite(Number(genEq))) {
+  if (!(gbsRes.data || []).length && typeof genEq === "number") {
     const alt = await supabase
       .from("generation_body_styles")
       .select("body_style_id")
-      .eq("generation_id", String(generationId));
-    if (!alt.error && (alt.data || []).length) gbs = alt;
+      .eq("generation_id", String(generationId).trim());
+    if (!alt.error && (alt.data || []).length) gbsRes = alt;
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B8',location:'bmw-garage-schema.mjs:fetchGenerationBodyStylesJoined',message:'gbs ids fetched',data:{generationId:String(generationId),rowCount:(gbs.data||[]).length,errorMsg:gbs.error?String(gbs.error.message||gbs.error):null},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
+  /** @type {(string | number)[]} */
+  const ids = [];
+  const seen = new Set();
+  for (const r of gbsRes.data || []) {
+    const bid = r?.body_style_id;
+    if (bid == null || bid === "") continue;
+    const k = String(bid);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    ids.push(bid);
+  }
 
-  if (gbs.error) return { data: [], error: gbs.error };
+  /** @type {{ body_style_id: string | number; code: string | null; name: string | null; label: string }[]} */
+  let out = [];
 
-  const ids = [
-    ...new Set(
-      (gbs.data || [])
-        .map((r) => r?.body_style_id)
-        .filter((v) => v != null && v !== ""),
-    ),
-  ];
-  if (!ids.length) return { data: [], error: null };
+  if (ids.length) {
+    const bsRes = await supabase
+      .from("body_styles")
+      .select("id,name,code")
+      .in("id", ids);
 
-  const bs = await supabase
-    .from("body_styles")
-    .select("id, name, code")
-    .in("id", ids);
+    const bsById = new Map(
+      (bsRes.data || []).map((b) => [String(b.id), b]),
+    );
 
-  // #region agent log
-  fetch('http://127.0.0.1:7320/ingest/103125a5-450c-4de9-889c-5502761e68ca',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'cedca9'},body:JSON.stringify({sessionId:'cedca9',runId:'debug',hypothesisId:'B9',location:'bmw-garage-schema.mjs:fetchGenerationBodyStylesJoined',message:'body_styles fetched by ids',data:{idsCount:ids.length,rowCount:(bs.data||[]).length,errorMsg:bs.error?String(bs.error.message||bs.error):null},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
-
-  if (bs.error) return { data: [], error: bs.error };
-
-  const list = (bs.data || [])
-    .map((row) => {
-      const id = row?.id;
-      if (id == null || id === "") return null;
-      const name = row?.name != null ? String(row.name).trim() : "";
-      const code = row?.code != null ? String(row.code).trim() : "";
+    out = ids.map((id) => {
+      const bs = bsById.get(String(id));
+      const name = bs?.name != null ? String(bs.name).trim() : "";
+      const code = bs?.code != null ? String(bs.code).trim() : "";
+      const label =
+        name && code && name !== code && !name.includes(code)
+          ? `${name} (${code})`
+          : name || code || `Caroserie (${String(id)})`;
       return {
         body_style_id: id,
-        name: name || null,
         code: code || null,
-        label: name || code || String(id),
+        name: name || null,
+        label,
       };
-    })
-    .filter(Boolean)
-    .sort((a, b) => a.label.localeCompare(b.label, "ro", { sensitivity: "base" }));
+    });
+    out.sort((a, b) =>
+      a.label.localeCompare(b.label, "ro", { sensitivity: "base" }),
+    );
 
-  return { data: list, error: null };
-}
+    const mergeErr = gbsRes.error || bsRes.error;
+    if (mergeErr && out.length) {
+      console.warn(
+        "[BMW] Caroserii din catalog: date afișabile dar răspuns Supabase cu eroare parțială:",
+        mergeErr,
+      );
+    }
 
-/**
- * Perechi distincte din rânduri `bmw_variants` (pentru UI cutie / tracțiune).
- * @param {Record<string, unknown>[]} rows
- * @returns {{ transmission_type: string; gear_count: unknown }[]}
- */
-export function distinctGearboxPairs(rows) {
-  const seen = new Set();
-  /** @type {{ transmission_type: string; gear_count: unknown }[]} */
-  const out = [];
-  for (const v of rows || []) {
-    const tt = String(v?.transmission_type ?? "").trim();
-    const gc = v?.gear_count;
-    // Păstrează rândurile care au măcar una dintre valori.
-    if (!tt && (gc == null || String(gc).trim() === "")) continue;
-    const key = `${tt}\u0000${String(gc ?? "")}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push({ transmission_type: tt, gear_count: gc });
+    // Nu întoarce `error` dacă avem opțiuni — index.html tratează orice error ca eșec total.
+    return { data: out, error: out.length ? null : mergeErr };
   }
-  out.sort((a, b) =>
-    `${a.transmission_type}|${a.gear_count}`.localeCompare(
-      `${b.transmission_type}|${b.gear_count}`,
-      "ro",
-      { sensitivity: "base" },
-    ),
-  );
-  return out;
-}
 
-/**
- * @param {Record<string, unknown>[]} rows
- * @returns {{ drivetrain_layout: string; drivetrain_label: string }[]}
- */
-export function distinctDrivetrainPairs(rows) {
-  const seen = new Set();
-  /** @type {{ drivetrain_layout: string; drivetrain_label: string }[]} */
-  const out = [];
-  for (const v of rows || []) {
-    const dl = String(v?.drivetrain_layout ?? "").trim();
-    const lbl = String(v?.drivetrain_label ?? "").trim();
-    const key = `${dl}\u0000${lbl}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push({ drivetrain_layout: dl, drivetrain_label: lbl });
-  }
-  out.sort((a, b) => {
-    const la = a.drivetrain_label || a.drivetrain_layout;
-    const lb = b.drivetrain_label || b.drivetrain_layout;
-    return la.localeCompare(lb, "ro", { sensitivity: "base" });
-  });
-  return out;
-}
+  const lk = await fetchBodyStylesForGeneration(supabase, generationId);
 
-/**
- * @param {Record<string, unknown>} v
- * @param {{ transmission_type: string; gear_count: unknown }} sel
- */
-export function variantMatchesGearbox(v, sel) {
-  const tt = String(v?.transmission_type ?? "").trim();
-  const gc = v?.gear_count;
-  return tt === sel.transmission_type && String(gc ?? "") === String(sel.gear_count ?? "");
-}
-
-/**
- * @param {Record<string, unknown>} v
- * @param {{ drivetrain_layout: string; drivetrain_label: string }} sel
- */
-export function variantMatchesDrivetrain(v, sel) {
-  const dl = String(v?.drivetrain_layout ?? "").trim();
-  const lbl = String(v?.drivetrain_label ?? "").trim();
-  return dl === sel.drivetrain_layout && lbl === sel.drivetrain_label;
+  return lk;
 }

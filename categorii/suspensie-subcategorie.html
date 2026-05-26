@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Subcategorie Suspensie — Garage Solutions</title>
+    <link rel="icon" href="../assets/garage-solutions-favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../assets/garage-solutions-apple-touch.png" />
+    <script>
+      try {
+        if (localStorage.getItem("garage-site-theme") === "bright")
+          document.documentElement.setAttribute("data-site-theme", "bright");
+      } catch (e) {}
+    </script>
+    <script>
+      (function () {
+        try {
+          var raw = new URLSearchParams(location.search).get("name") || "";
+          var decoded = decodeURIComponent(raw.replace(/\+/g, "%20")).trim();
+          var norm = decoded.replace(/\s+/g, " ").toLowerCase();
+          /* Linkuri vechi / variații de titlu → aceeași pagină OEM+ Vite */
+          var oemPlusNorms = [
+            "kituri suspensie oem+",
+            "kituri suspensii oem+",
+            "kits suspensie oem+",
+            "kits suspensii oem+",
+          ];
+          if (oemPlusNorms.indexOf(norm) !== -1) {
+            location.replace("../suspension-design-dist/oem-plus-kits.html");
+          }
+        } catch (_e) {}
+      })();
+    </script>
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <style>
+      .subcat-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; margin: 0.7rem 0 0.9rem; }
+      .subcat-filters select { width: 100%; padding: 0.58rem 0.72rem; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.35); background: rgba(15, 23, 42, 0.55); color: #e2e8f0; }
+      .subcat-products { list-style: none; margin: 0.5rem 0 0; padding: 0; display: grid; gap: 0.55rem; }
+      .subcat-products li { border: 1px solid rgba(148, 163, 184, 0.24); border-radius: 10px; background: rgba(15, 23, 42, 0.38); padding: 0.62rem 0.72rem; }
+      .subcat-products strong { display: block; color: #f8fafc; }
+      .subcat-products span { display: inline-block; margin-right: 0.55rem; margin-top: 0.35rem; color: #cbd5e1; font-size: 0.84rem; }
+      .subcat-note { margin: 0.45rem 0 0; color: #b6c3d8; }
+      @media (max-width: 740px) { .subcat-filters { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body class="body--categorie">
+    <div class="site-top site-top--hero">
+      <header class="header header--secondary-apex">
+        <a class="logo-link" href="../index.html" aria-label="Garage Solutions — acasa">
+          <img
+            class="logo-img"
+            src="../assets/garage-solutions-logo.png"
+            alt="Garage Solutions"
+            width="333"
+            height="222"
+            loading="eager"
+          />
+        </a>
+        <nav class="main-nav" aria-label="Navigare principala">
+          <a href="../index.html#categorii">Piese auto</a>
+          <a href="../anvelope.html">Anvelope</a>
+          <a href="../universale/jante-auto.html">Jante</a>
+          <a href="../universale.html">Universale</a>
+          <a href="../index.html">Oferte</a>
+          <a href="../index.html">Contact</a>
+          <div class="header-account-cluster">
+            <div class="header-account-cluster__buttons">
+              <button id="garage-btn" class="account-link" type="button" aria-label="Zona garaj utilizator">
+                Garajul meu
+              </button>
+              <button
+                id="account-btn"
+                class="account-link account-link--secondary"
+                type="button"
+                aria-label="Contul meu"
+                aria-expanded="false"
+                aria-controls="account-panel"
+              >
+                Contul meu
+              </button>
+            </div>
+          </div>
+        </nav>
+        <div class="header-apex" aria-label="Cont, favorite, cos">
+          <button type="button" class="header-apex__identity" id="header-identity-btn" aria-controls="account-panel" aria-label="Deschide contul">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.35" />
+              <path fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" d="M5 20.2c1.3-4.2 4.8-6.5 7-6.5s5.7 2.3 7 6.5" />
+            </svg>
+            <span class="header-apex__user-text" id="header-user-label">Autentificate!</span>
+          </button>
+          <span class="header-apex__favorites-wrap" id="header-favorites-wrap" hidden>
+            <button type="button" class="header-apex__icon-btn" id="header-favorites-btn" aria-label="Piese favorite salvate" title="Favorite">
+              <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.35"
+                  stroke-linejoin="round"
+                  d="M12 20.2S5 15.7 5 10.3c0-2.8 2.2-5 4.9-5 1.5 0 2.9.7 3.6 1.9.7-1.1 2-1.9 3.5-1.9 2.8 0 5 2.2 5 5 0 5.4-7 9.9-7 9.9Z"
+                />
+              </svg>
+            </button>
+          </span>
+          <button type="button" class="header-apex__icon-btn" id="header-cart-btn" aria-label="Cos cumparaturi" title="Cos">
+            <svg class="header-apex__svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.35"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5V4a3 3 0 0 1 6 0v1M6 6h12l-1.4 12.2a1.5 1.5 0 0 1-1.5 1.3H8.9a1.5 1.5 0 0 1-1.5-1.3L6 6Z"
+              />
+              <circle cx="10" cy="20" r="0.95" fill="currentColor" stroke="none" />
+              <circle cx="17" cy="20" r="0.95" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+        </div>
+        <div class="theme-switch-wrap theme-switch-wrap--header-corner" aria-label="Comutator temă">
+          <span class="theme-switch__txt">Dark</span>
+          <label class="theme-switch">
+            <input
+              type="checkbox"
+              id="site-theme-toggle"
+              class="theme-switch__input"
+              role="switch"
+              aria-checked="false"
+              aria-label="Comută tema între dark și bright"
+            />
+            <span class="theme-switch__slider"></span>
+          </label>
+          <span class="theme-switch__txt">Bright</span>
+        </div>
+      </header>
+    </div>
+
+    <main class="categorie-sub">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a class="breadcrumbs__link" href="../index.html">Acasa</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <a class="breadcrumbs__link" href="./suspensie.html">Suspensie</a>
+        <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+        <span class="breadcrumbs__current" id="subcat-name-breadcrumb">Subcategorie</span>
+      </nav>
+
+      <header class="categorie-sub__head categorie-sub__head--solo">
+        <div class="categorie-sub__intro">
+          <h1 class="categorie-sub__title" id="subcat-title">Subcategorie Suspensie</h1>
+          <p class="categorie-sub__lead">Piese disponibile pentru subcategoria selectată, filtrabile după producător și tip piesă.</p>
+        </div>
+      </header>
+
+      <section class="categorie-sub__content">
+        <h2 class="categorie-sub__h2">Piese disponibile (DB)</h2>
+        <div class="subcat-filters">
+          <label><span class="brand-strip__label" style="position: static; width: auto; height: auto; margin: 0 0 0.22rem; display: block; color: #cbd5e1;">Filtru după producător</span><select id="filter-producer"><option value="">Toți producătorii</option></select></label>
+          <label><span class="brand-strip__label" style="position: static; width: auto; height: auto; margin: 0 0 0.22rem; display: block; color: #cbd5e1;">Filtru după tip piesă</span><select id="filter-piece-type"><option value="">Toate tipurile</option></select></label>
+        </div>
+        <p class="subcat-note" id="db-state">Se încarcă produsele din baza de date...</p>
+        <ul class="subcat-products" id="db-products-list"></ul>
+        <p class="categorie-sub__actions"><a class="categorie-sub__btn" href="./suspensie.html">Înapoi la subcategorii suspensie</a></p>
+      </section>
+    </main>
+
+    <aside id="account-panel" class="account-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="account-panel-title">
+      <div class="account-panel__header">
+        <h2 id="account-panel-title">Contul meu</h2>
+        <button id="account-close-btn" type="button" class="account-panel__close">Inchide</button>
+      </div>
+      <div class="account-panel__section account-panel__section--auth" id="auth-section">
+        <h3>Cont (demo)</h3>
+        <p class="account-panel__hint" style="margin-top: 0; margin-bottom: 0.55rem; font-size: 0.76rem">
+          <a class="account-panel__cont-link" href="../cont.html">Pagină cont (nume, firmă, parolă) — baza de date</a>
+        </p>
+        <div id="auth-logged-out">
+          <div class="account-panel__subnav" role="tablist" aria-label="Autentificare și cont">
+            <button type="button" class="account-panel__tab" role="tab" id="auth-tab-login" aria-selected="true" aria-controls="auth-panel-login">Conectează-te</button>
+            <button type="button" class="account-panel__tab" role="tab" id="auth-tab-register" aria-selected="false" aria-controls="auth-panel-register">Creare cont</button>
+            <button type="button" class="account-panel__tab" role="tab" id="auth-tab-forgot" aria-selected="false" aria-controls="auth-panel-forgot">Parolă uitată</button>
+          </div>
+          <div id="auth-panel-login" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-login">
+            <p class="account-panel__hint">
+              Parola de demonstrație: <strong>demo</strong> — orice e-mail valid (ex. <code>eu@exemplu.ro</code>).
+            </p>
+            <form id="demo-login-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input id="demo-email" name="email" type="email" autocomplete="username" required placeholder="nume@domeniu.ro" class="account-panel__input" />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input id="demo-password" name="password" type="password" autocomplete="current-password" placeholder="demo" class="account-panel__input" />
+              </label>
+              <p id="demo-auth-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-login-btn">Conectează-te</button>
+            </form>
+          </div>
+          <div id="auth-panel-register" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-register" hidden>
+            <p class="account-panel__hint">
+              Alege o parolă de cel puțin 6 caractere. După creare ești conectat automat; la următoarea vizită folosește același e-mail cu parola <strong>demo</strong> (mod demonstrație).
+            </p>
+            <form id="demo-register-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input id="demo-register-email" name="email" type="email" autocomplete="email" required placeholder="nume@domeniu.ro" class="account-panel__input" />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Parolă</span>
+                <input id="demo-register-password" name="password" type="password" autocomplete="new-password" required minlength="6" class="account-panel__input" />
+              </label>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">Confirmă parola</span>
+                <input id="demo-register-password2" name="password2" type="password" autocomplete="new-password" required minlength="6" class="account-panel__input" />
+              </label>
+              <p id="demo-register-error" class="account-panel__error" role="alert" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-register-btn">Creează contul</button>
+            </form>
+          </div>
+          <div id="auth-panel-forgot" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-forgot" hidden>
+            <p class="account-panel__hint">Introdu adresa de e-mail asociată contului. În modul demonstrație nu se trimite un e-mail real.</p>
+            <form id="demo-forgot-form" class="account-panel__form" novalidate>
+              <label class="account-panel__field">
+                <span class="account-panel__field-label">E-mail</span>
+                <input id="demo-forgot-email" name="email" type="email" autocomplete="email" required placeholder="nume@domeniu.ro" class="account-panel__input" />
+              </label>
+              <p id="demo-forgot-error" class="account-panel__error" role="alert" hidden></p>
+              <p id="demo-forgot-success" class="account-panel__success" role="status" aria-live="polite" hidden></p>
+              <button type="submit" class="account-panel__submit" id="demo-forgot-btn">Trimite instrucțiuni</button>
+            </form>
+          </div>
+        </div>
+        <div id="auth-logged-in" hidden>
+          <p id="demo-user-line" class="account-panel__welcome"></p>
+          <p id="demo-session-meta" class="account-panel__meta"></p>
+          <p style="margin: 0 0 0.5rem; font-size: 0.8rem">
+            <a class="account-panel__cont-link" href="../cont.html">Deschide pagina de cont (Supabase) →</a>
+          </p>
+          <button type="button" class="account-panel__logout" id="demo-logout-btn">Deconectare</button>
+        </div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Mașinile salvate</h3>
+        <ul id="garage-saved-list"></ul>
+      </div>
+      <div class="account-panel__section" id="cos-cumparaturi-section">
+        <h3>Istoric comenzi (demo)</h3>
+        <div id="orders-demo-container"></div>
+      </div>
+      <div class="account-panel__section" id="favorite-articles-section">
+        <h3>Piese favorite (demo)</h3>
+        <div id="favorites-demo-container"></div>
+      </div>
+      <div class="account-panel__section">
+        <h3>Activitate recentă (demo)</h3>
+        <div id="activity-demo-container"></div>
+      </div>
+    </aside>
+
+    <footer class="footer">
+      <small>© <span id="y"></span> Garage Solutions</small>
+    </footer>
+
+    <script src="../assets/js/site-theme.js" defer></script>
+    <script src="../assets/js/main.js"></script>
+    <script type="module">
+      import { initAccountPanel } from "../assets/js/account-panel.mjs";
+      import { initDemoAuthUI } from "../assets/js/demo-auth-ui.mjs";
+
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      const accountBtn = document.getElementById("account-btn");
+      const accountPanel = document.getElementById("account-panel");
+      const accountCloseBtn = document.getElementById("account-close-btn");
+      const garageSavedList = document.getElementById("garage-saved-list");
+      let refreshDemoAuthUi = () => {};
+      const accountPanelApi = initAccountPanel({
+        accountBtn,
+        accountPanel,
+        accountCloseBtn,
+        savedCarsList: garageSavedList,
+        onOpen: () => refreshDemoAuthUi(),
+      });
+      refreshDemoAuthUi = initDemoAuthUI();
+
+      function scrollAccountSection(id) {
+        const el = document.getElementById(id);
+        el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+
+      document.getElementById("header-identity-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+      });
+      document.getElementById("header-favorites-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("favorite-articles-section"));
+      });
+      document.getElementById("header-cart-btn")?.addEventListener("click", () => {
+        accountPanelApi.open();
+        requestAnimationFrame(() => scrollAccountSection("cos-cumparaturi-section"));
+      });
+
+      const garageBtn = document.getElementById("garage-btn");
+      if (garageBtn) {
+        garageBtn.addEventListener("click", function () {
+          window.location.href = "../garage.html";
+        });
+      }
+    </script>
+
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../assets/js/supabase-config.mjs";
+
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const params = new URLSearchParams(window.location.search);
+      const subcatName = (params.get("name") || "").trim();
+      const titleEl = document.getElementById("subcat-title");
+      const breadcrumbEl = document.getElementById("subcat-name-breadcrumb");
+      if (subcatName) {
+        titleEl.textContent = subcatName;
+        breadcrumbEl.textContent = subcatName;
+        document.title = `${subcatName} — Garage Solutions`;
+      }
+
+      const producerEl = document.getElementById("filter-producer");
+      const pieceTypeEl = document.getElementById("filter-piece-type");
+      const stateEl = document.getElementById("db-state");
+      const listEl = document.getElementById("db-products-list");
+      let rows = [];
+
+      const esc = (s) => String(s ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      const norm = (s) => String(s ?? "").trim().toLowerCase();
+      const getBrand = (r) =>
+        r?.brand ??
+        r?.producer ??
+        r?.manufacturer ??
+        r?.marca ??
+        r?.brand_name ??
+        r?.producer_name ??
+        r?.manufacturer_name ??
+        "";
+      const getName = (r) => r?.name ?? r?.title ?? r?.product_name ?? "Produs fără nume";
+      const getPrice = (r) => {
+        const n = Number(r?.price ?? r?.price_ron ?? r?.sale_price ?? null);
+        return Number.isFinite(n) ? n : null;
+      };
+      const getType = (r) => String(r?.subcategory ?? "").trim() || "Altele";
+
+      function render() {
+        const producer = norm(producerEl.value);
+        const pieceType = norm(pieceTypeEl.value);
+        const filtered = rows.filter((r) => {
+          if (producer && norm(getBrand(r)) !== producer) return false;
+          if (pieceType && norm(getType(r)) !== pieceType) return false;
+          return true;
+        });
+        if (!filtered.length) {
+          stateEl.textContent = rows.length
+            ? "Nu există produse pentru filtrele selectate."
+            : `Nu există piese disponibile momentan pentru "${subcatName || "subcategoria selectată"}".`;
+          listEl.innerHTML = "";
+          return;
+        }
+        stateEl.textContent = `${filtered.length} produs(e) afișate.`;
+        listEl.innerHTML = filtered
+          .map((r) => `<li><strong>${esc(getName(r))}</strong><span>Producător: ${esc(getBrand(r) || "n/a")}</span><span>Tip piesă: ${esc(getType(r))}</span><span>${getPrice(r) !== null ? `${getPrice(r)} RON` : "Preț indisponibil"}</span></li>`)
+          .join("");
+      }
+
+      async function loadBroadSuspensieForProducers() {
+        let { data, error } = await supabase.from("products").select("*").eq("category", "suspensie").limit(800);
+        if (error || !data?.length) {
+          const r2 = await supabase.from("products").select("*").ilike("category", "%suspensie%").limit(800);
+          data = r2.data;
+        }
+        return data ?? [];
+      }
+
+      async function loadProducts() {
+        const term = subcatName || "suspensie";
+        const bucket = [];
+        const likeTerm = `%${term}%`;
+        const queries = [
+          () => supabase.from("products").select("*").eq("category", "suspensie").ilike("subcategory", likeTerm),
+          () => supabase.from("products").select("*").eq("category", "suspensie").ilike("name", likeTerm),
+          () => supabase.from("products").select("*").ilike("category", "%suspensie%").ilike("subcategory", likeTerm),
+        ];
+        for (const q of queries) {
+          const { data, error } = await q();
+          if (!error) bucket.push(...(data ?? []));
+        }
+        const seen = new Set();
+        rows = bucket.filter((r) => {
+          const key = String(r?.id ?? `${r?.category}|${r?.subcategory}|${r?.brand}|${r?.name}`);
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
+        const broadRows = await loadBroadSuspensieForProducers();
+        const producerSet = new Set();
+        for (const r of rows) {
+          const b = String(getBrand(r) || "").trim();
+          if (b) producerSet.add(b);
+        }
+        for (const r of broadRows) {
+          const b = String(getBrand(r) || "").trim();
+          if (b) producerSet.add(b);
+        }
+        const producers = Array.from(producerSet).sort((a, b) => a.localeCompare(b));
+        producerEl.innerHTML = `<option value="">Toți producătorii</option>${producers.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join("")}`;
+
+        const types = Array.from(new Set(rows.map((r) => String(getType(r) || "").trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+        pieceTypeEl.innerHTML = `<option value="">Toate tipurile</option>${types.map((t) => `<option value="${esc(t)}">${esc(t)}</option>`).join("")}`;
+
+        render();
+      }
+
+      producerEl.addEventListener("change", render);
+      pieceTypeEl.addEventListener("change", render);
+      loadProducts();
+    </script>
+  </body>
+</html>

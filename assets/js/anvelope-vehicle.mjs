@@ -5,8 +5,8 @@ import {
   loadModelsForBrand,
   loadEnginesForModel,
   loadYearsForModel,
+  loadBrandsForSelector,
 } from "./vehicle-garage-loaders.mjs";
-import { fetchModelsDisplayOrFallback } from "./models-display-fallback.mjs";
 
 function setHint(hintEl, state) {
   if (!hintEl) return;
@@ -58,97 +58,10 @@ function init() {
     engineSel.disabled = true;
     setHint(hint, "need-brand");
 
-    let data = [];
-    let error = null;
-    const firstTry = await supabase
-      .from("brands")
-      .select("id,name,logo_url")
-      .eq("is_active", true)
-      .order("name", { ascending: true });
-    data = firstTry.data || [];
-    error = firstTry.error;
-
-    if (error) {
-      const secondTry = await supabase
-        .from("brands")
-        .select("id,name,logo_url")
-        .order("name", { ascending: true });
-      data = secondTry.data || [];
-      error = secondTry.error;
-    }
-
-    const modelsTry = await fetchModelsDisplayOrFallback(supabase);
-    const activeBrandIds = new Set(
-      (modelsTry.data || []).map((r) => String(r?.brand_id || "").trim()).filter(Boolean)
-    );
-    const modelBrandLabelById = new Map();
-    (modelsTry.data || []).forEach((r) => {
-      const id = String(r?.brand_id || "").trim();
-      if (!id) return;
-      const label = String(
-        r?.brand_name ?? r?.brand ?? r?.manufacturer ?? r?.make ?? ""
-      ).trim();
-      if (label && !modelBrandLabelById.has(id)) modelBrandLabelById.set(id, label);
-    });
-
-    let finalBrands = (data || [])
-      .filter((b) => activeBrandIds.size === 0 || activeBrandIds.has(String(b.id)))
-      .map((b) => ({
-        id: b.id,
-        name: String(b.name || "").trim() || modelBrandLabelById.get(String(b.id)) || "",
-        logo_url: b.logo_url || "",
-        source: "brands",
-      }))
-      .filter((b) => b.name)
-      .sort((a, b) => a.name.localeCompare(b.name));
-
-    if (!finalBrands.length && !modelsTry.error) {
-      finalBrands = Array.from(activeBrandIds)
-        .map((id) => ({
-          id,
-          name: modelBrandLabelById.get(id) || `Brand ${id}`,
-          logo_url: "",
-          source: "models_display",
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name));
-    }
+    const { brands: finalBrands, error } = await loadBrandsForSelector(supabase);
 
     if (!finalBrands.length) {
-      const modelsFallbackTry = await supabase.from("models").select("*").limit(4000);
-      if (!modelsFallbackTry.error) {
-        const names = Array.from(
-          new Set(
-            (modelsFallbackTry.data || [])
-              .map((r) =>
-                String(
-                  r?.brand_name ??
-                    r?.brand ??
-                    r?.make ??
-                    r?.manufacturer ??
-                    r?.marque ??
-                    r?.marca ??
-                    ""
-                ).trim()
-              )
-              .filter(Boolean)
-          )
-        ).sort((a, b) => a.localeCompare(b));
-        finalBrands = names.map((name, idx) => ({
-          id: `m-${idx + 1}`,
-          name,
-          logo_url: "",
-          source: "models",
-        }));
-      }
-    }
-
-    if (!finalBrands.length) {
-      console.error(
-        "Eroare anvelope / marci:",
-        error?.message ||
-          modelsTry.error?.message ||
-          "fara rezultate in brands/models_display/models"
-      );
+      console.error("Eroare anvelope / marci:", error || "fara rezultate");
       setPlaceholder(brandSel, "Eroare la incarcare marci");
       return;
     }
@@ -160,6 +73,7 @@ function init() {
       o.textContent = b.name;
       o.dataset.logoUrl = b.logo_url || "";
       o.dataset.source = b.source;
+      if (b.slug) o.dataset.brandSlug = b.slug;
       brandSel.appendChild(o);
     });
     brandSel.disabled = false;

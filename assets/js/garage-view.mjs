@@ -1,7 +1,6 @@
 import {
   readSavedCars,
   writeSavedCars,
-  GARAGE_STORAGE_KEY,
   onGarageCarsUpdated,
 } from "./garage-saved-cars.mjs";
 import { getBrandLogoUrl } from "./brand-logo-fallbacks.mjs";
@@ -16,6 +15,7 @@ import {
   applyCarPaintStack,
 } from "./garage-car-paint.mjs";
 import { syncGarageStlViewer } from "./garage-stl-viewer.mjs";
+import { garageOemSuspensionFromCar } from "./garage-oem-suspension.mjs";
 
 function parseCarIndex() {
   const raw = new URLSearchParams(window.location.search).get("car");
@@ -59,6 +59,7 @@ export function initGarageView(root = document) {
   const hudBrand = root.getElementById("garage-hud-brand");
   const hudModel = root.getElementById("garage-hud-model");
   const hudEngine = root.getElementById("garage-hud-engine");
+  const hudOem = root.getElementById("garage-hud-oem");
   const hudCount = root.getElementById("garage-hud-count");
   const hudNav = root.getElementById("garage-hud-nav");
   const btnPrev = root.getElementById("garage-hud-prev");
@@ -292,10 +293,10 @@ export function initGarageView(root = document) {
       hudNav?.setAttribute("hidden", "");
       if (hudOrigin) {
         try {
-          const n = localStorage.getItem(GARAGE_STORAGE_KEY)?.length ?? 0;
-          hudOrigin.textContent = `Origin: ${window.location.origin} · cheie localStorage: ${n} caractere`;
+          const n = readSavedCars().length;
+          hudOrigin.textContent = `Origin: ${window.location.origin} · mașini în garaj (memorie): ${n}`;
         } catch {
-          hudOrigin.textContent = `Origin: ${window.location.origin} · localStorage indisponibil`;
+          hudOrigin.textContent = `Origin: ${window.location.origin}`;
         }
       }
       heroSwapGen += 1;
@@ -307,6 +308,7 @@ export function initGarageView(root = document) {
         carImg.classList.remove("garage-car-stack__img--photo");
       }
       bodyTypeRail?.setAttribute("hidden", "");
+      hudOem?.setAttribute("hidden", "");
       applyStlSync();
       return;
     }
@@ -335,6 +337,12 @@ export function initGarageView(root = document) {
     if (hudBrand) hudBrand.textContent = car.brand;
     if (hudModel) hudModel.textContent = car.model != null && String(car.model).trim() ? car.model : "—";
     if (hudEngine) hudEngine.textContent = car.engine != null && String(car.engine).trim() ? car.engine : "—";
+    if (hudOem) {
+      const oem = garageOemSuspensionFromCar(car);
+      const line = `OEM suspensie: față ${oem.front || "—"} · spate ${oem.rear || "—"}`;
+      hudOem.textContent = line;
+      hudOem.removeAttribute("hidden");
+    }
     if (hudCount) {
       hudCount.textContent =
         len === 1 ? "1 mașină în garaj" : `${len} mașini în garaj · ${carIndex + 1}/${len}`;
@@ -388,10 +396,6 @@ export function initGarageView(root = document) {
     applyStlSync();
   });
 
-  window.addEventListener("storage", (e) => {
-    if (e.key === GARAGE_STORAGE_KEY) render();
-  });
-
   const unsubBroadcast = onGarageCarsUpdated(() => render());
 
   window.addEventListener("pageshow", (e) => {
@@ -400,8 +404,12 @@ export function initGarageView(root = document) {
 
   window.addEventListener("focus", () => render());
 
+  void import("./garage-cloud-sync.mjs")
+    .then((m) => m.syncGarageFromCloudAndLocal())
+    .catch((e) => console.warn("[garage-view] sync", e))
+    .finally(() => render());
+
   wireCarPaintUi();
-  render();
 
   return () => unsubBroadcast();
 }

@@ -1,7 +1,8 @@
-import { readSavedCars, GARAGE_STORAGE_KEY } from "./garage-saved-cars.mjs";
+import { readSavedCars, GARAGE_CARS_CHANGED_EVENT } from "./garage-saved-cars.mjs";
+import { garageOemSuspensionFromCar } from "./garage-oem-suspension.mjs";
 
 /**
- * Panou „Contul meu”: fundal, Escape, focus, listă garaj din localStorage.
+ * Panou „Contul meu”: fundal, Escape, focus, listă garaj (memorie + sync Supabase).
  */
 export function initAccountPanel({
   accountBtn,
@@ -39,7 +40,14 @@ export function initAccountPanel({
     }
     cars.forEach((car) => {
       const li = document.createElement("li");
-      li.textContent = `${car.brand} | ${car.model} | ${car.engine}`;
+      const oem = garageOemSuspensionFromCar(car);
+      const main = document.createElement("span");
+      main.textContent = `${car.brand} | ${car.model} | ${car.engine}`;
+      const sub = document.createElement("span");
+      sub.className = "account-panel__garage-oem";
+      sub.textContent = ` · OEM: ${oem.front || "—"} / ${oem.rear || "—"}`;
+      li.appendChild(main);
+      li.appendChild(sub);
       savedCarsList.appendChild(li);
     });
   }
@@ -97,10 +105,8 @@ export function initAccountPanel({
     close();
   }
 
-  function onStorage(e) {
-    if (e.key === GARAGE_STORAGE_KEY) {
-      renderSavedCars();
-    }
+  function onGarageChanged() {
+    renderSavedCars();
   }
 
   function onAccountBtnClick(e) {
@@ -120,7 +126,7 @@ export function initAccountPanel({
   accountCloseBtn?.addEventListener("click", onCloseBtnClick);
   backdrop.addEventListener("click", onBackdropClick);
   document.addEventListener("keydown", onKeydown);
-  window.addEventListener("storage", onStorage);
+  window.addEventListener(GARAGE_CARS_CHANGED_EVENT, onGarageChanged);
 
   renderSavedCars();
 
@@ -130,7 +136,7 @@ export function initAccountPanel({
     refreshSavedCars: renderSavedCars,
     destroy() {
       document.removeEventListener("keydown", onKeydown);
-      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(GARAGE_CARS_CHANGED_EVENT, onGarageChanged);
       accountBtn?.removeEventListener("click", onAccountBtnClick);
       accountCloseBtn?.removeEventListener("click", onCloseBtnClick);
       backdrop.removeEventListener("click", onBackdropClick);

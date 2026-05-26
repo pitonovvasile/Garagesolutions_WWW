@@ -47,6 +47,13 @@ function inferEngineCode(car = null) {
 }
 
 export async function initTransmissionCategoryPage(config) {
+  try {
+    const m = await import("./garage-cloud-sync.mjs");
+    await m.syncGarageFromCloudAndLocal();
+  } catch (e) {
+    console.warn("[tx-cat] garaj sync", e);
+  }
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const {
     categoryKey,

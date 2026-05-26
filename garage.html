@@ -12,7 +12,16 @@
     <div class="garage-feature-carousel" aria-label="Moduri garaj">
       <div class="garage-feature-carousel__inner">
         <div class="garage-feature-carousel__track">
-          <span class="garage-feature-carousel__kicker">Garage</span>
+          <a class="garage-feature-carousel__brand" href="index.html" aria-label="Garage Solutions — acasă">
+            <img
+              class="garage-feature-carousel__brand-logo"
+              src="assets/garage-solutions-logo.png"
+              alt="Garage Solutions"
+              width="333"
+              height="222"
+              decoding="async"
+            />
+          </a>
           <a
             class="garage-feature-carousel__chip garage-feature-carousel__chip--design garage-feature-carousel__chip--suspension"
             href="garage/suspension-design.html#work"
@@ -47,10 +56,55 @@
             <span class="garage-feature-carousel__chip-label">Transmission</span>
           </a>
           <a
-            class="garage-feature-carousel__chip garage-feature-carousel__chip--design"
-            href="garage/bmw-catalog.html"
+            id="garage-braking-link"
+            class="garage-feature-carousel__chip garage-feature-carousel__chip--design garage-feature-carousel__chip--braking"
+            href="garage/braking.html"
           >
-            <span class="garage-feature-carousel__chip-label">BMW catalog</span>
+            <span class="garage-feature-carousel__chip-visual" aria-hidden="true">
+              <img
+                class="garage-feature-carousel__chip-img"
+                src="assets/garage-braking-system-icon.png"
+                width="128"
+                height="128"
+                alt=""
+                decoding="async"
+              />
+            </span>
+            <span class="garage-feature-carousel__chip-label">Sistemul de frânare</span>
+          </a>
+          <a
+            id="garage-aerodynamics-link"
+            class="garage-feature-carousel__chip garage-feature-carousel__chip--design garage-feature-carousel__chip--aerodynamics"
+            href="garage/aerodynamics-body.html"
+          >
+            <span class="garage-feature-carousel__chip-visual" aria-hidden="true">
+              <img
+                class="garage-feature-carousel__chip-img"
+                src="assets/garage-aerodynamics-body-icon.png"
+                width="128"
+                height="86"
+                alt=""
+                decoding="async"
+              />
+            </span>
+            <span class="garage-feature-carousel__chip-label">Aerodynamics body</span>
+          </a>
+          <a
+            id="garage-performance-link"
+            class="garage-feature-carousel__chip garage-feature-carousel__chip--design garage-feature-carousel__chip--performance"
+            href="garage/performance.html"
+          >
+            <span class="garage-feature-carousel__chip-visual" aria-hidden="true">
+              <img
+                class="garage-feature-carousel__chip-img"
+                src="assets/garage-performance-icon.png"
+                width="128"
+                height="128"
+                alt=""
+                decoding="async"
+              />
+            </span>
+            <span class="garage-feature-carousel__chip-label">Dinamics &amp; Performance</span>
           </a>
         </div>
       </div>
@@ -182,6 +236,7 @@
             </div>
           </div>
           <p id="garage-hud-engine" class="garage-hud__engine"></p>
+          <p id="garage-hud-oem" class="garage-hud__oem" hidden></p>
           <p id="garage-hud-count" class="garage-hud__count"></p>
           <div id="garage-hud-nav" class="garage-hud__nav" hidden>
             <button id="garage-hud-prev" type="button" class="garage-hud__btn">Anterioară</button>
@@ -352,12 +407,30 @@
       initGarageTheme(document);
       try {
         initGarageView(document);
+        const carIdx = new URLSearchParams(window.location.search).get("car") || "0";
         const txLink = document.getElementById("garage-transmission-link");
         txLink?.addEventListener("click", (e) => {
           const a = e.currentTarget;
           if (!(a instanceof HTMLAnchorElement)) return;
-          const idx = new URLSearchParams(window.location.search).get("car") || "0";
-          a.href = `garage/transmission.html?car=${encodeURIComponent(idx)}`;
+          a.href = `garage/transmission.html?car=${encodeURIComponent(carIdx)}`;
+        });
+        const brakingLink = document.getElementById("garage-braking-link");
+        brakingLink?.addEventListener("click", (e) => {
+          const a = e.currentTarget;
+          if (!(a instanceof HTMLAnchorElement)) return;
+          a.href = `garage/braking.html?car=${encodeURIComponent(carIdx)}`;
+        });
+        const aeroLink = document.getElementById("garage-aerodynamics-link");
+        aeroLink?.addEventListener("click", (e) => {
+          const a = e.currentTarget;
+          if (!(a instanceof HTMLAnchorElement)) return;
+          a.href = `garage/aerodynamics-body.html?car=${encodeURIComponent(carIdx)}`;
+        });
+        const perfLink = document.getElementById("garage-performance-link");
+        perfLink?.addEventListener("click", (e) => {
+          const a = e.currentTarget;
+          if (!(a instanceof HTMLAnchorElement)) return;
+          a.href = `garage/performance.html?car=${encodeURIComponent(carIdx)}`;
         });
       } catch (err) {
         console.error("[garage-view]", err);

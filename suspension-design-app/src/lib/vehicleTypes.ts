@@ -22,7 +22,7 @@ export type LayoutType = "coilover" | "separate";
 export interface AxlePreset {
   type: SuspensionArch;
   layout: LayoutType;
-  /** Camber line: atan2(top.x - bottom.x, top.y - bottom.y) */
+  /** Puncte folosite pentru camber lateral din geometria live (după bump): vector top → bottom în plan lateral. */
   camberTop: VehiclePointKey;
   camberBottom: VehiclePointKey;
   points: VehiclePointMap;

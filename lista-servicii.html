@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lista servisuri | Garage Solutions</title>
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="icon" href="assets/garage-solutions-favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="assets/garage-solutions-apple-touch.png" />
+    <script>
+      try {
+        if (localStorage.getItem("garage-site-theme") === "bright") {
+          document.documentElement.setAttribute("data-site-theme", "bright");
+        }
+      } catch (e) {}
+    </script>
+    <style>
+      .services-wrap {
+        width: min(1200px, calc(100% - 2rem));
+        margin: 1rem auto 2rem;
+      }
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+      .services-card {
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        border-radius: 14px;
+        background: linear-gradient(180deg, rgba(10, 12, 28, 0.8), rgba(7, 9, 22, 0.85));
+        padding: 0.9rem 1rem;
+      }
+      .services-card h3 {
+        margin: 0 0 0.5rem;
+      }
+      .services-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.6rem;
+      }
+      .services-list li {
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 10px;
+        padding: 0.6rem 0.75rem;
+        background: rgba(15, 23, 42, 0.35);
+      }
+      .services-list p {
+        margin: 0.2rem 0 0;
+        color: #d6d3d1;
+        font-size: 0.88rem;
+        line-height: 1.4;
+      }
+      .services-meta {
+        margin: 0;
+        color: #fca5a5;
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .services-status {
+        margin-top: 0.5rem;
+        color: #fca5a5;
+      }
+      .services-logos {
+        margin-top: 1rem;
+        border: 1px solid rgba(239, 68, 68, 0.22);
+        border-radius: 14px;
+        background: linear-gradient(180deg, rgba(10, 12, 28, 0.78), rgba(7, 9, 22, 0.86));
+        padding: 0.65rem 0.5rem;
+        overflow: hidden;
+      }
+      .services-logos__title {
+        margin: 0 0 0.45rem;
+        padding: 0 0.45rem;
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fca5a5;
+      }
+      .services-logos__track {
+        display: flex;
+        width: max-content;
+        animation: services-logos-marquee 30s linear infinite;
+        will-change: transform;
+      }
+      .services-logos:hover .services-logos__track {
+        animation-play-state: paused;
+      }
+      .services-logos__items {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0 0.35rem;
+      }
+      .services-logos__chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.42rem;
+        border: 1px solid rgba(239, 68, 68, 0.28);
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.45);
+        padding: 0.26rem 0.52rem;
+        white-space: nowrap;
+      }
+      .services-logos__badge {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #1d4ed8, #111827);
+        color: #e5e7eb;
+        font-size: 0.67rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+      }
+      .services-logos__img {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid rgba(248, 113, 113, 0.38);
+      }
+      .services-logos__name {
+        color: #f3f4f6;
+        font-size: 0.78rem;
+        letter-spacing: 0.03em;
+      }
+      .services-logos__empty {
+        margin: 0.2rem 0.45rem 0;
+        color: #fca5a5;
+        font-size: 0.82rem;
+      }
+      @keyframes services-logos-marquee {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+      @media (max-width: 1180px) {
+        .services-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 820px) {
+        .services-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body class="body--categorie">
+    <div class="site-top site-top--hero">
+      <header class="header header--secondary-apex">
+        <a class="logo-link" href="index.html" aria-label="Garage Solutions — acasa">
+          <img
+            class="logo-img"
+            src="assets/garage-solutions-logo.png"
+            alt="Garage Solutions"
+            width="333"
+            height="222"
+            loading="eager"
+          />
+        </a>
+        <nav class="main-nav" aria-label="Navigare principala">
+          <a href="index.html#categorii">Piese auto</a>
+          <a href="anvelope.html">Anvelope</a>
+          <a href="universale/jante-auto.html">Jante</a>
+          <a href="universale.html">Universale</a>
+          <a href="index.html">Oferte</a>
+          <a href="index.html">Contact</a>
+          <a href="catalog/live.html">Catalog Live</a>
+        </nav>
+        <div
+          class="theme-switch-wrap theme-switch-wrap--header-corner"
+          aria-label="Comutator temă"
+        >
+          <span class="theme-switch__txt">Dark</span>
+          <label class="theme-switch">
+            <input
+              type="checkbox"
+              id="site-theme-toggle"
+              class="theme-switch__input"
+              role="switch"
+              aria-checked="false"
+              aria-label="Comută tema între dark și bright"
+            />
+            <span class="theme-switch__slider"></span>
+          </label>
+          <span class="theme-switch__txt">Bright</span>
+        </div>
+      </header>
+    </div>
+    <main class="services-wrap">
+      <section class="categorie-sub categorie-sub--wide">
+        <div class="categorie-sub__head categorie-sub__head--solo">
+          <div class="categorie-sub__intro">
+            <h1 class="categorie-sub__title">Lista servisuri</h1>
+            <p class="categorie-sub__lead">
+              Pagina încarcă din baza de date partenerii de service, categoriile de servicii și
+              serviciile disponibile, cu descrieri detaliate.
+            </p>
+          </div>
+        </div>
+        <div class="categorie-sub__actions categorie-sub__actions--minor">
+          <a class="categorie-sub__inline" href="index.html#vehicle-config-section">← Înapoi la configurator</a>
+        </div>
+      </section>
+
+      <section class="services-grid">
+        <article class="services-card">
+          <h3>Parteneri service</h3>
+          <ul id="partners-list" class="services-list"></ul>
+          <p id="partners-status" class="services-status"></p>
+        </article>
+
+        <article class="services-card">
+          <h3>Categorii servicii</h3>
+          <ul id="categories-list" class="services-list"></ul>
+          <p id="categories-status" class="services-status"></p>
+        </article>
+
+        <article class="services-card">
+          <h3>Servicii detaliate</h3>
+          <ul id="services-list" class="services-list"></ul>
+          <p id="services-status" class="services-status"></p>
+        </article>
+      </section>
+      <section class="services-logos" aria-label="Carusel logo servisuri partenere">
+        <h2 class="services-logos__title">Hero carusel — logo servisuri partenere</h2>
+        <div id="services-logos-track" class="services-logos__track" hidden>
+          <div id="services-logos-items" class="services-logos__items"></div>
+        </div>
+        <p id="services-logos-empty" class="services-logos__empty" hidden>
+          Nu există încă logo-uri de servisuri în baza de date.
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer" aria-label="Footer principal">
+      <div class="footer__grid">
+        <section class="footer__col">
+          <h3>Garage Solutions</h3>
+          <p>
+            Platformă auto pentru piese, service-uri partenere și gestionarea garajului personal într-o
+            interfață unică.
+          </p>
+        </section>
+        <section class="footer__col">
+          <h3>Navigare</h3>
+          <ul class="footer__list">
+            <li><a href="index.html#categorii">Categorii piese</a></li>
+            <li><a href="garage.html">Garajul meu</a></li>
+            <li><a href="garage/transmission.html">Transmission</a></li>
+            <li><a href="cont.html">Contul meu</a></li>
+          </ul>
+        </section>
+        <section class="footer__col">
+          <h3>Servicii</h3>
+          <ul class="footer__list">
+            <li><a href="lista-servicii.html">Lista servisuri</a></li>
+            <li><a href="parteneri/rar-homologare.html">RAR & Omologări (asistență)</a></li>
+            <li><a href="parteneri/itp-inspectii-tehnice.html">ITP & Inspecții Tehnice</a></li>
+            <li><a href="parteneri/general-garage-hub.html">Service multimarcă</a></li>
+            <li><a href="parteneri/tuning-forge.html">Tuning & performanță</a></li>
+            <li><a href="parteneri/detailing-atelier.html">Detailing auto</a></li>
+          </ul>
+        </section>
+        <section class="footer__col">
+          <h3>Suport</h3>
+          <ul class="footer__list">
+            <li><a href="#">Întrebări frecvente</a></li>
+            <li><a href="#">Termeni și condiții</a></li>
+            <li><a href="#">Politică de confidențialitate</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </section>
+      </div>
+      <div class="footer__bottom">
+        <small>© <span id="y"></span> Garage Solutions. Toate drepturile rezervate.</small>
+      </div>
+    </footer>
+
+    <script src="assets/js/site-theme.js" defer></script>
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./assets/js/supabase-config.mjs";
+
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      /** @param {unknown} v */
+      const s = (v) => String(v ?? "").trim();
+      const first = (...vals) => vals.map((v) => s(v)).find(Boolean) || "";
+
+      async function fetchFirstWorkingTable(candidates, orderBy = "id") {
+        let lastError = null;
+        for (const table of candidates) {
+          const res = await supabase.from(table).select("*").limit(500).order(orderBy, { ascending: true });
+          if (!res.error) return { table, rows: res.data || [] };
+          lastError = res.error;
+        }
+        return { table: "", rows: [], error: lastError };
+      }
+
+      function renderList(listEl, statusEl, rows, mapFn, emptyMsg, sourceTable) {
+        listEl.innerHTML = "";
+        if (!rows.length) {
+          statusEl.textContent = emptyMsg;
+          return;
+        }
+        statusEl.textContent = sourceTable ? `Sursă DB: ${sourceTable}` : "";
+        rows.map(mapFn).forEach((item) => {
+          const li = document.createElement("li");
+          const strong = document.createElement("strong");
+          strong.textContent = item.title || "Fără titlu";
+          li.appendChild(strong);
+          if (item.meta) {
+            const meta = document.createElement("p");
+            meta.className = "services-meta";
+            meta.textContent = item.meta;
+            li.appendChild(meta);
+          }
+          if (item.description) {
+            const p = document.createElement("p");
+            p.textContent = item.description;
+            li.appendChild(p);
+          }
+          listEl.appendChild(li);
+        });
+      }
+
+      function partnerInitials(name) {
+        const tokens = String(name || "")
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean);
+        if (!tokens.length) return "GS";
+        return tokens
+          .slice(0, 2)
+          .map((t) => t[0] || "")
+          .join("")
+          .toUpperCase();
+      }
+
+      function renderPartnerLogos(rows) {
+        const track = document.getElementById("services-logos-track");
+        const items = document.getElementById("services-logos-items");
+        const empty = document.getElementById("services-logos-empty");
+        if (!track || !items || !empty) return;
+        items.innerHTML = "";
+        const mapped = (rows || [])
+          .map((r) => ({
+            name: first(r.name, r.partner_name, r.display_name, r.title),
+            logo: first(r.logo_url, r.logo, r.image_url, r.avatar_url),
+          }))
+          .filter((x) => x.name);
+        if (!mapped.length) {
+          track.hidden = true;
+          empty.hidden = false;
+          return;
+        }
+        empty.hidden = true;
+        track.hidden = false;
+        mapped.forEach((item) => {
+          const chip = document.createElement("div");
+          chip.className = "services-logos__chip";
+          if (item.logo) {
+            const img = document.createElement("img");
+            img.className = "services-logos__img";
+            img.src = item.logo;
+            img.alt = item.name;
+            chip.appendChild(img);
+          } else {
+            const badge = document.createElement("span");
+            badge.className = "services-logos__badge";
+            badge.textContent = partnerInitials(item.name);
+            chip.appendChild(badge);
+          }
+          const label = document.createElement("span");
+          label.className = "services-logos__name";
+          label.textContent = item.name;
+          chip.appendChild(label);
+          items.appendChild(chip);
+        });
+        const clone = items.cloneNode(true);
+        clone.removeAttribute("id");
+        track.innerHTML = "";
+        track.appendChild(items);
+        track.appendChild(clone);
+      }
+
+      async function init() {
+        const partnersList = document.getElementById("partners-list");
+        const partnersStatus = document.getElementById("partners-status");
+        const categoriesList = document.getElementById("categories-list");
+        const categoriesStatus = document.getElementById("categories-status");
+        const servicesList = document.getElementById("services-list");
+        const servicesStatus = document.getElementById("services-status");
+
+        partnersStatus.textContent = "Se încarcă...";
+        categoriesStatus.textContent = "Se încarcă...";
+        servicesStatus.textContent = "Se încarcă...";
+
+        const partnersRes = await fetchFirstWorkingTable(
+          ["service_partners", "partners", "garage_partners", "workshop_partners"],
+          "name",
+        );
+        renderList(
+          partnersList,
+          partnersStatus,
+          partnersRes.rows,
+          (r) => ({
+            title: first(r.name, r.partner_name, r.display_name, r.title),
+            meta: first(r.city, r.location, r.region),
+            description: first(r.description, r.summary, r.about),
+          }),
+          "Nu s-au găsit parteneri service în DB.",
+          partnersRes.table,
+        );
+        renderPartnerLogos(partnersRes.rows);
+
+        const categoriesRes = await fetchFirstWorkingTable(
+          ["service_categories", "categories", "service_types"],
+          "name",
+        );
+        renderList(
+          categoriesList,
+          categoriesStatus,
+          categoriesRes.rows,
+          (r) => ({
+            title: first(r.name, r.category_name, r.title),
+            meta: first(r.slug, r.code),
+            description: first(r.description, r.details),
+          }),
+          "Nu s-au găsit categorii de servicii în DB.",
+          categoriesRes.table,
+        );
+
+        const servicesRes = await fetchFirstWorkingTable(
+          ["partner_services", "services", "service_items", "workshop_services"],
+          "name",
+        );
+        renderList(
+          servicesList,
+          servicesStatus,
+          servicesRes.rows,
+          (r) => ({
+            title: first(r.name, r.service_name, r.title),
+            meta: first(r.category_name, r.category, r.partner_name, r.duration),
+            description: first(r.description, r.long_description, r.details, r.notes),
+          }),
+          "Nu s-au găsit servicii detaliate în DB.",
+          servicesRes.table,
+        );
+      }
+
+      init().catch((e) => {
+        const msg = `Eroare la încărcare: ${e?.message || e}`;
+        document.getElementById("partners-status").textContent = msg;
+        document.getElementById("categories-status").textContent = msg;
+        document.getElementById("services-status").textContent = msg;
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Garage Solutions: preview localhost",
+      "detail": "scripts/preview-server.mjs — anti-cache implicit. Sau Run and Debug: «Garage Solutions: preview (server + browser)» (deschide singur browserul).",
+      "type": "npm",
+      "script": "preview",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      }
+    },
+    {
+      "label": "Garage Solutions: preview (serve, alternativă)",
+      "detail": "Pachetul serve — fără header-e no-store; util doar dacă ai nevoie explicit de cache agresiv.",
+      "type": "npm",
+      "script": "preview:serve",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      }
+    }
+  ]
+}
