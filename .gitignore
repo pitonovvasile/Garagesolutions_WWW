@@ -13,5 +13,8 @@ node_modules/
 *.log
 npm-debug.log*
 
+# Local database/export backups
+db-backups/
+
 # Optional: editor (uncomment if you do not want IDE config in the repo)
 # .cursor/
