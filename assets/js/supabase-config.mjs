@@ -8,5 +8,5 @@
  *
  * Nu există o a doua sursă (ex. `VITE_SUPABASE_*`) pentru aceste chei — modifici doar aici și redeploy / rebuild.
  */
-export const SUPABASE_URL = "https://nfnamdmdavbaedpesdpy.supabase.co";
-export const SUPABASE_ANON_KEY = "sb_publishable_UgbUMWX6g-TKVvYw1FL1tg_OfqdX8VW";
+export const SUPABASE_URL = "https://reboxjzkoopkfwaemjrz.supabase.co";
+export const SUPABASE_ANON_KEY = "sb_publishable_ZsLAXJMmC49tj7LERSprmA_kx8lumd2";

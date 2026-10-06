@@ -403,9 +403,11 @@
     <script type="module">
       import { initGarageTheme } from "./assets/js/garage-theme.mjs";
       import { initGarageView } from "./assets/js/garage-view.mjs";
+      import { initDemoSync } from "./assets/js/demo-sync.mjs?v=20260527-sync1";
 
       initGarageTheme(document);
       try {
+        await initDemoSync();
         initGarageView(document);
         const carIdx = new URLSearchParams(window.location.search).get("car") || "0";
         const txLink = document.getElementById("garage-transmission-link");
@@ -442,7 +444,7 @@
           const p = empty.querySelector(".garage-hud__empty-text");
           if (p) {
             p.textContent =
-              "Nu s-a putut încărca garajul (verifică consola). Deschide pagina prin http://127.0.0.1:8080/garage.html dacă folosești module ES.";
+              "Nu s-a putut încărca garajul (verifică consola). Deschide pagina prin serverul local de preview, nu prin file://.";
           }
         }
       }

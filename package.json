@@ -14,8 +14,9 @@
     "preview:no-open": "PREVIEW_OPEN=0 node scripts/preview-server.mjs",
     "preview:ipv4": "HOST=127.0.0.1 node scripts/preview-server.mjs",
     "preview:9090": "PORT=9090 node scripts/preview-server.mjs",
-    "suspension:build": "npm --prefix suspension-design-app run build",
-    "suspension:dev": "npm --prefix suspension-design-app run dev",
+    "engine:build": "npm --prefix garage-engineered-engine run build",
+    "pages:build": "npm run engine:build && node scripts/build-pages.mjs",
+    "engine:dev": "npm --prefix garage-engineered-engine run dev",
     "supabase:types": "npx supabase gen types typescript --project-id nfnamdmdavbaedpesdpy --schema public > assets/types/supabase.generated.ts"
   },
   "devDependencies": {

@@ -11,17 +11,39 @@
           document.documentElement.setAttribute("data-site-theme", "bright");
       } catch (e) {}
     </script>
-    <link rel="stylesheet" href="../suspension-design-dist/assets/suspension-design-ErrorBoundary.css" />
+    <link rel="stylesheet" href="../garage-engineered-engine-dist/assets/garage-engineered-engine-ErrorBoundary.css?v=20260527-drs-pivot-right-1" />
     <style>
-      #root {
-        min-height: 100dvh;
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
       }
-      .perf-boot {
-        margin: 0;
-        padding: 1.25rem;
-        font-family: system-ui, sans-serif;
-        font-size: 0.875rem;
-        color: #94a3b8;
+      #root {
+        height: 100dvh;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .engine-boot {
+        display: grid;
+        min-height: 100dvh;
+        place-items: center;
+        background: #06080c;
+      }
+      .engine-boot__logo {
+        width: min(26rem, 56vw);
+        transform-origin: center;
+        animation: engine-boot-logo 1.7s ease-in-out infinite;
+      }
+      @keyframes engine-boot-logo {
+        0%,
+        100% {
+          opacity: 0.82;
+          transform: scale(1.3);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.34);
+        }
       }
     </style>
   </head>
@@ -32,7 +54,11 @@
         <a class="text-amber-400 underline" href="../garage.html">Înapoi la garaj</a>
       </div>
     </noscript>
-    <div id="root"><p class="perf-boot" id="perf-boot">Se încarcă modulul Dinamics &amp; Performance…</p></div>
-    <script type="module" src="../suspension-design-dist/assets/suspension-design.js?v=20260519-50"></script>
+    <div id="root">
+      <div class="engine-boot" aria-label="Se încarcă Garage Solutions Engineered Engine">
+        <img class="engine-boot__logo" src="../assets/garage-solutions-logo.png" alt="Garage Solutions" />
+      </div>
+    </div>
+    <script type="module" src="../garage-engineered-engine-dist/assets/garage-engineered-engine.js?v=20260527-drs-pivot-right-1"></script>
   </body>
 </html>

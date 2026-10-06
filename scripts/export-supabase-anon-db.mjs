@@ -34,6 +34,11 @@ const DEFAULT_TABLES = [
   "bmw_configuration_lookup",
   "bmw_configuration_differential_lookup",
   "bmw_technical_specs",
+  "aero_package",
+  "aero_profile",
+  "aero_component",
+  "aero_package_component",
+  "aero_component_effect",
   "bilstein_suspension_options",
 ];
 

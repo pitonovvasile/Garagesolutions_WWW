@@ -12,14 +12,6 @@ import {
   wireAddressCardGeo,
 } from "./ro-address-geo.mjs";
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    storage: createSupabaseCookieMirrorStorage(),
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
-
 const elGate = document.getElementById("cont-auth-gate");
 const elApp = document.getElementById("cont-app");
 const contAuthError = document.getElementById("cont-auth-error");
@@ -50,16 +42,26 @@ const passwordForm = document.getElementById("cont-password-form");
 const signOutBtn = document.getElementById("cont-sign-out-btn");
 const contHeaderEmail = document.getElementById("cont-header-email");
 const contConnectMeta = document.getElementById("cont-connect-meta");
+const headerUserLabel = document.getElementById("header-user-label");
+const headerFavoritesWrap = document.getElementById("header-favorites-wrap");
+const headerIdentityBtn = document.getElementById("header-identity-btn");
 
 const fieldActivity = document.getElementById("profile-activity");
 const wrapCompany = document.getElementById("profile-company-wrap");
 
-const inpEmail = document.getElementById("cont-login-email");
 const inpPwd = document.getElementById("cont-pwd-new");
 const inpPwd2 = document.getElementById("cont-pwd-confirm");
 const inpProfileEmail = document.getElementById("cont-profile-email");
 const RECONFIGURE_CAR_KEY = "garageSolutionsReconfigureCarV1";
 const RECONFIGURE_CAR_EDIT_CONTEXT_KEY = "garageSolutionsReconfigureCarEditContextV1";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    storage: createSupabaseCookieMirrorStorage(),
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
 
 function setMsg(el, text, isError) {
   if (!el) return;
@@ -73,6 +75,30 @@ function setMsg(el, text, isError) {
   el.hidden = false;
   el.classList.toggle("cont-message--error", Boolean(isError));
   el.classList.toggle("cont-message--ok", !isError);
+}
+
+function displayNameForHeader(user) {
+  const meta = user?.user_metadata && typeof user.user_metadata === "object" ? user.user_metadata : {};
+  const fullName = [meta.first_name, meta.last_name]
+    .map((v) => (typeof v === "string" ? v.trim() : ""))
+    .filter(Boolean)
+    .join(" ");
+  if (fullName) return fullName;
+  if (typeof user?.displayName === "string" && user.displayName.trim()) return user.displayName.trim();
+  const email = typeof user?.email === "string" ? user.email.trim() : "";
+  return email ? email.split("@")[0] : "Contul meu";
+}
+
+function syncHeaderWithAccountSession(user) {
+  const label = user ? displayNameForHeader(user) : "Contul meu";
+  if (headerUserLabel) headerUserLabel.textContent = label;
+  if (headerFavoritesWrap) headerFavoritesWrap.hidden = !user;
+  if (headerIdentityBtn) {
+    headerIdentityBtn.setAttribute(
+      "aria-label",
+      user ? `Deschide contul pentru ${label}` : "Deschide autentificarea contului",
+    );
+  }
 }
 
 function formatSupabaseErr(err) {
@@ -260,7 +286,7 @@ function applyAuthMetadataToProfileFields(user) {
   if (!hasFn() && meta.first_name) fnEl.value = String(meta.first_name).trim();
   if (!hasLn() && meta.family_name) lnEl.value = String(meta.family_name).trim();
   if (!hasFn() && meta.given_name) fnEl.value = String(meta.given_name).trim();
-  const combinedName = meta.full_name || meta.name;
+  const combinedName = meta.full_name || meta.name || user?.displayName;
   if (!hasFn() && !hasLn() && combinedName) {
     const parts = String(combinedName).trim().split(/\s+/).filter(Boolean);
     if (parts.length >= 2) {
@@ -934,14 +960,15 @@ async function refreshUserHeader(user) {
 
 async function onSession(session) {
   if (!session?.user) {
+    syncHeaderWithAccountSession(null);
     showView(false);
     renderSavedCarsForAccount();
     return;
   }
+  syncHeaderWithAccountSession(session.user);
   showView(true);
-  await refreshUserHeader(session.user);
   try {
-    await syncGarageFromCloudAndLocal();
+    await syncGarageFromCloudAndLocal(supabase);
   } catch (e) {
     console.warn("[cont] sync garaj cloud", e?.message || e);
   }
@@ -1157,7 +1184,7 @@ passwordForm?.addEventListener("submit", async (e) => {
     false
   );
   const { data: s } = await supabase.auth.getSession();
-  if (s?.user) await refreshUserHeader(s.user);
+  if (s?.session?.user) await refreshUserHeader(s.session.user);
 });
 
 signOutBtn?.addEventListener("click", async () => {
@@ -1197,7 +1224,7 @@ savedCarsListEl?.addEventListener("click", (ev) => {
   if (!cars[idx]) return;
   cars.splice(idx, 1);
   writeSavedCars(cars);
-  void pushLocalGarageToCloud().catch((e) => console.warn("[cont] push garaj", e));
+  void pushLocalGarageToCloud(supabase).catch((e) => console.warn("[cont] push garaj", e));
   renderSavedCarsForAccount();
   setMsg(contGarageCarsMsg, "Mașina a fost ștearsă din garaj.", false);
 });
@@ -1207,7 +1234,7 @@ savedCarsClearBtn?.addEventListener("click", () => {
   if (!cars.length) return;
   if (!confirm("Ștergi toate mașinile salvate din garaj?")) return;
   writeSavedCars([]);
-  void pushLocalGarageToCloud().catch((e) => console.warn("[cont] push garaj", e));
+  void pushLocalGarageToCloud(supabase).catch((e) => console.warn("[cont] push garaj", e));
   renderSavedCarsForAccount();
   setMsg(contGarageCarsMsg, "Toate mașinile salvate au fost șterse.", false);
 });

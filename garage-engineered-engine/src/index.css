@@ -1,0 +1,862 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  min-height: 100dvh;
+  height: 100%;
+}
+
+body {
+  @apply bg-neutral-950 text-neutral-200 antialiased;
+  margin: 0;
+}
+
+html:has(#root > [data-garage-engine-root-shell]),
+body:has(#root > [data-garage-engine-root-shell]),
+#root:has(> [data-garage-engine-root-shell]) {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/*
+ * OEM+ kits (`oem-plus-kits.html`): același tip de fundal ca site-ul static după ce se încarcă `main.css`
+ * (straturi body::before / body::after pentru dark; bright ascunde pseudo-straturile din main.css).
+ * Depășește `bg-neutral-950` de mai sus pentru `body:has(...)` (specificitate mai mare).
+ */
+body:has(#root > .oem-plus-app) {
+  color: #e4e7ec;
+  background-color: #07090f;
+  background-image: linear-gradient(180deg, #101722 0%, #090d16 35%, #06080f 100%);
+  background-size: 100% 100%;
+}
+
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) {
+  color: #2a2b3f;
+  background-color: #ebe8f4;
+  background-image: linear-gradient(
+    180deg,
+    #f7f6fb 0%,
+    #ebe8f4 38%,
+    #dfd8ee 72%,
+    #d0d8ee 100%
+  );
+  background-size: 100% 100%;
+}
+
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) select.oem-catalog-select {
+  border-color: rgba(42, 43, 63, 0.22) !important;
+  background-color: #f7f6fb !important;
+  color: #2a2b3f !important;
+}
+
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) select.oem-catalog-select option {
+  background-color: #f7f6fb;
+  color: #2a2b3f;
+}
+
+/* Conținut OEM+ pe bright: aceleași tonuri Future Dusk ca în main.css (titluri, text secundar, card). */
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) .oem-plus-sheet {
+  color: #2a2b3f;
+}
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) .oem-plus-sheet .text-white {
+  color: #353654 !important;
+}
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) .oem-plus-sheet .text-neutral-200 {
+  color: #2a2b3f !important;
+}
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) .oem-plus-sheet .text-neutral-400 {
+  color: #5a5c7a !important;
+}
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) .oem-plus-sheet .text-neutral-500 {
+  color: #5a5c7a !important;
+}
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) .oem-plus-sheet a {
+  color: #5a5c7a;
+}
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) .oem-plus-sheet a:hover {
+  color: #9c895b;
+}
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) .oem-plus-sheet .oem-plus-head {
+  border-color: rgba(53, 54, 84, 0.22);
+}
+html[data-site-theme="bright"] body:has(#root > .oem-plus-app) .oem-plus-sheet .oem-plus-card {
+  border-color: rgba(53, 54, 84, 0.22);
+  background-color: rgba(247, 246, 251, 0.94);
+  box-shadow: 0 4px 20px rgba(53, 54, 84, 0.08);
+}
+
+/* Range input — engineering dark */
+input[type="range"].sd-rail {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.25), rgba(59, 130, 246, 0.35));
+}
+input[type="range"].sd-rail::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #22d3ee, #3b82f6);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+input[type="range"].sd-rail::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #22d3ee, #3b82f6);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.active-aero-rear-wing-layout {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+}
+
+.active-aero-drs-visual {
+  container-type: inline-size;
+  position: relative;
+  min-height: clamp(18rem, 24vw, 24rem);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.active-aero-visual {
+  position: relative;
+  height: 100%;
+  min-height: inherit;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.07), transparent 42%);
+}
+
+.active-aero-car-anchor {
+  position: absolute;
+  z-index: 10;
+  opacity: 0.95;
+  transform-origin: right bottom;
+}
+
+.active-aero-car-anchor--rear {
+  right: clamp(0.75rem, 2.7cqw, 2rem);
+  bottom: 0;
+  width: clamp(20rem, 75cqw, 47.5rem);
+  max-width: calc(100% - 1.5rem);
+  transform: translateY(0);
+}
+
+.active-aero-car-anchor--front {
+  right: clamp(-3rem, -4cqw, -1.25rem);
+  bottom: 0;
+  width: clamp(38rem, 138cqw, 47.5rem);
+  max-width: 138%;
+  transform: translateY(22%);
+}
+
+.active-aero-asphalt {
+  position: absolute;
+  right: clamp(0.25rem, 2.25cqw, 1.35rem);
+  bottom: -28px;
+  z-index: 4;
+  width: clamp(22rem, 80cqw, 51rem);
+  max-width: calc(100% - 0.5rem);
+  height: clamp(3.6rem, 10.5cqw, 5.7rem);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.active-aero-asphalt__surface,
+.active-aero-asphalt__edge,
+.active-aero-asphalt__aggregate,
+.active-aero-asphalt__contact {
+  position: absolute;
+  display: block;
+}
+
+.active-aero-asphalt__surface {
+  inset: 0 0 0;
+  border-radius: 0.18rem 0.18rem 0 0;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(226, 232, 240, 0.24) 0 0.7px, transparent 1.2px),
+    radial-gradient(circle at 19% 64%, rgba(148, 163, 184, 0.2) 0 0.8px, transparent 1.4px),
+    radial-gradient(circle at 33% 35%, rgba(244, 244, 245, 0.16) 0 0.7px, transparent 1.35px),
+    radial-gradient(circle at 48% 76%, rgba(113, 113, 122, 0.34) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 64% 28%, rgba(203, 213, 225, 0.2) 0 0.8px, transparent 1.45px),
+    radial-gradient(circle at 82% 58%, rgba(82, 82, 91, 0.5) 0 1px, transparent 1.9px),
+    linear-gradient(180deg, rgba(38, 41, 45, 0.98) 0%, rgba(23, 25, 29, 0.98) 26%, rgba(9, 10, 12, 0.98) 78%, rgba(4, 5, 7, 1) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1.1rem 1.6rem rgba(0, 0, 0, 0.42),
+    0 -0.8rem 1.8rem rgba(0, 0, 0, 0.32);
+  opacity: 0.98;
+}
+
+.active-aero-asphalt__aggregate {
+  inset: 0.2rem 0.2rem 0;
+  border-radius: 0.16rem 0.16rem 0 0;
+  background:
+    repeating-linear-gradient(12deg, transparent 0 0.42rem, rgba(255, 255, 255, 0.04) 0.42rem 0.48rem, transparent 0.48rem 0.9rem),
+    repeating-linear-gradient(93deg, transparent 0 0.32rem, rgba(0, 0, 0, 0.22) 0.32rem 0.38rem, transparent 0.38rem 0.82rem);
+  mix-blend-mode: screen;
+  opacity: 0.42;
+}
+
+.active-aero-asphalt__edge {
+  left: 2%;
+  right: 2%;
+  top: 0;
+  height: clamp(2px, 0.45cqw, 4px);
+  border-radius: 9999px;
+  background:
+    linear-gradient(90deg, transparent, rgba(203, 213, 225, 0.42) 11%, rgba(250, 250, 250, 0.62) 48%, rgba(148, 163, 184, 0.34) 82%, transparent),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0 1px, transparent 1px 7px);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.9),
+    0 0.55rem 1.1rem rgba(0, 0, 0, 0.42);
+  opacity: 0.86;
+}
+
+.active-aero-asphalt__contact {
+  top: -4%;
+  height: 20%;
+  border-radius: 9999px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.34) 48%, transparent 74%);
+  filter: blur(3px);
+  opacity: 0.7;
+}
+
+.active-aero-asphalt__contact--rear {
+  left: 29%;
+  width: 17%;
+}
+
+.active-aero-asphalt__contact--front {
+  right: 10%;
+  width: 19%;
+}
+
+.active-aero-drs-legend,
+.active-aero-drs-forces {
+  position: absolute;
+  z-index: 30;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.375rem;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+}
+
+.active-aero-drs-legend {
+  left: clamp(0.75rem, 3.2cqw, 1.5rem);
+  top: clamp(0.75rem, 3.2cqw, 1.25rem);
+  width: clamp(7rem, 16cqw, 11.5rem);
+  padding: 0.375rem 0.5rem;
+}
+
+.active-aero-drs-forces {
+  right: clamp(0.75rem, 3.2cqw, 1.75rem);
+  top: clamp(0.75rem, 3.2cqw, 1.5rem);
+  width: clamp(12rem, 24cqw, 24rem);
+  padding: clamp(0.75rem, 1.6cqw, 1rem);
+}
+
+.active-aero-rear-downforce {
+  position: absolute;
+  left: 47.5%;
+  top: 49%;
+  z-index: 24;
+  width: 0;
+  height: 27%;
+  color: #ef4444;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.active-aero-rear-downforce--green {
+  color: #22c55e;
+}
+
+.active-aero-rear-downforce--blue {
+  color: #3b82f6;
+}
+
+.active-aero-rear-downforce--open {
+  height: 17%;
+}
+
+.active-aero-rear-downforce__shaft {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  display: block;
+  width: clamp(0.45rem, 1.45cqw, 0.8rem);
+  height: calc(100% - 1rem);
+  border-radius: 9999px 9999px 0 0;
+  background: currentColor;
+  box-shadow: 0 0 18px color-mix(in srgb, currentColor 72%, transparent);
+  opacity: 0.9;
+  transform: translateX(-50%);
+}
+
+.active-aero-rear-downforce__arrow {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: clamp(0.7rem, 1.5cqw, 1rem) solid transparent;
+  border-right: clamp(0.7rem, 1.5cqw, 1rem) solid transparent;
+  border-top: clamp(1rem, 2.1cqw, 1.35rem) solid currentColor;
+  filter: drop-shadow(0 0 13px color-mix(in srgb, currentColor 70%, transparent));
+  opacity: 0.95;
+  transform: translateX(-50%);
+}
+
+.active-aero-rear-downforce__label {
+  position: absolute;
+  left: 50%;
+  bottom: -0.8rem;
+  transform: translate(-50%, 100%);
+  color: #e5e7eb;
+  font-size: clamp(0.5rem, 1.35cqw, 0.72rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+}
+
+@container (max-width: 44rem) {
+  .active-aero-drs-forces {
+    width: clamp(10.75rem, 34cqw, 14rem);
+  }
+
+  .active-aero-drs-legend {
+    width: clamp(6.5rem, 22cqw, 8rem);
+  }
+
+  .active-aero-car-anchor--rear {
+    width: clamp(18rem, 82cqw, 36rem);
+  }
+}
+
+@media (max-width: 1180px) {
+  .active-aero-rear-wing-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .active-aero-drs-controls {
+    border-right-width: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+.active-aero-drs-flap {
+  position: absolute;
+  left: 0.6%;
+  top: 36.7%;
+  z-index: 20;
+  width: 11%;
+  height: 7%;
+  pointer-events: none;
+}
+
+.active-aero-drs-flap__hinge {
+  position: absolute;
+  right: 14%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(229, 231, 235, 0.95);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.active-aero-drs-flap__blade {
+  position: absolute;
+  right: 14%;
+  top: 45%;
+  width: 72%;
+  height: 7px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(17, 24, 39, 0.96), rgba(226, 232, 240, 0.95), rgba(17, 24, 39, 0.94));
+  box-shadow: 0 0 13px rgba(255, 255, 255, 0.35);
+  transform-origin: right center;
+  transition: transform 220ms ease, background 220ms ease;
+}
+
+.active-aero-drs-flap--closed .active-aero-drs-flap__blade {
+  transform: rotate(17deg);
+}
+
+.active-aero-drs-flap--open .active-aero-drs-flap__blade {
+  background: linear-gradient(90deg, rgba(6, 78, 59, 0.96), rgba(134, 239, 172, 0.95), rgba(5, 46, 22, 0.92));
+  transform: rotate(2deg);
+}
+
+.active-aero-front-lip-field {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  color: var(--front-lip-field-color);
+  opacity: var(--front-lip-field-opacity);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transform: scale(var(--front-lip-field-scale));
+  transform-origin: 89% 75%;
+  clip-path: inset(0 0 12% 0);
+}
+
+.active-aero-front-lip-field__curves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.active-aero-front-lip-field__curve {
+  stroke-dasharray: 5 18;
+  stroke-linecap: round;
+  animation: active-aero-dash 1.9s linear infinite;
+  animation-delay: var(--front-lip-field-delay);
+}
+
+.active-aero-front-lip-field__particle {
+  position: absolute;
+  right: 2%;
+  top: var(--front-lip-particle-top);
+  display: block;
+  width: 1.5px;
+  height: 1.5px;
+  border-radius: 9999px;
+  background: currentColor;
+  box-shadow: 0 0 7px currentColor;
+  opacity: 0;
+  animation: active-aero-front-lip-particle var(--front-lip-particle-duration) linear infinite;
+  animation-delay: var(--front-lip-particle-delay);
+  will-change: transform, opacity;
+}
+
+.active-aero-front-lip-field__pressure {
+  position: absolute;
+  right: 1.15rem;
+  bottom: 3rem;
+  width: min(11rem, 30%);
+  height: 3.2rem;
+  border-radius: 52% 48% 58% 42%;
+  background:
+    radial-gradient(ellipse at 86% 34%, rgba(96, 165, 250, 0.5), transparent 44%),
+    radial-gradient(ellipse at 48% 74%, rgba(34, 211, 238, 0.2), transparent 66%);
+  filter: blur(9px);
+  opacity: 0.42;
+  animation: active-aero-front-lip-pressure 1.9s ease-in-out infinite;
+}
+
+.active-aero-front-lip-field__split {
+  position: absolute;
+  right: 0.8rem;
+  bottom: 5.25rem;
+  width: min(8.5rem, 24%);
+  height: 1px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.85) 38%, rgba(34, 211, 238, 0.55) 74%, transparent);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.42);
+  opacity: 0.76;
+  transform: rotate(-4deg);
+}
+
+.active-aero-underbody-density {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 3.05rem;
+  z-index: 2;
+  width: var(--underbody-density-length);
+  height: 4.2rem;
+  color: var(--front-lip-field-color);
+  opacity: var(--underbody-density-opacity);
+  pointer-events: none;
+  transform-origin: right bottom;
+}
+
+.active-aero-underbody-density__sheet,
+.active-aero-underbody-density__core,
+.active-aero-underbody-density__line {
+  position: absolute;
+  right: 0;
+  display: block;
+}
+
+.active-aero-underbody-density__sheet {
+  bottom: 0.55rem;
+  width: 100%;
+  height: 2.35rem;
+  border-radius: 9999px 30% 42% 9999px;
+  background:
+    radial-gradient(ellipse at 92% 56%, rgba(147, 197, 253, 0.46), transparent 42%),
+    linear-gradient(270deg, rgba(96, 165, 250, 0.34), rgba(34, 211, 238, 0.16) 44%, transparent 100%);
+  filter: blur(7px);
+}
+
+.active-aero-underbody-density__core {
+  bottom: 1.35rem;
+  width: 88%;
+  height: 0.35rem;
+  border-radius: 9999px;
+  background: linear-gradient(270deg, rgba(191, 219, 254, 0.8), rgba(96, 165, 250, 0.5) 38%, transparent 100%);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.48);
+  opacity: var(--underbody-density-core);
+}
+
+.active-aero-underbody-density__line {
+  height: 1px;
+  border-radius: 9999px;
+  background: linear-gradient(270deg, rgba(191, 219, 254, 0.88), rgba(96, 165, 250, 0.52), transparent);
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.42);
+  animation: active-aero-underbody-density-line 2s ease-in-out infinite;
+}
+
+.active-aero-underbody-density__line--upper {
+  bottom: 2.25rem;
+  width: 62%;
+  opacity: 0.56;
+  transform: rotate(-1.5deg);
+}
+
+.active-aero-underbody-density__line--middle {
+  bottom: 1.62rem;
+  width: 100%;
+  opacity: 0.78;
+  animation-delay: -0.35s;
+}
+
+.active-aero-underbody-density__line--lower {
+  bottom: 1.02rem;
+  width: 74%;
+  opacity: 0.5;
+  transform: rotate(1.25deg);
+  animation-delay: -0.7s;
+}
+
+.active-aero-front-lip {
+  position: absolute;
+  left: 84.1%;
+  top: 61.4%;
+  z-index: 24;
+  width: 12.5%;
+  height: 6.5%;
+  pointer-events: none;
+  transform: translateY(var(--front-lip-drop));
+  transform-origin: left center;
+  transition: transform 220ms ease;
+}
+
+.active-aero-front-lip__hinge {
+  position: absolute;
+  left: 7%;
+  bottom: 18%;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(226, 232, 240, 0.95);
+  box-shadow: 0 0 10px rgba(147, 197, 253, 0.65);
+}
+
+.active-aero-front-lip__actuator {
+  position: absolute;
+  left: 10%;
+  bottom: 34%;
+  width: 34%;
+  height: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.92), rgba(147, 197, 253, 0.96));
+  box-shadow: 0 0 9px rgba(96, 165, 250, 0.5);
+  transform: rotate(-19deg);
+  transform-origin: left center;
+}
+
+.active-aero-front-lip__blade {
+  position: absolute;
+  left: 5%;
+  bottom: 0;
+  width: var(--front-lip-length);
+  height: 8px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(8, 13, 23, 0.98), rgba(96, 165, 250, 0.98), rgba(3, 7, 18, 0.96));
+  box-shadow: 0 0 13px rgba(96, 165, 250, 0.56);
+  opacity: var(--front-lip-opacity);
+  transform: rotate(var(--front-lip-angle));
+  transform-origin: 6% 50%;
+  transition: opacity 220ms ease, transform 220ms ease, width 220ms ease;
+}
+
+.active-aero-front-lip__glow {
+  position: absolute;
+  left: 8%;
+  bottom: -9px;
+  width: var(--front-lip-length);
+  height: 18px;
+  border-radius: 9999px;
+  background: radial-gradient(ellipse at 50% 42%, rgba(59, 130, 246, 0.64), transparent 72%);
+  filter: blur(5px);
+  opacity: var(--front-lip-opacity);
+}
+
+.active-aero-front-splitter-trace {
+  position: absolute;
+  right: 0.8rem;
+  bottom: 4.05rem;
+  z-index: 22;
+  width: min(12.5rem, 36%);
+  height: 4.8rem;
+  pointer-events: none;
+  color: #60a5fa;
+  mix-blend-mode: screen;
+}
+
+.active-aero-front-splitter-trace__line {
+  position: absolute;
+  right: 0;
+  display: block;
+  height: 1px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, currentColor 32%, rgba(34, 211, 238, 0.55) 68%, transparent);
+  box-shadow: 0 0 8px currentColor;
+  opacity: 0.64;
+  transform-origin: right center;
+  animation: active-aero-front-trace 1.8s ease-in-out infinite;
+}
+
+.active-aero-front-splitter-trace__line--top {
+  top: 13%;
+  width: 55%;
+  --front-trace-rotate: -10deg;
+  transform: rotate(-10deg);
+}
+
+.active-aero-front-splitter-trace__line--middle {
+  top: 45%;
+  width: 92%;
+  opacity: 0.78;
+  --front-trace-rotate: 0deg;
+  animation-delay: -0.3s;
+}
+
+.active-aero-front-splitter-trace__line--lower {
+  top: 71%;
+  width: 70%;
+  --front-trace-rotate: 7deg;
+  transform: rotate(7deg);
+  opacity: 0.52;
+  animation-delay: -0.6s;
+}
+
+.active-aero-front-downforce-vector {
+  position: absolute;
+  right: 2.05rem;
+  bottom: 2.75rem;
+  z-index: 23;
+  width: 4.8rem;
+  height: 5.6rem;
+  pointer-events: none;
+  color: #60a5fa;
+  mix-blend-mode: screen;
+}
+
+.active-aero-front-downforce-vector__shaft {
+  position: absolute;
+  left: 50%;
+  top: 0.45rem;
+  width: 2px;
+  height: 3.6rem;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0), currentColor 36%, rgba(34, 211, 238, 0.86));
+  box-shadow: 0 0 10px currentColor;
+  transform: translateX(-50%);
+  opacity: 0.78;
+}
+
+.active-aero-front-downforce-vector__arrow {
+  position: absolute;
+  left: 50%;
+  top: 3.65rem;
+  width: 18px;
+  height: 18px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  filter: drop-shadow(0 0 6px currentColor);
+  transform: translateX(-50%) rotate(45deg);
+  opacity: 0.86;
+}
+
+.active-aero-front-downforce-vector__label {
+  position: absolute;
+  right: -1.15rem;
+  bottom: -0.1rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(229, 231, 235, 0.9);
+  text-shadow: 0 0 10px rgba(96, 165, 250, 0.55);
+}
+
+.active-aero-front-lift-meter {
+  position: absolute;
+  left: 0.8rem;
+  top: 0.8rem;
+  z-index: 24;
+  width: min(8.75rem, calc(100% - 1.6rem));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.4rem;
+  background: rgba(0, 0, 0, 0.42);
+  padding: 0.5rem 0.55rem;
+  backdrop-filter: blur(8px);
+}
+
+.active-aero-front-lift-meter__label {
+  display: block;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(212, 212, 216, 0.74);
+}
+
+.active-aero-front-lift-meter__value {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  color: #93c5fd;
+  text-shadow: 0 0 12px rgba(96, 165, 250, 0.55);
+}
+
+.active-aero-front-lift-meter__rail {
+  display: block;
+  margin-top: 0.38rem;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.active-aero-front-lift-meter__fill {
+  display: block;
+  height: 100%;
+  max-width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #60a5fa, #22d3ee);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.55);
+}
+
+@keyframes active-aero-dash {
+  to {
+    stroke-dashoffset: -72;
+  }
+}
+
+@keyframes active-aero-front-lip-particle {
+  0% {
+    opacity: 0;
+    transform: translateX(0) translateY(0) scale(0.65);
+  }
+  18% {
+    opacity: 0.78;
+  }
+  82% {
+    opacity: 0.52;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-240px) translateY(var(--front-lip-particle-drop)) scale(0.24);
+  }
+}
+
+@keyframes active-aero-front-lip-pressure {
+  0%,
+  100% {
+    transform: translateX(6px) translateY(0) scaleX(0.9);
+  }
+  50% {
+    transform: translateX(-6px) translateY(4px) scaleX(1.08);
+  }
+}
+
+@keyframes active-aero-underbody-density-line {
+  0%,
+  100% {
+    transform: translateX(4px) scaleX(0.92);
+  }
+  50% {
+    transform: translateX(-5px) scaleX(1.04);
+  }
+}
+
+@keyframes active-aero-front-trace {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: translateX(5px) scaleX(0.88) rotate(var(--front-trace-rotate, 0deg));
+  }
+  50% {
+    opacity: 0.78;
+    transform: translateX(-5px) scaleX(1.05) rotate(var(--front-trace-rotate, 0deg));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .active-aero-front-lip-field__curve,
+  .active-aero-front-lip-field__particle,
+  .active-aero-front-lip-field__pressure,
+  .active-aero-front-splitter-trace__line,
+  .active-aero-underbody-density__line {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
+/* OEM+ kits: layout stabil când `assets/css/main.css` face `body` flex (header site) */
+#root > .oem-plus-app {
+  flex: 1 1 auto;
+  min-height: 100dvh;
+  min-width: 0;
+  /* Fundalul paginii vine de pe `body` (tema dark / bright ca în main.css), nu de aici. */
+  background-color: transparent;
+}
+
+/*
+ * OEM+ kits: <select> vizibil chiar dacă alte foi CSS de pe site suprascriu stilul implicit.
+ * (fără date demo — doar prezentare vizibilă pentru opțiunile din Supabase)
+ */
+select.oem-catalog-select {
+  box-sizing: border-box;
+  display: block !important;
+  width: 100% !important;
+  min-height: 2.75rem !important;
+  padding: 0.5rem 0.75rem !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background-color: #171717 !important;
+  background-image: none !important;
+  color: #fafafa !important;
+  font: inherit !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+}
+select.oem-catalog-select:disabled {
+  opacity: 0.55 !important;
+  cursor: not-allowed;
+}
+select.oem-catalog-select option {
+  background-color: #171717;
+  color: #fafafa;
+}

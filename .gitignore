@@ -13,8 +13,13 @@ node_modules/
 *.log
 npm-debug.log*
 
+# Local demo sync state (created by the preview server)
+.garage-demo-sync.json
+.garage-demo-sync.json.tmp
+
 # Local database/export backups
 db-backups/
+.pages-dist/
 
 # Optional: editor (uncomment if you do not want IDE config in the repo)
 # .cursor/

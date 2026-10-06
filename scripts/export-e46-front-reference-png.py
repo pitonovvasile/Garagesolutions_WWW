@@ -15,10 +15,10 @@ from pathlib import Path
 from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[1]
-SIL = ROOT / "suspension-design-app/src/assets/reference/e46-front-silhouette.png"
-SUSP = ROOT / "suspension-design-app/src/assets/reference/e46-front-suspension.png"
-OUT = ROOT / "suspension-design-app/src/assets/reference/bmw-e46-front.png"
-OUT_BODY = ROOT / "suspension-design-app/src/assets/reference/bmw-e46-front-body.png"
+SIL = ROOT / "garage-engineered-engine/src/assets/reference/e46-front-silhouette.png"
+SUSP = ROOT / "garage-engineered-engine/src/assets/reference/e46-front-suspension.png"
+OUT = ROOT / "garage-engineered-engine/src/assets/reference/bmw-e46-front.png"
+OUT_BODY = ROOT / "garage-engineered-engine/src/assets/reference/bmw-e46-front-body.png"
 
 EXPORT_MAX = 720
 WORK_MAX = min(1600, EXPORT_MAX * 2)

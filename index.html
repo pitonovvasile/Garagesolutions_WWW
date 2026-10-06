@@ -511,8 +511,7 @@
           </div>
           <div id="auth-panel-register" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-register" hidden>
             <p class="account-panel__hint">
-              Alege o parolă de cel puțin 6 caractere. După creare ești conectat automat; la următoarea vizită folosește
-              același e-mail cu parola <strong>demo</strong> (mod demonstrație).
+              Folosește parola <strong>demo</strong>. După creare ești conectat automat cu același cont demo.
             </p>
             <form id="demo-register-form" class="account-panel__form" novalidate>
               <label class="account-panel__field">
@@ -535,7 +534,7 @@
                   type="password"
                   autocomplete="new-password"
                   required
-                  minlength="6"
+                  placeholder="demo"
                   class="account-panel__input"
                 />
               </label>
@@ -547,7 +546,7 @@
                   type="password"
                   autocomplete="new-password"
                   required
-                  minlength="6"
+                  placeholder="demo"
                   class="account-panel__input"
                 />
               </label>
@@ -2469,7 +2468,14 @@
           return;
         }
 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            storageKey: "garage-catalog-anon",
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false,
+          },
+        });
         bmwSupabase = supabase;
         setPlaceholder(brandSelect, "Se incarca marci...");
         setPlaceholder(modelSelect, "Selecteaza mai intai marca");

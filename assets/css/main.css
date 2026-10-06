@@ -5,6 +5,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 :root {
   /* Înălțimea benzii header și logo-ul din header sunt independente (reglaj separat). */
   --header-bar-height: 56px;

@@ -3,6 +3,7 @@
  * Parolă: "demo" + orice e-mail valid. Salt JWT nu exista — nu folosi in productie reale.
  */
 export const DEMO_SESSION_KEY = "garageSolutionsDemoSessionV1";
+export const DEMO_SESSION_CHANGED_EVENT = "garageSolutionsDemoSessionChanged";
 
 const SESSION_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -46,10 +47,27 @@ function createSessionForEmail(e) {
   };
   try {
     localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(session));
+    emitDemoSessionChanged();
   } catch (err) {
     return { ok: false, error: "Nu s-a putut salva sesiunea (stocare privata?)" };
   }
   return { ok: true, email: e, displayName: session.displayName };
+}
+
+function emitDemoSessionChanged() {
+  try {
+    window.dispatchEvent(new CustomEvent(DEMO_SESSION_CHANGED_EVENT));
+  } catch (_) {}
+}
+
+export function setDemoSession(session) {
+  try {
+    localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify(session));
+    emitDemoSessionChanged();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -78,8 +96,8 @@ export function registerDemo(email, password, passwordConfirm) {
   }
   const p = password || "";
   const c = passwordConfirm || "";
-  if (p.length < 6) {
-    return { ok: false, error: "Parola trebuie sa aibă cel puțin 6 caractere." };
+  if (p !== "demo") {
+    return { ok: false, error: 'Parola de demo este cuvantul: demo' };
   }
   if (p !== c) {
     return { ok: false, error: "Parolele nu coincid." };
@@ -106,6 +124,7 @@ export function requestPasswordResetDemo(email) {
 export function logoutDemo() {
   try {
     localStorage.removeItem(DEMO_SESSION_KEY);
+    emitDemoSessionChanged();
   } catch {
     /* ignore */
   }

@@ -20,6 +20,22 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const BASE_PORT = Number(process.env.PORT || 8844);
 const BIND_HOST = process.env.HOST;
+const DEMO_SYNC_FILE = path.join(root, ".garage-demo-sync.json");
+const DEMO_SYNC_TMP_FILE = path.join(root, ".garage-demo-sync.json.tmp");
+const DEMO_SYNC_BODY_LIMIT = 1024 * 1024 * 2;
+
+const DEMO_SYNC_KEYS = new Set([
+  "garageSolutionsDemoSessionV1",
+  "garageSolutionsDemoAccountProfileV1",
+  "garageSolutionsDemoDeliveryAddressesV1",
+  "garageSolutionsSavedCars",
+  "garageSolutionsCarPaintV1",
+  "garageSolutionsSuspensionSavedConfigurationV1",
+  "garageSolutionsCartV1",
+  "garageSolutionsOwnedPartsV1",
+  "garageSolutionsSuspensionSetupsV1",
+  "garageSolutionsAeroBodySetupsV1",
+]);
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -67,6 +83,108 @@ function sendFile(res, filePath) {
   fs.createReadStream(filePath).pipe(res);
 }
 
+function defaultDemoSyncStore() {
+  return { revision: 0, updatedAt: null, data: {} };
+}
+
+function readDemoSyncStore() {
+  try {
+    const raw = fs.readFileSync(DEMO_SYNC_FILE, "utf8");
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || !parsed.data || typeof parsed.data !== "object") {
+      return defaultDemoSyncStore();
+    }
+    return {
+      revision: Number.isFinite(Number(parsed.revision)) ? Number(parsed.revision) : 0,
+      updatedAt: typeof parsed.updatedAt === "string" ? parsed.updatedAt : null,
+      data: sanitizeDemoSyncData(parsed.data),
+    };
+  } catch {
+    return defaultDemoSyncStore();
+  }
+}
+
+function writeDemoSyncStore(store) {
+  const out = {
+    revision: Number.isFinite(Number(store.revision)) ? Number(store.revision) : 0,
+    updatedAt: typeof store.updatedAt === "string" ? store.updatedAt : new Date().toISOString(),
+    data: sanitizeDemoSyncData(store.data),
+  };
+  fs.writeFileSync(DEMO_SYNC_TMP_FILE, `${JSON.stringify(out, null, 2)}\n`, "utf8");
+  fs.renameSync(DEMO_SYNC_TMP_FILE, DEMO_SYNC_FILE);
+  return out;
+}
+
+function sanitizeDemoSyncData(data) {
+  const out = {};
+  if (!data || typeof data !== "object" || Array.isArray(data)) return out;
+  for (const [key, value] of Object.entries(data)) {
+    if (!DEMO_SYNC_KEYS.has(key)) continue;
+    if (typeof value !== "string") continue;
+    if (Buffer.byteLength(value, "utf8") > DEMO_SYNC_BODY_LIMIT) continue;
+    out[key] = value;
+  }
+  return out;
+}
+
+function sendJson(res, status, payload) {
+  res.writeHead(status, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store",
+  });
+  res.end(JSON.stringify(payload));
+}
+
+function readJsonBody(req, res, done) {
+  let raw = "";
+  req.setEncoding("utf8");
+  req.on("data", (chunk) => {
+    raw += chunk;
+    if (Buffer.byteLength(raw, "utf8") > DEMO_SYNC_BODY_LIMIT) {
+      sendJson(res, 413, { ok: false, error: "Payload prea mare." });
+      req.destroy();
+    }
+  });
+  req.on("end", () => {
+    if (!raw.trim()) {
+      done({});
+      return;
+    }
+    try {
+      done(JSON.parse(raw));
+    } catch {
+      sendJson(res, 400, { ok: false, error: "JSON invalid." });
+    }
+  });
+}
+
+function handleDemoSyncRequest(req, res) {
+  if (req.method === "GET") {
+    sendJson(res, 200, { ok: true, ...readDemoSyncStore() });
+    return;
+  }
+  if (req.method === "PUT" || req.method === "POST") {
+    readJsonBody(req, res, (payload) => {
+      const current = readDemoSyncStore();
+      const incoming = sanitizeDemoSyncData(payload.data || {});
+      const replace = payload.mode === "replace";
+      const next = writeDemoSyncStore({
+        revision: current.revision + 1,
+        updatedAt: new Date().toISOString(),
+        data: replace ? incoming : { ...current.data, ...incoming },
+      });
+      sendJson(res, 200, { ok: true, ...next });
+    });
+    return;
+  }
+  if (req.method === "OPTIONS") {
+    res.writeHead(204, { "Cache-Control": "no-store" });
+    res.end();
+    return;
+  }
+  sendJson(res, 405, { ok: false, error: "Metoda neacceptata." });
+}
+
 function handleRequest(req, res) {
   applyPreviewHeaders(res);
   const u = new URL(req.url || "/", "http://localhost");
@@ -74,6 +192,10 @@ function handleRequest(req, res) {
     res.setHeader("Cache-Control", "no-store");
     res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
     res.end("ok");
+    return;
+  }
+  if (u.pathname === "/__garage_demo_sync") {
+    handleDemoSyncRequest(req, res);
     return;
   }
   let pathname = u.pathname;
