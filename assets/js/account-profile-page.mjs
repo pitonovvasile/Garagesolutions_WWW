@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./supabase-config.mjs";
 import { createSupabaseCookieMirrorStorage } from "./supabase-session-cookie-mirror.mjs";
 import { onGarageCarsUpdated, readSavedCars, writeSavedCars } from "./garage-saved-cars.mjs";
@@ -15,6 +15,20 @@ import {
 const elGate = document.getElementById("cont-auth-gate");
 const elApp = document.getElementById("cont-app");
 const contAuthError = document.getElementById("cont-auth-error");
+const contForgotToggle = document.getElementById("cont-forgot-toggle");
+const contRecoveryRequestForm = document.getElementById("cont-recovery-request-form");
+const contRecoveryCancel = document.getElementById("cont-recovery-cancel");
+const contRecoveryMsg = document.getElementById("cont-recovery-message");
+const contResetPanel = document.getElementById("cont-reset-password-panel");
+const contResetForm = document.getElementById("cont-reset-password-form");
+const contResetMsg = document.getElementById("cont-reset-password-message");
+const contResetDismiss = document.getElementById("cont-reset-password-dismiss");
+const contWelcomeSection = document.getElementById("cont-welcome-section");
+const contWelcomeCopy = document.getElementById("cont-welcome-copy");
+const contWelcomeSteps = document.getElementById("cont-welcome-steps");
+const contWelcomeDismiss = document.getElementById("cont-welcome-dismiss");
+const contWelcomeProfile = document.getElementById("cont-welcome-profile");
+const contWelcomeDelivery = document.getElementById("cont-welcome-delivery");
 const contFormMsg = document.getElementById("cont-form-message");
 const contPwdMsg = document.getElementById("cont-password-message");
 const contDeliveryMsg = document.getElementById("cont-delivery-message");
@@ -54,14 +68,25 @@ const inpPwd2 = document.getElementById("cont-pwd-confirm");
 const inpProfileEmail = document.getElementById("cont-profile-email");
 const RECONFIGURE_CAR_KEY = "garageSolutionsReconfigureCarV1";
 const RECONFIGURE_CAR_EDIT_CONTEXT_KEY = "garageSolutionsReconfigureCarEditContextV1";
+const WELCOME_DISMISSED_PREFIX = "garageSolutionsWelcomeDismissedV1:";
+const WELCOME_PENDING_REASON_KEY = "garageSolutionsWelcomePendingReasonV1";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     storage: createSupabaseCookieMirrorStorage(),
     persistSession: true,
     autoRefreshToken: true,
+    detectSessionInUrl: true,
   },
 });
+
+const welcomeState = {
+  user: null,
+  profile: null,
+  deliveryCount: 0,
+};
+
+let passwordRecoveryMode = false;
 
 function setMsg(el, text, isError) {
   if (!el) return;
@@ -75,6 +100,57 @@ function setMsg(el, text, isError) {
   el.hidden = false;
   el.classList.toggle("cont-message--error", Boolean(isError));
   el.classList.toggle("cont-message--ok", !isError);
+}
+
+function currentAccountRedirectUrl() {
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.hash = "";
+  return url.toString();
+}
+
+function urlLooksLikePasswordRecovery() {
+  const params = new URLSearchParams(window.location.search);
+  const hash = new URLSearchParams(String(window.location.hash || "").replace(/^#/, ""));
+  return params.get("type") === "recovery" || hash.get("type") === "recovery";
+}
+
+function clearSensitiveAuthUrlParts() {
+  if (!window.history?.replaceState) return;
+  const url = new URL(window.location.href);
+  url.searchParams.delete("type");
+  url.searchParams.delete("access_token");
+  url.searchParams.delete("refresh_token");
+  url.searchParams.delete("expires_in");
+  url.searchParams.delete("token_type");
+  url.searchParams.delete("error");
+  url.searchParams.delete("error_code");
+  url.searchParams.delete("error_description");
+  url.hash = "";
+  window.history.replaceState({}, document.title, url.toString());
+}
+
+function setRecoveryRequestVisible(visible) {
+  if (contRecoveryRequestForm) contRecoveryRequestForm.hidden = !visible;
+  if (contForgotToggle) contForgotToggle.hidden = visible;
+  if (visible) {
+    const loginEmail = loginForm?.querySelector('input[name="email"]')?.value || "";
+    const recoveryEmail = contRecoveryRequestForm?.querySelector('input[name="email"]');
+    if (recoveryEmail && loginEmail && !recoveryEmail.value) recoveryEmail.value = loginEmail;
+    recoveryEmail?.focus();
+  } else {
+    setMsg(contRecoveryMsg, "", false);
+  }
+}
+
+function setResetPanelVisible(visible, message = "") {
+  if (contResetPanel) contResetPanel.hidden = !visible;
+  if (visible) {
+    setMsg(contResetMsg, message, false);
+    requestAnimationFrame(() => contResetPanel?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  } else {
+    setMsg(contResetMsg, "", false);
+  }
 }
 
 function displayNameForHeader(user) {
@@ -375,6 +451,97 @@ const PROFILE_BILLING_SELECT = [
   "bill_pj_denumire, bill_pj_cui, bill_pj_reg_com, bill_pj_county, bill_pj_city, bill_pj_street, bill_pj_postal, bill_pj_bank, bill_pj_iban, bill_pj_contact",
 ].join(" ");
 
+function welcomeDismissKey(user) {
+  return `${WELCOME_DISMISSED_PREFIX}${user?.id || user?.email || "anonymous"}`;
+}
+
+function isWelcomeDismissed(user) {
+  try {
+    return localStorage.getItem(welcomeDismissKey(user)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markWelcomeDismissed(user) {
+  try {
+    localStorage.setItem(welcomeDismissKey(user), "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+function profileIsComplete(row) {
+  if (!row) return false;
+  const hasName = Boolean(String(row.first_name || "").trim() && String(row.last_name || "").trim());
+  const hasActivity = Boolean(String(row.activity_type || "").trim());
+  const hasCompanyIfNeeded = row.activity_type !== "juridica" || Boolean(String(row.company_name || "").trim());
+  return hasName && hasActivity && hasCompanyIfNeeded;
+}
+
+function renderWelcomeFlow(user = welcomeState.user, profile = welcomeState.profile) {
+  if (!contWelcomeSection || !contWelcomeSteps) return;
+  welcomeState.user = user || welcomeState.user;
+  welcomeState.profile = profile || welcomeState.profile;
+  const activeUser = welcomeState.user;
+  if (!activeUser) {
+    contWelcomeSection.hidden = true;
+    return;
+  }
+
+  const carsCount = readSavedCars().length;
+  const steps = [
+    {
+      title: "Profil",
+      copy: "Nume, prenume și tip cont completate.",
+      complete: profileIsComplete(welcomeState.profile),
+    },
+    {
+      title: "Garaj",
+      copy: carsCount ? `${carsCount} mașină/mașini salvate.` : "Salvează prima mașină pentru filtrări rapide.",
+      complete: carsCount > 0,
+    },
+    {
+      title: "Livrare",
+      copy: welcomeState.deliveryCount
+        ? `${welcomeState.deliveryCount} adresă/adrese salvate.`
+        : "Adaugă o adresă ca să pregătim checkout-ul.",
+      complete: welcomeState.deliveryCount > 0,
+    },
+  ];
+  const allComplete = steps.every((step) => step.complete);
+  let pendingReason = "";
+  try {
+    pendingReason = sessionStorage.getItem(WELCOME_PENDING_REASON_KEY) || "";
+  } catch {
+    pendingReason = "";
+  }
+  if (allComplete && !pendingReason) {
+    contWelcomeSection.hidden = true;
+    return;
+  }
+  if (isWelcomeDismissed(activeUser) && !pendingReason) {
+    contWelcomeSection.hidden = true;
+    return;
+  }
+
+  if (contWelcomeCopy) {
+    contWelcomeCopy.textContent =
+      pendingReason === "registered"
+        ? "Contul a fost creat. Următorii pași leagă profilul, garajul și livrarea de contul tău."
+        : "Completează datele de bază ca să putem lega rapid mașinile, adresele și comenzile de contul tău.";
+  }
+
+  contWelcomeSteps.innerHTML = "";
+  steps.forEach((step) => {
+    const li = document.createElement("li");
+    li.className = `cont-welcome-step${step.complete ? " is-complete" : ""}`;
+    li.innerHTML = `<strong>${escAttr(step.title)}</strong><span>${escAttr(step.copy)}</span>`;
+    contWelcomeSteps.appendChild(li);
+  });
+  contWelcomeSection.hidden = false;
+}
+
 function encodeAddrPayload(ar) {
   try {
     return btoa(unescape(encodeURIComponent(JSON.stringify(ar))));
@@ -664,6 +831,7 @@ function renderSavedCarsForAccount() {
     if (savedCarsEmptyHintEl) savedCarsEmptyHintEl.hidden = false;
     if (savedCarsClearBtn) savedCarsClearBtn.disabled = true;
     if (savedCarsAsideEl) savedCarsAsideEl.hidden = true;
+    renderWelcomeFlow();
     requestAnimationFrame(() => refreshContNavFromScroll());
     return;
   }
@@ -694,6 +862,7 @@ function renderSavedCarsForAccount() {
     `;
     savedCarsListEl.appendChild(li);
   });
+  renderWelcomeFlow();
   requestAnimationFrame(() => refreshContNavFromScroll());
 }
 
@@ -864,10 +1033,13 @@ async function loadDeliveryAddresses(user) {
       true
     );
     deliveryListEl.innerHTML = "";
+    welcomeState.deliveryCount = 0;
+    renderWelcomeFlow(user);
     syncDeliveryEmpty();
     return;
   }
   const rows = data || [];
+  welcomeState.deliveryCount = rows.length;
   try {
     injectCountyDatalistOnce();
     await ensureRoGeoData();
@@ -880,6 +1052,7 @@ async function loadDeliveryAddresses(user) {
     deliveryListEl.appendChild(card);
     if (card.querySelector(".cont-addr__city")) wireAddressCardGeo(card);
   });
+  renderWelcomeFlow(user);
   syncDeliveryEmpty();
 }
 
@@ -903,6 +1076,92 @@ deliveryAddBtn?.addEventListener("click", () => {
       setMsg(contDeliveryMsg, e?.message || String(e), true);
     }
   })();
+});
+
+contForgotToggle?.addEventListener("click", () => {
+  setRecoveryRequestVisible(true);
+});
+
+contRecoveryCancel?.addEventListener("click", () => {
+  setRecoveryRequestVisible(false);
+});
+
+contRecoveryRequestForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setMsg(contRecoveryMsg, "", false);
+  const fd = new FormData(contRecoveryRequestForm);
+  const email = (fd.get("email") || "").toString().trim();
+  if (!email) {
+    setMsg(contRecoveryMsg, "Introdu adresa de e-mail a contului.", true);
+    return;
+  }
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: currentAccountRedirectUrl(),
+  });
+  if (error) {
+    setMsg(contRecoveryMsg, formatSupabaseErr(error), true);
+    return;
+  }
+  setMsg(
+    contRecoveryMsg,
+    "Dacă e-mailul există în platformă, vei primi un link de resetare. Verifică și folderul Spam.",
+    false
+  );
+});
+
+contResetForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setMsg(contResetMsg, "", false);
+  const fd = new FormData(contResetForm);
+  const p1 = (fd.get("password") || "").toString();
+  const p2 = (fd.get("password2") || "").toString();
+  if (p1.length < 6) {
+    setMsg(contResetMsg, "Parola trebuie să aibă cel puțin 6 caractere.", true);
+    return;
+  }
+  if (p1 !== p2) {
+    setMsg(contResetMsg, "Parolele nu coincid.", true);
+    return;
+  }
+  const { error } = await supabase.auth.updateUser({ password: p1 });
+  if (error) {
+    setMsg(contResetMsg, formatSupabaseErr(error), true);
+    return;
+  }
+  contResetForm.reset();
+  passwordRecoveryMode = false;
+  clearSensitiveAuthUrlParts();
+  setMsg(contResetMsg, "Parola a fost actualizată. Rămâi conectat în contul tău.", false);
+  setTimeout(() => setResetPanelVisible(false), 1400);
+});
+
+contResetDismiss?.addEventListener("click", () => {
+  passwordRecoveryMode = false;
+  clearSensitiveAuthUrlParts();
+  setResetPanelVisible(false);
+});
+
+contWelcomeDismiss?.addEventListener("click", () => {
+  markWelcomeDismissed(welcomeState.user);
+  try {
+    sessionStorage.removeItem(WELCOME_PENDING_REASON_KEY);
+  } catch {
+    /* ignore */
+  }
+  if (contWelcomeSection) contWelcomeSection.hidden = true;
+});
+
+contWelcomeProfile?.addEventListener("click", () => {
+  setProfileFormLocked(false);
+  document.getElementById("cont-profile-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById("profile-last-name")?.focus({ preventScroll: true });
+});
+
+contWelcomeDelivery?.addEventListener("click", () => {
+  document.getElementById("cont-delivery-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (!deliveryListEl?.querySelector(".cont-addr-card")) {
+    deliveryAddBtn?.click();
+  }
 });
 
 async function loadProfile(user) {
@@ -933,8 +1192,11 @@ async function loadProfile(user) {
         true
       );
     }
+    welcomeState.user = user;
+    welcomeState.profile = data || {};
     fillForm(data || {});
     fillFormBilling(data || {});
+    renderWelcomeFlow(user, data || {});
   } catch (e) {
     setMsg(contFormMsg, e?.message || String(e), true);
   } finally {
@@ -960,13 +1222,21 @@ async function refreshUserHeader(user) {
 
 async function onSession(session) {
   if (!session?.user) {
+    welcomeState.user = null;
+    welcomeState.profile = null;
+    welcomeState.deliveryCount = 0;
+    if (contWelcomeSection) contWelcomeSection.hidden = true;
     syncHeaderWithAccountSession(null);
     showView(false);
     renderSavedCarsForAccount();
     return;
   }
+  welcomeState.user = session.user;
   syncHeaderWithAccountSession(session.user);
   showView(true);
+  if (passwordRecoveryMode) {
+    setResetPanelVisible(true, "Sesiunea de recuperare este activă. Setează parola nouă mai jos.");
+  }
   try {
     await syncGarageFromCloudAndLocal(supabase);
   } catch (e) {
@@ -994,6 +1264,7 @@ loginForm?.addEventListener("submit", async (e) => {
     return;
   }
   loginForm.reset();
+  setRecoveryRequestVisible(false);
 });
 
 registerForm?.addEventListener("submit", async (e) => {
@@ -1015,6 +1286,11 @@ registerForm?.addEventListener("submit", async (e) => {
   if (error) {
     setMsg(contAuthError, error.message, true);
     return;
+  }
+  try {
+    sessionStorage.setItem(WELCOME_PENDING_REASON_KEY, "registered");
+  } catch {
+    /* ignore */
   }
   setMsg(
     contAuthError,
@@ -1056,6 +1332,13 @@ profileForm?.addEventListener("submit", async (e) => {
     setMsg(contFormMsg, error.message, true);
     return;
   }
+  welcomeState.profile = { ...(welcomeState.profile || {}), ...payload };
+  try {
+    sessionStorage.removeItem(WELCOME_PENDING_REASON_KEY);
+  } catch {
+    /* ignore */
+  }
+  renderWelcomeFlow(user, welcomeState.profile);
   setMsg(contFormMsg, "Datele au fost salvate.", false);
   setProfileFormLocked(true);
 });
@@ -1241,8 +1524,16 @@ savedCarsClearBtn?.addEventListener("click", () => {
 
 onGarageCarsUpdated(renderSavedCarsForAccount);
 
-supabase.auth.onAuthStateChange((_event, session) => {
-  onSession(session);
+if (urlLooksLikePasswordRecovery()) {
+  passwordRecoveryMode = true;
+}
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === "PASSWORD_RECOVERY") {
+    passwordRecoveryMode = true;
+  }
+  // Ieșim din callback înainte de orice cerere Supabase (lock-ul Auth).
+  setTimeout(() => { void onSession(session); }, 0);
 });
 
 const { data: { session: initial } } = await supabase.auth.getSession();

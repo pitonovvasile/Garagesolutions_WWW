@@ -193,10 +193,10 @@
             <p id="model-market-label" class="brand-strip__market-label">-- / -- / --</p>
           </div>
           <div class="brand-strip__field" id="bmw-generation-field" hidden>
-            <p class="brand-strip__text">Alege generație</p>
-            <label class="brand-strip__label" for="car-generation">Generație</label>
+            <p class="brand-strip__text">Alege generația BMW</p>
+            <label class="brand-strip__label" for="car-generation">Generație BMW</label>
             <select id="car-generation" name="car-generation" class="brand-strip__select" disabled>
-              <option value="" selected disabled>Selectează model</option>
+              <option value="" selected disabled>Selectează întâi modelul</option>
             </select>
           </div>
           <div class="brand-strip__field">
@@ -648,7 +648,7 @@
     </footer>
     <script src="assets/js/site-theme.js" defer></script>
     <script type="module">
-      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
       import {
         setPlaceholder,
         loadModelsForBrand,
@@ -2803,6 +2803,9 @@
             generationSelect.disabled = !(genRows || []).length;
             if (!(genRows || []).length) {
               setPlaceholder(generationSelect, "—");
+            } else {
+              setPlaceholder(engineSelect, "Alege întâi generația BMW");
+              engineSelect.disabled = true;
             }
             updatePartsButtonState();
             return;
@@ -2861,9 +2864,10 @@
             bmwCatalogBodyStyleRows = null;
             setPlaceholder(chassisSelect, "Selectează generația");
             chassisSelect.disabled = true;
-            setPlaceholder(engineSelect, "—");
+            setPlaceholder(engineSelect, "Alege întâi generația BMW");
             engineSelect.disabled = true;
             resetBmwEngineDrivetrainTransmission();
+            setPlaceholder(engineSelect, "Alege întâi generația BMW");
             resetModelMarketLabel();
             updatePartsButtonState();
             return;
@@ -3043,4 +3047,3 @@
     </script>
   </body>
 </html>
-

@@ -4,7 +4,7 @@
  * Scriere: `catalog_variant_id` / `catalog_configuration_id` + catalog hierarchy când există;
  * coloanele BMW legacy rămân populate în oglindă pentru compatibilitate.
  */
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./supabase-config.mjs";
 import { createSupabaseCookieMirrorStorage } from "./supabase-session-cookie-mirror.mjs";
 import {
@@ -232,7 +232,7 @@ export async function fetchSavedVehiclesFromCloud(sb, userId) {
     .order("sort_index", { ascending: true });
   if (error) {
     console.warn("[garage-cloud]", error.message || String(error));
-    return [];
+    throw error;
   }
   const legacy = (data || []).map((row) => rowToSavedCar(/** @type {Record<string, unknown>} */ (row)));
   return dedupeGarageCars(legacy.filter((c) => c.brand.length > 0));
@@ -266,13 +266,17 @@ async function getSessionWithRetry(sb, attempts = 4) {
   for (let i = 0; i < attempts; i += 1) {
     const {
       data: { session },
+      error,
     } = await sb.auth.getSession();
+    if (error) throw error;
     if (session?.user) return session;
     await new Promise((r) => setTimeout(r, 120 * (i + 1)));
   }
   const {
     data: { session },
+    error,
   } = await sb.auth.getSession();
+  if (error) throw error;
   return session ?? null;
 }
 

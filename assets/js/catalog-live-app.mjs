@@ -1,5 +1,6 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./supabase-config.mjs";
+import { isCatalogAdminEmail } from "./catalog-admin-config.mjs";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const TABLES = [
@@ -185,6 +186,10 @@ async function refreshForTable(table) {
 async function bootstrap() {
   for (const table of TABLES) await fetchTable(table);
   renderAll();
+  await syncAdminUiGate();
+  supabase.auth.onAuthStateChange(() => {
+    void syncAdminUiGate();
+  });
   TABLES.forEach((table) => {
     supabase
       .channel(`catalog-live-${table}`)
@@ -220,21 +225,52 @@ function wireEvents() {
     state.selectedVariantId = id;
     renderAll();
   });
-  $("admin-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const entryId = $("admin-entry-id").value.trim();
-    const notes = $("admin-notes").value.trim();
-    if (!entryId) return;
-    $("admin-status").textContent = "Salvare...";
-    const { data: session } = await supabase.auth.getSession();
-    if (!session?.session?.user) {
-      $("admin-status").textContent = "Necesita autentificare admin pentru write path.";
-      return;
-    }
-    const { error } = await supabase.from("bmw_catalog_entries").update({ notes }).eq("id", entryId);
-    $("admin-status").textContent = error ? `Eroare save: ${error.message}` : "Salvat. Se va propaga live prin Realtime.";
-    if (!error) await refreshForTable("bmw_catalog_entries");
+  const adminForm = $("admin-form");
+  if (adminForm) {
+    adminForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const entryId = $("admin-entry-id").value.trim();
+      const notes = $("admin-notes").value.trim();
+      if (!entryId) return;
+      $("admin-status").textContent = "Salvare...";
+      const { data: session } = await supabase.auth.getSession();
+      const user = session?.session?.user;
+      if (!user) {
+        $("admin-status").textContent = "Necesită autentificare admin pentru write path.";
+        return;
+      }
+      if (!isCatalogAdminEmail(user.email)) {
+        $("admin-status").textContent =
+          "Contul nu e în allowlist admin (catalog-admin-config.mjs). Write-urile sunt blocate în UI; RLS trebuie să blocheze și pe server.";
+        return;
+      }
+      const { error } = await supabase.from("bmw_catalog_entries").update({ notes }).eq("id", entryId);
+      $("admin-status").textContent = error
+        ? `Eroare save: ${error.message}`
+        : "Salvat. Se va propaga live prin Realtime.";
+      if (!error) await refreshForTable("bmw_catalog_entries");
+    });
+  }
+}
+
+async function syncAdminUiGate() {
+  const form = $("admin-form");
+  const status = $("admin-status");
+  if (!form) return;
+  const { data: session } = await supabase.auth.getSession();
+  const email = session?.session?.user?.email || "";
+  const allowed = isCatalogAdminEmail(email);
+  form.querySelectorAll("input, textarea, button").forEach((el) => {
+    el.disabled = !allowed;
   });
+  if (!status) return;
+  if (!email) {
+    status.textContent = "Write admin: autentifică-te + allowlist (vezi catalog-admin-config.mjs).";
+  } else if (!allowed) {
+    status.textContent = `Write admin: dezactivat pentru ${email} (nu e în allowlist).`;
+  } else {
+    status.textContent = "Write admin: activ pentru contul curent.";
+  }
 }
 
 wireEvents();

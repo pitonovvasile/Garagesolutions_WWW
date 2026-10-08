@@ -1,5 +1,6 @@
 import {
   getSession,
+  isDemoAuthAllowed,
   loginDemo,
   logoutDemo,
   registerDemo,
@@ -11,6 +12,7 @@ import { DEMO_ORDERS, DEMO_FAVORITES, DEMO_ACTIVITY } from "./demo-data.mjs";
 
 /**
  * Conectează formularele (login / register / parolă uitată) și secțiunile comenzi / favorite / activitate in panou.
+ * Demo auth rulează doar pe localhost; în rest, panoul trimite către cont.html.
  * @param {{ manageHeader?: boolean }} [options]
  * @returns {() => void} apelat la fiecare deschidere a panoului
  */
@@ -317,6 +319,20 @@ export function initDemoAuthUI(options = {}) {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") render();
   });
+
+  if (!isDemoAuthAllowed()) {
+    if (elOut) {
+      elOut.hidden = false;
+      elOut.innerHTML = [
+        '<p class="account-panel__hint" style="margin:0 0 0.75rem">Autentificarea demo e dezactivată în afara localhost.</p>',
+        '<p class="account-panel__hint" style="margin:0">Pentru cont real (Supabase), deschide ',
+        '<a href="cont.html">Contul meu</a>.</p>',
+      ].join("");
+    }
+    if (elIn) elIn.hidden = true;
+    updateDemoHeader(null);
+    return () => {};
+  }
 
   setActiveAuthTab("login");
   render();

@@ -1,12 +1,10 @@
 /**
  * Preview local static — `npm run preview`
  *
- * Implicit: un singur listener dual-stack (:: + IPv4 mapat) — localhost și 127.0.0.1
- * merg prin același socket (evită desincronizarea 0.0.0.0 vs ::1).
- * Fallback: ascultă pe 0.0.0.0 dacă :: nu e disponibil.
- *
+ * Implicit: bind doar pe 127.0.0.1 (nu expune demo-sync pe LAN).
+ * LAN / dual-stack: PREVIEW_LAN=1 npm run preview
+ * Alt host: HOST=0.0.0.0 npm run preview
  * Alt port: PORT=9090 npm run preview
- * Bind fix: HOST=127.0.0.1 npm run preview
  * Fără deschidere browser: PREVIEW_OPEN=0 npm run preview
  * Cache: implicit fără cache pentru .html/.js/.mjs/.css/.json — PREVIEW_ALLOW_CACHE=1 pentru a permite cache-ul.
  */
@@ -56,10 +54,29 @@ const MIME = {
   ".woff2": "font/woff2",
 };
 
-/** Header-e pentru Simple Browser / Chromium (COI). Fără X-Frame-Options. */
+/** Header-e pentru Simple Browser / Chromium (COI) + bază de securitate. Fără X-Frame-Options (preview în IDE). */
 function applyPreviewHeaders(res) {
   res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
   res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  // Relaxed for local preview: esm.sh + Supabase + inline scripts pe HTML-uri legacy.
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' https://esm.sh https://cdn.jsdelivr.net",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https:",
+      "font-src 'self' data:",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://esm.sh",
+      "worker-src 'self' blob:",
+      "frame-ancestors 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join("; "),
+  );
 }
 
 /**
@@ -158,7 +175,22 @@ function readJsonBody(req, res, done) {
   });
 }
 
+function isLoopbackRemoteAddress(addr) {
+  if (!addr || typeof addr !== "string") return false;
+  return (
+    addr === "127.0.0.1" ||
+    addr === "::1" ||
+    addr === "localhost" ||
+    addr.startsWith("::ffff:127.0.0.1")
+  );
+}
+
 function handleDemoSyncRequest(req, res) {
+  // Demo sync stores session/profile/cart — never accept non-loopback clients.
+  if (!isLoopbackRemoteAddress(req.socket?.remoteAddress || "")) {
+    sendJson(res, 403, { ok: false, error: "Demo sync e permis doar de pe loopback." });
+    return;
+  }
   if (req.method === "GET") {
     sendJson(res, 200, { ok: true, ...readDemoSyncStore() });
     return;
@@ -277,6 +309,10 @@ function printBanner(port, preferredPort, extra) {
   console.log(
     "  Preview: .html / .js / .mjs / .css / .json → Cache-Control: no-store. PREVIEW_ALLOW_CACHE=1 → cache normal.",
   );
+  console.log(
+    "  Bind implicit: 127.0.0.1. LAN: PREVIEW_LAN=1 npm run preview (sau npm run preview:lan).",
+  );
+  console.log("  Demo sync /__garage_demo_sync: doar clienți loopback.");
   if (extra?.bind) console.log(`  (mod bind: ${extra.bind})`);
   if (process.env.SSH_CONNECTION || process.env.REMOTE_CONTAINERS) {
     console.log(
@@ -301,7 +337,8 @@ function printBanner(port, preferredPort, extra) {
 
 /**
  * HOST setat: un singur bind.
- * Altfel: încearcă :: dual-stack, apoi 0.0.0.0.
+ * Implicit: doar 127.0.0.1.
+ * PREVIEW_LAN=1: încearcă :: dual-stack, apoi 0.0.0.0, apoi loopback.
  */
 function listenWithFallback(port, triesLeft, strategies, strategyIndex) {
   const strat = strategies[strategyIndex];
@@ -339,9 +376,11 @@ function listenWithFallback(port, triesLeft, strategies, strategyIndex) {
   }
 }
 
-const DEFAULT_STRATEGIES = [
-  { type: "dual-stack", bindLabel: ":: + IPv4 (dual-stack)" },
-  { type: "ipv4-any", bindLabel: "0.0.0.0" },
+const LOOPBACK_STRATEGIES = [{ type: "ipv4-loopback", bindLabel: "127.0.0.1 (default)" }];
+
+const LAN_STRATEGIES = [
+  { type: "dual-stack", bindLabel: ":: + IPv4 (dual-stack, PREVIEW_LAN=1)" },
+  { type: "ipv4-any", bindLabel: "0.0.0.0 (PREVIEW_LAN=1)" },
   { type: "ipv4-loopback", bindLabel: "127.0.0.1" },
 ];
 
@@ -363,7 +402,8 @@ function tryListen(port, triesLeft) {
     return;
   }
 
-  listenWithFallback(port, triesLeft, DEFAULT_STRATEGIES, 0);
+  const lan = process.env.PREVIEW_LAN === "1";
+  listenWithFallback(port, triesLeft, lan ? LAN_STRATEGIES : LOOPBACK_STRATEGIES, 0);
 }
 
 process.on("SIGINT", () => {

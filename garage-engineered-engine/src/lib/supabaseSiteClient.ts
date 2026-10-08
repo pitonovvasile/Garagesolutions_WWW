@@ -1,4 +1,5 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { getGarageCloudSupabase } from "@site-garage-cloud";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@site-supabase-config";
 
 function trimStr(v: unknown): string {
@@ -39,13 +40,9 @@ export function resolveSupabaseCredentials(): { url: string; anonKey: string } {
   return r;
 }
 
-let cached: { url: string; anonKey: string; client: SupabaseClient } | null = null;
-
-/** Client Supabase anon — aceleași credențiale ca restul site-ului. */
+/** Același client și aceeași stocare Auth ca garajul și magazinul. */
 export function getSiteSupabaseClient(): SupabaseClient {
-  const { url, anonKey } = resolveSupabaseCredentials();
-  if (!cached || cached.url !== url || cached.anonKey !== anonKey) {
-    cached = { url, anonKey, client: createClient(url, anonKey) };
-  }
-  return cached.client;
+  resolveSupabaseCredentials();
+  // Modulul JS are o declarație parțială; instanța reală este SupabaseClient.
+  return getGarageCloudSupabase() as unknown as SupabaseClient;
 }

@@ -25,30 +25,40 @@ export function useGarageCars(): SavedGarageCar[] {
   useEffect(() => {
     let cancelled = false;
     let authUnsub: { unsubscribe: () => void } | undefined;
+    let authTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const refreshGarage = async () => {
+      try {
+        const m = await import("@site-garage-cloud");
+        await loadInitialGarageData();
+        if (cancelled) return;
+        const next = await m.syncGarageFromCloudAndLocal();
+        const enriched = await enrichGarageCars(next);
+        if (!cancelled) setCars(enriched);
+      } catch (e) {
+        console.warn("[suspension] garage cloud sync", e);
+      }
+    };
 
     (async () => {
       try {
         const m = await import("@site-garage-cloud");
+        if (cancelled) return;
+        const sb = m.getGarageCloudSupabase();
+        const { data } = sb.auth.onAuthStateChange((event: string) => {
+          if (cancelled || event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") return;
+          // Auth holds a lock during this callback; defer all Supabase calls.
+          if (authTimer !== undefined) clearTimeout(authTimer);
+          authTimer = setTimeout(() => {
+            if (!cancelled) void refreshGarage();
+          }, 0);
+        });
+        authUnsub = data.subscription;
         if (!cancelled) {
           const initial = await loadInitialGarageData();
           if (!cancelled) setCars(initial);
         }
 
-        const sb = m.getGarageCloudSupabase();
-        const { data } = sb.auth.onAuthStateChange((event: string) => {
-          if (event === "TOKEN_REFRESHED") return;
-          void (async () => {
-            try {
-              const next = await m.syncGarageFromCloudAndLocal();
-              if (!cancelled) {
-                setCars(await enrichGarageCars(next));
-              }
-            } catch (e) {
-              console.warn("[suspension] garage cloud sync", e);
-            }
-          })();
-        });
-        authUnsub = data.subscription;
       } catch (e) {
         console.warn("[suspension] garage cloud module", e);
         if (!cancelled) {
@@ -60,6 +70,7 @@ export function useGarageCars(): SavedGarageCar[] {
 
     return () => {
       cancelled = true;
+      if (authTimer !== undefined) clearTimeout(authTimer);
       authUnsub?.unsubscribe();
     };
   }, []);

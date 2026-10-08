@@ -1,8 +1,10 @@
 import path from "node:path";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoAssetsGarageCloud = path.resolve(__dirname, "../assets/js/garage-cloud-sync.mjs");
 const repoGarageSavedCars = path.resolve(__dirname, "../assets/js/garage-saved-cars.mjs");
@@ -15,6 +17,7 @@ export default defineConfig({
   base: "./",
   resolve: {
     alias: {
+      "https://esm.sh/@supabase/supabase-js@2.49.1": require.resolve("@supabase/supabase-js"),
       "@site-garage-cloud": repoAssetsGarageCloud,
       "@site-garage-saved-cars": repoGarageSavedCars,
       "@site-bmw-technical-specs": repoBmwTechnicalSpecs,

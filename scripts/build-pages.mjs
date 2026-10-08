@@ -44,5 +44,24 @@ const compressedPath = path.join(output, `${stl}.gz`);
 await mkdir(path.dirname(compressedPath), { recursive: true });
 await writeFile(compressedPath, compressedStl);
 await writeFile(path.join(output, "robots.txt"), "User-agent: *\nDisallow: /\n");
-await writeFile(path.join(output, "_headers"), "/*\n  X-Robots-Tag: noindex, nofollow\n/*.html\n  Cache-Control: no-store\n/*.js\n  Cache-Control: no-store\n/*.mjs\n  Cache-Control: no-store\n/*.css\n  Cache-Control: no-store\n");
+await writeFile(
+  path.join(output, "_headers"),
+  [
+    "/*",
+    "  X-Robots-Tag: noindex, nofollow",
+    "  X-Content-Type-Options: nosniff",
+    "  Referrer-Policy: strict-origin-when-cross-origin",
+    "  Permissions-Policy: camera=(), microphone=(), geolocation=()",
+    "  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://esm.sh; worker-src 'self' blob:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'",
+    "/*.html",
+    "  Cache-Control: no-store",
+    "/*.js",
+    "  Cache-Control: no-store",
+    "/*.mjs",
+    "  Cache-Control: no-store",
+    "/*.css",
+    "  Cache-Control: no-store",
+    "",
+  ].join("\n"),
+);
 console.log(`Cloudflare Pages: ${output}`);

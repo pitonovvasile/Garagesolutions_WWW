@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./supabase-config.mjs";
 import { createSupabaseCookieMirrorStorage } from "./supabase-session-cookie-mirror.mjs";
 import { syncGarageFromCloudAndLocal } from "./garage-cloud-sync.mjs";
