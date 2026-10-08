@@ -1,18 +1,23 @@
 import {
   getSession,
+  isDemoAuthAllowed,
   loginDemo,
   logoutDemo,
   registerDemo,
   requestPasswordResetDemo,
   DEMO_SESSION_KEY,
+  DEMO_SESSION_CHANGED_EVENT,
 } from "./demo-auth.mjs";
 import { DEMO_ORDERS, DEMO_FAVORITES, DEMO_ACTIVITY } from "./demo-data.mjs";
 
 /**
  * Conectează formularele (login / register / parolă uitată) și secțiunile comenzi / favorite / activitate in panou.
+ * Demo auth rulează doar pe localhost; în rest, panoul trimite către cont.html.
+ * @param {{ manageHeader?: boolean }} [options]
  * @returns {() => void} apelat la fiecare deschidere a panoului
  */
-export function initDemoAuthUI() {
+export function initDemoAuthUI(options = {}) {
+  const manageHeader = options.manageHeader !== false;
   const elOut = document.getElementById("auth-logged-out");
   const elIn = document.getElementById("auth-logged-in");
   const form = document.getElementById("demo-login-form");
@@ -161,6 +166,21 @@ export function initDemoAuthUI() {
     actBox.appendChild(ul);
   }
 
+  function updateDemoHeader(session) {
+    if (!manageHeader) return;
+    const headerUserLabel = document.getElementById("header-user-label");
+    const headerFavoritesWrap = document.getElementById("header-favorites-wrap");
+    if (!session) {
+      if (headerUserLabel) headerUserLabel.textContent = "Contul meu";
+      if (headerFavoritesWrap) headerFavoritesWrap.hidden = true;
+      return;
+    }
+    if (headerUserLabel) {
+      headerUserLabel.textContent = session.displayName || session.email?.split("@")[0] || "Utilizator";
+    }
+    if (headerFavoritesWrap) headerFavoritesWrap.hidden = false;
+  }
+
   function clearAuthErrors() {
     if (err) {
       err.textContent = "";
@@ -200,10 +220,7 @@ export function initDemoAuthUI() {
         "Autentifică-te (demo) pentru a vedea piese favorite cu referințe și prețuri orientative."
       );
       renderLockedPlaceholder(actBox, "Jurnalul de activitate (demo) este disponibil după autentificare.");
-      const headerUserLabel = document.getElementById("header-user-label");
-      const headerFavoritesWrap = document.getElementById("header-favorites-wrap");
-      if (headerUserLabel) headerUserLabel.textContent = "Autentificate!";
-      if (headerFavoritesWrap) headerFavoritesWrap.hidden = true;
+      updateDemoHeader(null);
       return;
     }
 
@@ -214,16 +231,9 @@ export function initDemoAuthUI() {
     }
     if (metaLine) {
       const d = new Date(s.loginAt);
-      metaLine.textContent = `E-mail: ${s.email} · Sesiune demo până la ${d.toLocaleDateString("ro-RO")} (stocare doar in acest browser).`;
+      metaLine.textContent = `E-mail: ${s.email} · Sesiune demo până la ${d.toLocaleDateString("ro-RO")} (sincronizare prin preview local).`;
     }
-    {
-      const headerUserLabel = document.getElementById("header-user-label");
-      const headerFavoritesWrap = document.getElementById("header-favorites-wrap");
-      if (headerUserLabel) {
-        headerUserLabel.textContent = s.displayName || s.email?.split("@")[0] || "Utilizator";
-      }
-      if (headerFavoritesWrap) headerFavoritesWrap.hidden = false;
-    }
+    updateDemoHeader(s);
 
     renderOrdersLoggedIn();
     renderFavoritesLoggedIn();
@@ -304,6 +314,25 @@ export function initDemoAuthUI() {
       render();
     }
   });
+  window.addEventListener(DEMO_SESSION_CHANGED_EVENT, render);
+  window.addEventListener("pageshow", render);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") render();
+  });
+
+  if (!isDemoAuthAllowed()) {
+    if (elOut) {
+      elOut.hidden = false;
+      elOut.innerHTML = [
+        '<p class="account-panel__hint" style="margin:0 0 0.75rem">Autentificarea demo e dezactivată în afara localhost.</p>',
+        '<p class="account-panel__hint" style="margin:0">Pentru cont real (Supabase), deschide ',
+        '<a href="cont.html">Contul meu</a>.</p>',
+      ].join("");
+    }
+    if (elIn) elIn.hidden = true;
+    updateDemoHeader(null);
+    return () => {};
+  }
 
   setActiveAuthTab("login");
   render();

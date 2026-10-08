@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Accesorii — Garage Solutions</title>
     <link rel="stylesheet" href="../assets/css/main.css" />
+    <link rel="stylesheet" href="../assets/css/accesorii-catalog.css" />
     <link rel="icon" href="../assets/garage-solutions-favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="../assets/garage-solutions-apple-touch.png" />
     <script>
@@ -122,21 +123,30 @@
         </div>
         <div class="categorie-sub__intro">
           <h1 class="categorie-sub__title">Accesorii</h1>
-          <p class="categorie-sub__lead">Produse de interior, curatenie, mici echipari si add-on-uri pentru autovehiculul tau.</p>
+          <p class="categorie-sub__lead">Accesorii universale organizate după grupele din catalogul Bardi.</p>
         </div>
       </header>
 
-      <section class="categorie-sub__content" aria-labelledby="categorie-continut">
-        <h2 id="categorie-continut" class="categorie-sub__h2">Piese in aceasta categorie</h2>
-        <p>
-          Aici vei regasi catalogul de piese filtrat dupa marca, model si motorizare (din pagina
-          <a class="categorie-sub__inline" href="../index.html">principala</a>). Pana conectam lista
-          live, foloseste selectia de autovehicul de acasa si revenim cu rezultatele aici in functie de
-          stoc.
-        </p>
-        <p class="categorie-sub__actions">
-          <a class="categorie-sub__btn" href="../index.html">Inapoi la piese &amp; autovehicul</a>
-        </p>
+      <section class="accessories-catalog" aria-labelledby="categorie-continut">
+        <div class="accessories-catalog__heading">
+          <div>
+            <h2 id="categorie-continut" class="categorie-sub__h2">Categorii accesorii</h2>
+            <p>Alege o grupă pentru a vedea produsele disponibile.</p>
+          </div>
+          <label class="accessories-catalog__search">
+            <span>Caută în catalog</span>
+            <input id="accessories-search" type="search" placeholder="Categorie, produs sau cod" autocomplete="off" />
+          </label>
+        </div>
+        <nav id="accessories-categories" class="accessories-catalog__categories" aria-label="Categorii accesorii"></nav>
+        <nav id="accessories-subcategories" class="accessories-catalog__subcategories" aria-label="Subcategorii accesorii" hidden></nav>
+        <div class="accessories-catalog__results">
+          <div class="accessories-catalog__results-head">
+            <h3 id="accessories-results-title">Produse</h3>
+            <span id="accessories-count" aria-live="polite"></span>
+          </div>
+          <div id="accessories-products" class="accessories-catalog__products"></div>
+        </div>
       </section>
     </main>
 
@@ -319,6 +329,7 @@
     
     <script src="../assets/js/site-theme.js" defer></script>
     <script src="../assets/js/main.js"></script>
+    <script type="module" src="../assets/js/accesorii-catalog.mjs"></script>
     <script type="module">
       import { initAccountPanel } from "../assets/js/account-panel.mjs";
       import { initDemoAuthUI } from "../assets/js/demo-auth-ui.mjs";

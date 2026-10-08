@@ -73,7 +73,8 @@ with fit as (
     ) as f
 )
 insert into public.products (id, category, subcategory, brand, name, price, fitment, updated_at)
-select * from (
+select seed.id, seed.category, seed.subcategory, seed.brand, seed.name, seed.price, fit.f, now()
+from (
   values
     ('tx-clutch-kit-performance-clutches-stage1-smf', 'clutch', 'Clutch Kits', 'Performance Clutches', 'Stage 1 Street HD Clutch & Single Mass Flywheel Kit', 855.99),
     ('tx-clutch-kit-dkm-stage1', 'clutch', 'Clutch Kits', 'DKM', 'Stage 1 Uprated Clutch + Flywheel Kit', 853.99),

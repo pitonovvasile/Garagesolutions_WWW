@@ -1,9 +1,13 @@
 /**
- * Stocare Supabase Auth: localStorage (principal) + oglindă în cookie-uri (Max-Age 1 an)
- * pentru recuperare dacă localStorage e golat și pentru cerința de persistență pe cookie.
+ * Stocare Supabase Auth: localStorage (principal) + oglindă în cookie-uri
+ * pentru recuperare dacă localStorage e golat.
+ *
+ * Cookie-urile NU sunt HttpOnly (scriere din JS) — TTL scurt ca să reducă fereastra
+ * dacă apare XSS. Sursa de adevăr rămâne localStorage.
  */
 
-export const SITE_PERSIST_COOKIE_MAX_AGE_SEC = 365 * 24 * 60 * 60;
+/** 7 zile — nu 1 an (JWT în cookie citibil din JS). */
+export const SITE_PERSIST_COOKIE_MAX_AGE_SEC = 7 * 24 * 60 * 60;
 
 const CHUNK_CHARS = 3000;
 const CHUNK_PREFIX = "gs_sbch_";

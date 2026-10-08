@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Catalog Hub Admin · Garage Solutions</title>
+    <link rel="icon" href="./assets/garage-solutions-favicon.png" />
+    <link rel="stylesheet" href="./assets/css/catalog-hub-admin.css" />
+  </head>
+  <body>
+    <header class="admin-shell__topbar">
+      <a class="admin-shell__brand" href="./index.html" aria-label="Garage Solutions">
+        <img src="./assets/garage-solutions-logo.png" alt="" />
+        <span>
+          <strong>Garage Solutions</strong>
+          <small>Catalog Hub Admin</small>
+        </span>
+      </a>
+      <div class="admin-shell__session">
+        <span id="admin-session-label">Se verifică sesiunea...</span>
+        <a href="./cont.html">Cont</a>
+      </div>
+    </header>
+
+    <main class="admin-shell">
+      <section class="admin-hero" aria-labelledby="admin-title">
+        <div>
+          <p>Catalog Hub · acces administrativ</p>
+          <h1 id="admin-title">Date furnizori și vehicule canonice</h1>
+        </div>
+        <div id="admin-auth-state" class="admin-auth-state" role="status">
+          Se încarcă...
+        </div>
+      </section>
+
+      <section id="admin-locked" class="admin-locked" hidden>
+        <h2>Acces restricționat</h2>
+        <p id="admin-locked-message">
+          Autentifică-te cu un cont admin pentru a vedea Catalog Hub.
+        </p>
+        <form id="admin-login-form" class="admin-login-form">
+          <label>
+            E-mail admin
+            <input
+              id="admin-login-email"
+              class="admin-input"
+              type="email"
+              autocomplete="username"
+              value="pitonov.vasile@gmail.com"
+              required
+            />
+          </label>
+          <label>
+            Parolă
+            <input
+              id="admin-login-password"
+              class="admin-input"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </label>
+          <button class="admin-button" type="submit">Autentificare admin</button>
+        </form>
+        <button id="admin-logout" type="button" class="admin-button admin-button--ghost" hidden>
+          Ieșire
+        </button>
+      </section>
+
+      <section id="admin-dashboard" hidden>
+        <div class="admin-stats" id="admin-stats" aria-label="Sumar Catalog Hub"></div>
+
+        <section class="admin-panel" aria-labelledby="suppliers-title">
+          <div class="admin-panel__head">
+            <div>
+              <p>Distribuitori</p>
+              <h2 id="suppliers-title">Surse conectate</h2>
+            </div>
+            <button id="admin-refresh" type="button" class="admin-icon-button">Refresh</button>
+          </div>
+          <div id="supplier-list" class="supplier-list"></div>
+        </section>
+
+        <section class="admin-grid">
+          <section class="admin-panel" aria-labelledby="coverage-title">
+            <div class="admin-panel__head">
+              <div>
+                <p>Acoperire Bardi</p>
+                <h2 id="coverage-title">Mărci, ani, motorizări</h2>
+              </div>
+              <select id="coverage-sort" class="admin-select" aria-label="Sortare acoperire">
+                <option value="make">Marcă</option>
+                <option value="missing">Fără motorizări</option>
+                <option value="refs">Motorizări descrescător</option>
+              </select>
+            </div>
+            <div id="coverage-list" class="coverage-list"></div>
+          </section>
+
+          <section class="admin-panel" aria-labelledby="vehicle-types-title">
+            <div class="admin-panel__head">
+              <div>
+                <p>Tipuri furnizor</p>
+                <h2 id="vehicle-types-title">Vehicle refs Bardi</h2>
+              </div>
+              <div class="admin-filter-row">
+                <select id="make-filter" class="admin-select" aria-label="Filtru marcă">
+                  <option value="">Toate mărcile</option>
+                </select>
+                <input id="type-search" class="admin-input" type="search" placeholder="Caută model" />
+              </div>
+            </div>
+            <div id="type-list" class="type-list"></div>
+            <div class="admin-pagination">
+              <button id="types-prev" type="button" class="admin-button admin-button--ghost">Înapoi</button>
+              <span id="types-page">0-0</span>
+              <button id="types-next" type="button" class="admin-button admin-button--ghost">Înainte</button>
+            </div>
+          </section>
+        </section>
+
+        <section class="admin-panel" aria-labelledby="detail-title">
+          <div class="admin-panel__head">
+            <div>
+              <p>Detaliu tip vehicul</p>
+              <h2 id="detail-title">Ani și motorizări</h2>
+            </div>
+            <span id="detail-status">Selectează un tip.</span>
+          </div>
+          <div id="type-detail" class="type-detail"></div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./assets/js/catalog-hub-admin.mjs"></script>
+  </body>
+</html>

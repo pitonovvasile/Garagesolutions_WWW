@@ -120,6 +120,23 @@ export function syncGarageStlViewer(mount, statusEl, bodyEl, { car, view3d }) {
   st.initializing = true;
   const stlUrl = new URL(GARAGE_E46_COMPACT_STL_PATH, window.location.href).href;
 
+  // Pages has a 25 MiB asset limit; its build publishes this model as gzip.
+  // Local preview still serves the original STL and uses the fallback below.
+  const loadGeometry = async (loader) => {
+    if (typeof DecompressionStream === "function") {
+      try {
+        const response = await fetch(`${stlUrl}.gz`);
+        if (response.ok && response.body) {
+          const stream = response.body.pipeThrough(new DecompressionStream("gzip"));
+          return loader.parse(await new Response(stream).arrayBuffer());
+        }
+      } catch (_) {
+        // Try the uncompressed local asset.
+      }
+    }
+    return loader.loadAsync(stlUrl);
+  };
+
   loadThreeLibs()
     .then(({ THREE, STLLoader, OrbitControls }) => {
       st.initializing = false;
@@ -166,8 +183,7 @@ export function syncGarageStlViewer(mount, statusEl, bodyEl, { car, view3d }) {
       st.controls = controls;
 
       const loader = new STLLoader();
-      loader.load(
-        stlUrl,
+      loadGeometry(loader).then(
         (geometry) => {
           if (session !== stlSession || !st.scene || !st.renderer) return;
           geometry.computeVertexNormals();
@@ -195,7 +211,6 @@ export function syncGarageStlViewer(mount, statusEl, bodyEl, { car, view3d }) {
             statusEl.textContent = "";
           }
         },
-        undefined,
         () => {
           if (session !== stlSession) return;
           disposeInternals();

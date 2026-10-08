@@ -1,0 +1,65 @@
+Inventar: suspensie BMW / camber (modul garage-engineered-engine + legături site)
+Actualizat relativ la rădăcina repo Garagesolutions_WWW. Căile sunt din rădăcina proiectului.
+
+=== 1. Asset-uri referință E46 / camber (sursă) ===
+garage-engineered-engine/src/assets/reference/bmw-e46-front.orig.gif
+garage-engineered-engine/src/assets/reference/bmw-e46-front.png
+garage-engineered-engine/src/assets/reference/bmw-e46-front-body.png
+garage-engineered-engine/src/assets/reference/bmw-e46-front-camber-workspace.gif
+garage-engineered-engine/src/assets/reference/bmw-e46-rear.png
+garage-engineered-engine/src/assets/reference/e46-front-silhouette.png
+garage-engineered-engine/src/assets/reference/e46-front-suspension.png
+
+=== 2. Export compozit lateral (Python) ===
+scripts/export-e46-front-reference-png.py
+
+=== 3. UI React — viewport / panouri camber & geometrie ===
+garage-engineered-engine/src/components/CenterViewport.tsx
+garage-engineered-engine/src/components/RightPanel.tsx
+garage-engineered-engine/src/components/LeftSidebar.tsx
+garage-engineered-engine/src/components/MetricTraceRow.tsx
+
+=== 4. Logică camber / kinematice / validare ===
+garage-engineered-engine/src/lib/vehicleKinematics.ts
+garage-engineered-engine/src/data/vehicles.ts
+garage-engineered-engine/src/lib/vehicleTypes.ts
+garage-engineered-engine/src/lib/axleStockValidation.ts
+garage-engineered-engine/src/lib/metricProvenance.ts
+garage-engineered-engine/src/store/suspensionStore.ts
+garage-engineered-engine/src/store/suspensionAssistantStore.ts
+
+=== 5. Date vehicul / stock / preseturi (context BMW) ===
+garage-engineered-engine/src/data/vehicleStockSuspension.ts
+garage-engineered-engine/src/data/vehicleGarageProfiles.ts
+garage-engineered-engine/src/data/suspensionCatalog.ts
+garage-engineered-engine/src/lib/recommendationEngine.ts
+garage-engineered-engine/src/lib/garageStorage.ts
+garage-engineered-engine/src/lib/siteCart.ts
+
+=== 6. Shell aplicație ===
+garage-engineered-engine/src/App.tsx
+garage-engineered-engine/src/main.tsx
+garage-engineered-engine/index.html
+garage-engineered-engine/vite.config.ts
+
+=== 7. Pagini HTML site care încarcă modulul ===
+suspension-design.html
+garage/suspension-design.html
+
+=== 8. Build generat (nu edita manual; după `npm run build` în garage-engineered-engine) ===
+garage-engineered-engine-dist/
+  (index.html, garage-engineered-engine.js, garage-engineered-engine-index.css, asset-uri cu nume hashed: *.png, *.gif etc.)
+
+=== 9. Alte fișiere site cu „suspensie” / BMW (în afara modulului React) ===
+categorii/suspensie.html
+assets/suspensie-icon-alpha.png
+assets/suspensie-icon-alpha.bak.png
+assets/js/bmw-garage-schema.mjs
+assets/js/bmw-dropdown-variants.mjs
+assets/js/garage-bmw-platform.mjs
+garage/bmw-catalog.html
+supabase/migrations/004_bmw_catalog_anon_read_rls.sql
+supabase/migrations/005_bmw_configuration_lookup_anon_read.sql
+supabase/migrations/006_bmw_variant_configurations_anon_read.sql
+
+Notă: în `garage-engineered-engine-dist/assets/` pot rămâne fișiere vechi din build-uri anterioare; curățarea e opțională; sursa de adevăr pentru asset-uri noi e folderul din secțiunea 1.

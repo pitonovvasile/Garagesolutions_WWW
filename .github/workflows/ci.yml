@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  engine:
+    name: Engine build + aero tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: garage-engineered-engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: garage-engineered-engine/package-lock.json
+      - run: npm ci
+      - run: npm run test:aero
+      - run: npm run build
+
+  secrets-scan:
+    name: No service_role in tracked source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan for elevated Supabase keys
+        run: |
+          set -euo pipefail
+          # Fail only on literal secret-like assignments / JWT-looking blobs, not docs.
+          hits="$(git grep -nE 'sb_secret_[A-Za-z0-9_]+|(service_role|SUPABASE_SERVICE_ROLE)[_A-Z]*\s*[:=]\s*["'\''][^"'\'']+["'\'']' -- \
+            ':!*.md' ':!.github/**' ':!db-backups/**' || true)"
+          if [ -n "$hits" ]; then
+            echo "$hits"
+            echo "Possible elevated key material found in source."
+            exit 1
+          fi
+          echo "OK — no service_role / sb_secret key material in tracked source."

@@ -26,7 +26,7 @@
             "kits suspensii oem+",
           ];
           if (oemPlusNorms.indexOf(norm) !== -1) {
-            location.replace("../suspension-design-dist/oem-plus-kits.html");
+            location.replace("../garage-engineered-engine-dist/oem-plus-kits.html");
           }
         } catch (_e) {}
       })();
@@ -309,7 +309,7 @@
     </script>
 
     <script type="module">
-      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
       import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../assets/js/supabase-config.mjs";
 
       const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

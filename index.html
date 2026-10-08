@@ -193,10 +193,10 @@
             <p id="model-market-label" class="brand-strip__market-label">-- / -- / --</p>
           </div>
           <div class="brand-strip__field" id="bmw-generation-field" hidden>
-            <p class="brand-strip__text">Alege generație</p>
-            <label class="brand-strip__label" for="car-generation">Generație</label>
+            <p class="brand-strip__text">Alege generația BMW</p>
+            <label class="brand-strip__label" for="car-generation">Generație BMW</label>
             <select id="car-generation" name="car-generation" class="brand-strip__select" disabled>
-              <option value="" selected disabled>Selectează model</option>
+              <option value="" selected disabled>Selectează întâi modelul</option>
             </select>
           </div>
           <div class="brand-strip__field">
@@ -511,8 +511,7 @@
           </div>
           <div id="auth-panel-register" class="account-panel__tabpanel" role="tabpanel" aria-labelledby="auth-tab-register" hidden>
             <p class="account-panel__hint">
-              Alege o parolă de cel puțin 6 caractere. După creare ești conectat automat; la următoarea vizită folosește
-              același e-mail cu parola <strong>demo</strong> (mod demonstrație).
+              Folosește parola <strong>demo</strong>. După creare ești conectat automat cu același cont demo.
             </p>
             <form id="demo-register-form" class="account-panel__form" novalidate>
               <label class="account-panel__field">
@@ -535,7 +534,7 @@
                   type="password"
                   autocomplete="new-password"
                   required
-                  minlength="6"
+                  placeholder="demo"
                   class="account-panel__input"
                 />
               </label>
@@ -547,7 +546,7 @@
                   type="password"
                   autocomplete="new-password"
                   required
-                  minlength="6"
+                  placeholder="demo"
                   class="account-panel__input"
                 />
               </label>
@@ -649,7 +648,7 @@
     </footer>
     <script src="assets/js/site-theme.js" defer></script>
     <script type="module">
-      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
       import {
         setPlaceholder,
         loadModelsForBrand,
@@ -2469,7 +2468,14 @@
           return;
         }
 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            storageKey: "garage-catalog-anon",
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false,
+          },
+        });
         bmwSupabase = supabase;
         setPlaceholder(brandSelect, "Se incarca marci...");
         setPlaceholder(modelSelect, "Selecteaza mai intai marca");
@@ -2797,6 +2803,9 @@
             generationSelect.disabled = !(genRows || []).length;
             if (!(genRows || []).length) {
               setPlaceholder(generationSelect, "—");
+            } else {
+              setPlaceholder(engineSelect, "Alege întâi generația BMW");
+              engineSelect.disabled = true;
             }
             updatePartsButtonState();
             return;
@@ -2855,9 +2864,10 @@
             bmwCatalogBodyStyleRows = null;
             setPlaceholder(chassisSelect, "Selectează generația");
             chassisSelect.disabled = true;
-            setPlaceholder(engineSelect, "—");
+            setPlaceholder(engineSelect, "Alege întâi generația BMW");
             engineSelect.disabled = true;
             resetBmwEngineDrivetrainTransmission();
+            setPlaceholder(engineSelect, "Alege întâi generația BMW");
             resetModelMarketLabel();
             updatePartsButtonState();
             return;
@@ -3037,4 +3047,3 @@
     </script>
   </body>
 </html>
-

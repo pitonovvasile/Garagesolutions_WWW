@@ -4,10 +4,15 @@
  * Scriere: `catalog_variant_id` / `catalog_configuration_id` + catalog hierarchy când există;
  * coloanele BMW legacy rămân populate în oglindă pentru compatibilitate.
  */
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./supabase-config.mjs";
 import { createSupabaseCookieMirrorStorage } from "./supabase-session-cookie-mirror.mjs";
-import { readSavedCars, writeSavedCars } from "./garage-saved-cars.mjs";
+import {
+  dedupeGarageCars,
+  garageCarIdentityKey,
+  readSavedCars,
+  writeSavedCars,
+} from "./garage-saved-cars.mjs";
 import {
   fetchResolvedGarageForUser,
   rowToSavedCarFromResolved,
@@ -15,44 +20,27 @@ import {
 
 const TABLE = "user_saved_vehicles";
 
-/** Aceeași identitate ca `garage-saved-cars.mjs` / `garageStorage.ts` — pentru merge cloud ↔ local. */
-function garageCarIdentityKey(car) {
-  if (!car || typeof car !== "object") return "";
-  const o = /** @type {Record<string, unknown>} */ (car);
-  const brand =
-    (typeof o.brand === "string" && o.brand.trim()) ||
-    (typeof o.make === "string" && o.make.trim()) ||
-    (typeof o.marca === "string" && o.marca.trim()) ||
-    "";
-  const model =
-    (typeof o.model === "string" && o.model.trim()) ||
-    (typeof o.modelName === "string" && o.modelName.trim()) ||
-    "";
-  const engine = typeof o.engine === "string" ? o.engine.trim() : "";
-  return [brand, model, engine].map((s) => String(s || "").trim().toLowerCase()).join("\0");
-}
-
 /**
  * Păstrează ordinea și câmpurile rezolvate din `cloud`, apoi adaugă mașini din `local`
  * care nu există încă în cloud (ex. tocmai salvate în magazin înainte ca push-ul să reușească).
  */
 function mergeCloudGarageWithLocalOnlyAdditions(cloud, local) {
-  const cloudList = Array.isArray(cloud) ? cloud : [];
-  const localList = Array.isArray(local) ? local : [];
+  const cloudList = dedupeGarageCars(Array.isArray(cloud) ? cloud : []);
+  const localList = dedupeGarageCars(Array.isArray(local) ? local : []);
   const seen = new Set();
   for (const c of cloudList) {
     const k = garageCarIdentityKey(c);
-    if (k && k !== "\0\0\0") seen.add(k);
+    if (k) seen.add(k);
   }
   const out = [...cloudList];
   for (const c of localList) {
     const k = garageCarIdentityKey(c);
-    if (!k || k === "\0\0\0") continue;
+    if (!k) continue;
     if (seen.has(k)) continue;
     seen.add(k);
     out.push(c);
   }
-  return out;
+  return dedupeGarageCars(out);
 }
 
 /** Migrare din vechiul `localStorage` (o singură citire — șters doar după push reușit). */
@@ -68,9 +56,6 @@ function readLegacyGarageArrayFromBrowserStorage() {
 }
 
 function clearLegacyGarageBrowserKeys() {
-  try {
-    localStorage.removeItem("garageSolutionsSavedCars");
-  } catch (_) {}
   try {
     sessionStorage.removeItem("garageSolutionsSavedCarsTransfer");
   } catch (_) {}
@@ -101,7 +86,8 @@ const TOP_KEYS = new Set([
 /** @type {import("@supabase/supabase-js").SupabaseClient | null} */
 let _client = null;
 
-export function getGarageCloudSupabase() {
+export function getGarageCloudSupabase(client = null) {
+  if (client) return client;
   if (_client) return _client;
   _client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
@@ -235,7 +221,7 @@ function carToRow(userId, car, sortIndex) {
 export async function fetchSavedVehiclesFromCloud(sb, userId) {
   const primary = await fetchResolvedGarageForUser(sb, userId);
   if (!primary.error) {
-    return primary.data || [];
+    return dedupeGarageCars(primary.data || []);
   }
   console.warn("[garage-cloud] resolved view unavailable, falling back to raw table", primary.error);
 
@@ -246,10 +232,10 @@ export async function fetchSavedVehiclesFromCloud(sb, userId) {
     .order("sort_index", { ascending: true });
   if (error) {
     console.warn("[garage-cloud]", error.message || String(error));
-    return [];
+    throw error;
   }
   const legacy = (data || []).map((row) => rowToSavedCar(/** @type {Record<string, unknown>} */ (row)));
-  return legacy.filter((c) => c.brand.length > 0);
+  return dedupeGarageCars(legacy.filter((c) => c.brand.length > 0));
 }
 
 /**
@@ -264,8 +250,9 @@ export async function replaceSavedVehiclesInCloud(sb, userId, cars) {
     console.warn("[garage-cloud] delete", delErr.message || String(delErr));
     return false;
   }
-  if (!cars.length) return true;
-  const rows = cars.map((c, i) => carToRow(userId, c, i));
+  const uniqueCars = dedupeGarageCars(cars);
+  if (!uniqueCars.length) return true;
+  const rows = uniqueCars.map((c, i) => carToRow(userId, c, i));
   const { error: insErr } = await sb.from(TABLE).insert(rows);
   if (insErr) {
     console.warn("[garage-cloud] insert", insErr.message || String(insErr));
@@ -279,23 +266,27 @@ async function getSessionWithRetry(sb, attempts = 4) {
   for (let i = 0; i < attempts; i += 1) {
     const {
       data: { session },
+      error,
     } = await sb.auth.getSession();
+    if (error) throw error;
     if (session?.user) return session;
     await new Promise((r) => setTimeout(r, 120 * (i + 1)));
   }
   const {
     data: { session },
+    error,
   } = await sb.auth.getSession();
+  if (error) throw error;
   return session ?? null;
 }
 
 /**
  * Încarcă garajul din Supabase în memorie; fără autentificare păstrează memoria curentă.
- * Migrare: dacă există vechiul JSON în `localStorage`, îl îmbină o dată în cloud apoi șterge cheia.
+ * Migrare: dacă există vechiul JSON în `localStorage`, îl îmbină în cloud și păstrează copia demo locală.
  * @returns {Promise<import("./garage-saved-cars.mjs").SavedGarageCar[]>}
  */
-export async function syncGarageFromCloudAndLocal() {
-  const sb = getGarageCloudSupabase();
+export async function syncGarageFromCloudAndLocal(client = null) {
+  const sb = getGarageCloudSupabase(client);
   const session = await getSessionWithRetry(sb);
   const legacyRows = readLegacyGarageArrayFromBrowserStorage();
 
@@ -341,8 +332,8 @@ export async function syncGarageFromCloudAndLocal() {
 }
 
 /** După modificări locale: rescrie cloud-ul (utilizator autentificat). */
-export async function pushLocalGarageToCloud() {
-  const sb = getGarageCloudSupabase();
+export async function pushLocalGarageToCloud(client = null) {
+  const sb = getGarageCloudSupabase(client);
   const session = await getSessionWithRetry(sb, 2);
   if (!session?.user) return;
   const local = readSavedCars();
